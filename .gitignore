@@ -9,6 +9,7 @@ public/cookie.txt
 /storage/backups/*
 /storage/framework/laravel-excel/*
 /vendor
+/vendor_
 /.idea
 /.vscode
 /.vagrant
