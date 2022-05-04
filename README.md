@@ -1,5 +1,3 @@
-<img src="icon_pro3.jpg" width="120">
-
 # **Facturador PRO 4**
 
 
@@ -125,17 +123,3 @@ Procedimiento para solucionar error 1033 SUNAT: [Guía](https://docs.google.com/
 Recreación de documentos: [Guía](https://drive.google.com/open?id=1_ZvNpA3_IyvEiQ2NSaiW_rsBhVNbK7YD-_l1kbrEGwQ "Clic")<br>
 Manual de cambios privados: [Guía](https://drive.google.com/open?id=1ePniWwGvylJDzHTcPOj6E_nQtD_eO6PCReB_xwzOn98 "Clic")<br>
 Validador documentos: [Guía](https://docs.google.com/document/d/1v6XpJrEwCx3suRzRsa4-3-kcAghRvS9DHS5esb89SuI/edit "Clic")<br>
-
-## Soporte
-
-* Use Issues como sistema de tickets para añadir sus sugerencias, problemas o inquietudes
-* Inconvenientes con facturación serán atendidos con prioridad
-* Una vez obtiene acceso al repositorio tendrá un año de vigencia, pasado el año debe renovar su contrato
-* Toda instalación es gestionada mediante los canales de Slack
-* Nuevas instalaciones o actualizaciones deben ser programadas y gestionadas, para ser ejecutada el mismo día debe haber un problema previo
-
-## FacturaloPeru
-
-[facturaloperu.com](http://facturaloperu.com "Clic")<br>
-soporte@facturaloperu.com<br>
-wsapp: 930 973 902<br>
