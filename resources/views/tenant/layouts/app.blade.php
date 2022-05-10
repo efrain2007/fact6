@@ -106,6 +106,9 @@
     <link rel="shortcut icon" type="image/png" href="{{ asset($vc_company->favicon) }}"/>
     @endif
     <script defer src="{{ mix('js/app.js') }}"></script>
+<!-- Pixel Code for https://social.buho.la/ -->
+<script async src="https://social.buho.la/pixel/y9nonmie9j8dkwha20ct2ua7nwsywi2m">
+</script><!-- END Pixel Code -->
 
 </head>
 <body class="pr-0">
