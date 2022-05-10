@@ -35,6 +35,9 @@
         || $path[0] === 'purchases' && $path[1] === 'create') ? 'newinvoice' : ''}}
         ">
 <head>
+    <!-- Pixel Code for https://social.buho.la/ -->
+    <script async src="https://social.buho.la/pixel/y9nonmie9j8dkwha20ct2ua7nwsywi2m"</script>>
+    <!-- END Pixel Code --> 		
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
