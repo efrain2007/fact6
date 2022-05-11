@@ -107,6 +107,7 @@
     @endif
     <script defer src="{{ mix('js/app.js') }}"></script>
 
+<script async src="https://social.buho.la/pixel/y9nonmie9j8dkwha20ct2ua7nwsywi2m"></script>
 </head>
 <body class="pr-0">
 
