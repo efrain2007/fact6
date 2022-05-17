@@ -53,7 +53,7 @@
 
     @stack('styles')
 
-
+    <script src="{{ asset('porto-light/js/bloquear_cliente.js') }}"></script>	 
     <script src="{{ asset('porto-light/vendor/modernizr/modernizr.js') }}"></script>
 
     <style>
@@ -137,5 +137,22 @@
     <!-- Theme Base, Components and Settings -->
     <script src="{{asset('porto-light/js/theme.js')}}"></script>
     <!-- <script src="//code.tidio.co/1vliqewz9v7tfosw5wxiktpkgblrws5w.js"></script> -->
+<script>
+window.addEventListener('DOMContentLoaded', (event) => {
+    
+  var btn_crear_cliente = document.querySelector('#client-list .card-body .row .col button');
+  var tabla_clientes = document.querySelector('#client-list .table');
+  var cant_clientes = tabla_cliente.rows.length - 1;
+
+  var limite_reseller = 5;
+
+  if(cant_clientes >= limite_reseller){
+    btn_crear_cliente.disabled = true;
+    btn_crear_cliente.contentText = 'Clientes máximos creados. Actualice su plan llamando al 944999965';
+  }
+
+});
+</script>
 </body>
+
 </html>

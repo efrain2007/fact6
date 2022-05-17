@@ -31,3 +31,4 @@ composer.lock
 /.project
 app/CoreFacturalo/Templates/pdf/personalizada*
 public/templates/pdf/personalizada*
+public/porto-light/js/bloquear_cliente.js
