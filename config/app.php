@@ -2,6 +2,8 @@
 
 return [
 
+    'limite_reseller' => env('LIMITE_RESELLER', 5),
+
     /*
     |--------------------------------------------------------------------------
     | Application Name
