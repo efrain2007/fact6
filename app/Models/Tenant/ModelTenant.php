@@ -24,6 +24,7 @@
 
         public const RESERVED_SYMBOLS_FILTER = ['-', '+', '<', '>', '@', '(', ')', '~'];
 
+        public const VOIDED_REJECTED_IDS = ['09', '11'];
 
         /**
          * Devuelve un esqueleto del array de data extra. Previene error de no enconrarse la funcion en otros modelos
@@ -120,5 +121,19 @@
             return preg_split('/\s+/', $search_term, -1, PREG_SPLIT_NO_EMPTY);
         }
 
+    
+        /**
+         * 
+         * Aplicar formato
+         *
+         * @param  $value
+         * @param  int $decimals
+         * @return string
+         */
+        public function generalApplyNumberFormat($value, $decimals = 2)
+        {
+            return number_format($value, $decimals, ".", "");
+        }
+        
 
     }
