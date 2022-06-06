@@ -11,6 +11,8 @@
     use Illuminate\Foundation\Application;
     use Illuminate\Support\Facades\Config;
     use Modules\Inventory\Models\Warehouse;
+    use Modules\LevelAccess\Models\ModuleLevel;
+    use App\Models\Tenant\Skin;
 
     /**
      * Class App\Models\Tenant\Configuration
@@ -238,12 +240,20 @@
             'set_unit_price_dispatch_related_record',
             'restrict_voided_send',
             'shipping_time_days_voided',
+            'top_menu_a_id',
+            'top_menu_b_id',
+            'top_menu_c_id',
+            'top_menu_d_id',
+            'skin_id',
             'enabled_tips_pos',
             'legend_forest_to_xml',
             'change_currency_item',
             'enabled_advanced_records_search',
             'change_decimal_quantity_unit_price_pdf',
             'decimal_quantity_unit_price_pdf',
+            'separate_cash_transactions',
+            'order_cash_income',
+            'generate_order_note_from_quotation',
         ];
 
         protected $casts = [
@@ -323,12 +333,20 @@
             'set_unit_price_dispatch_related_record' => 'bool',
             'restrict_voided_send' => 'bool',
             'shipping_time_days_voided' => 'int',
+            'top_menu_a_id' => 'int',
+            'top_menu_b_id' => 'int',
+            'top_menu_c_id' => 'int',
+            'top_menu_d_id' => 'int',
+            'skin_id' => 'int',
             'enabled_tips_pos' => 'bool',
             'legend_forest_to_xml' => 'bool',
             'change_currency_item' => 'bool',
             'enabled_advanced_records_search' => 'bool',
             'change_decimal_quantity_unit_price_pdf' => 'bool',
             'decimal_quantity_unit_price_pdf' => 'int',
+            'separate_cash_transactions' => 'bool',
+            'order_cash_income' => 'bool',
+            'generate_order_note_from_quotation' => 'bool',
             
         ];
 
@@ -422,6 +440,7 @@
                 $warehouse = new Warehouse();
             }
             $currency = CurrencyType::all();
+            $skins = Skin::all();
             return [
                 'id' => $this->id,
                 'company' => $company,
@@ -521,13 +540,23 @@
                 'new_validator_pagination' => $this->getNewValidatorPagination(),
                 'restrict_voided_send' => $this->restrict_voided_send,
                 'shipping_time_days_voided' => $this->shipping_time_days_voided,
+                'top_menu_a' => $this->top_menu_a_id ? $this->top_menu_a : '',
+                'top_menu_b' => $this->top_menu_b_id ? $this->top_menu_b : '',
+                'top_menu_c' => $this->top_menu_c_id ? $this->top_menu_c : '',
+                'top_menu_d' => $this->top_menu_d_id ? $this->top_menu_d : '',
+                'skin_id' => $this->skin_id,
+                'skins' => $skins,
+                'facturalo_server' => true, // $this->getFacturaloConfig(),
                 'enabled_tips_pos' => $this->enabled_tips_pos,
                 'legend_forest_to_xml' => $this->legend_forest_to_xml,
                 'change_currency_item' => $this->change_currency_item,
                 'enabled_advanced_records_search' => $this->enabled_advanced_records_search,
                 'change_decimal_quantity_unit_price_pdf' => $this->change_decimal_quantity_unit_price_pdf,
                 'decimal_quantity_unit_price_pdf' => $this->decimal_quantity_unit_price_pdf,
-
+                'separate_cash_transactions' => $this->separate_cash_transactions,
+                'order_cash_income' => $this->order_cash_income,
+                'generate_order_note_from_quotation' => $this->generate_order_note_from_quotation,
+                
             ];
         }
 
@@ -2123,8 +2152,7 @@
         {
             return $query->select('set_unit_price_dispatch_related_record')->first()->set_unit_price_dispatch_related_record;
         }
-         
-        
+
         /**
          * Usado en:
          * LegendInput, para facturas y boletas
@@ -2135,9 +2163,9 @@
         {
             return Configuration::select('legend_forest_to_xml')->firstOrFail()->legend_forest_to_xml;
         }
-                
+
         /**
-         * 
+         *
          * Obtener configuracion avanzada de busqueda
          *
          * @param Builder $query
@@ -2150,7 +2178,7 @@
 
 
         /**
-         * 
+         *
          * Obtener configuracion de decimales para el precio unitario en pdf
          *
          * @param Builder $query
@@ -2160,5 +2188,72 @@
         {
             return $query->select('change_decimal_quantity_unit_price_pdf', 'decimal_quantity_unit_price_pdf')->firstOrFail();
         }
+
+        public function top_menu_a()
+        {
+            return $this->belongsTo(ModuleLevel::class, 'top_menu_a_id');
+        }
+
+        public function top_menu_b()
+        {
+            return $this->belongsTo(ModuleLevel::class, 'top_menu_b_id');
+        }
+
+        public function top_menu_c()
+        {
+            return $this->belongsTo(ModuleLevel::class, 'top_menu_c_id');
+        }
+
+        public function top_menu_d()
+        {
+            return $this->belongsTo(ModuleLevel::class, 'top_menu_d_id');
+        }
+
+        public function skin()
+        {
+            return $this->belongsTo(Skin::class, 'skin_id');
+        }
+
+        public function  getFacturaloConfig(): bool
+        {
+            return (bool) \Config('extra.suscription_facturalo');
+        }
+
+        
+        /**
+         *
+         * @param Builder $query
+         * @return Builder
+         */
+        public function scopeGetSeparateCashTransactions($query)
+        {
+            return $query->select('separate_cash_transactions')->firstOrFail()->separate_cash_transactions;
+        }
+
+        
+        /**
+         *
+         * @param Builder $query
+         * @return Builder
+         */
+        public function scopeGetOrderCashIncome($query)
+        {
+            return $query->select('order_cash_income')->firstOrFail()->order_cash_income;
+        }
+
+         
+        /**
+         * 
+         * Obtener campo individual de la configuracion
+         *
+         * @param  Builder $query
+         * @param  string $column
+         * @return Builder
+         */
+        public function scopeGetRecordIndividualColumn($query, $column)
+        {
+            return $query->select($column)->firstOrFail()->{$column};
+        }
+        
 
     }
