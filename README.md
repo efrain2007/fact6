@@ -1,5 +1,23 @@
+<<<<<<< HEAD
 # **Facturador PRO 4**
+=======
+<img src="icon_pro5.png" width="120">
 
+# **Facturador PRO 5**
+>>>>>>> 2e52ec8c1d86017fd7f136eb8b09ef3d71626eb4
+
+
+## Términos y condiciones del uso de este repositorio
+
+1.- Este repositorio es de código abierto pero de acceso privado, se permite la distribución y/o modificaciones si se hace referencio a la casa matriz del desarrollo de este es software es [https://facturaloperu.com](https://facturaloperu.com)
+
+2.- Esta sección de términos y condiciones no puede ser removida al compartir o distribuir el repositorio de alguna forma, de hacerlo, [https://facturaloperu.com](https://facturaloperu.com) se reserva el derecho de remover el acceso y limitar el uso a quien lo distribuya de esa forma o a quien se atribuya el desarrollo del mismo.
+
+3.- Si desea distribuir el código fuente como propio, debe tener al menos un 30% de modificaciones en todo el código, y previamente debe validarse dicho % por [https://facturaloperu.com](https://facturaloperu.com)
+
+4.- El uso del software a nivel funcional es marca blanca, sin embargo a nivel de distribución del código fuente, debe contener esta sección de términos y condiciones.
+
+5.- [https://facturaloperu.com](https://facturaloperu.com) no se hace responsable por los daños o perjuicios del uso del código de este software cuando no ha sido distribuido directamente por [https://facturaloperu.com](https://facturaloperu.com)
 
 ## Manuales de Instalación
 
@@ -50,7 +68,7 @@ Linux - Ubuntu 18 - Docker - SSL opcional<br>
 
 ## API
 
-[Descargar colección para Postman](https://drive.google.com/file/d/15NrfWm0YzgcJxLjePP_rUg-ePmE3Wc8L/view?usp=sharing "Clic")<br>
+[Descargar colección para Postman](https://drive.google.com/file/d/1MhFHT0UF4CayjZfHkCqi5VMpqN34PGkV/view?usp=sharing "Clic")<br>
 [Documentación - Ver json con respuestas](https://docs.google.com/document/d/1QO3H2nhV6dubGFc-IOrXY1X1hobmKkSmutfrtKbelTw/edit "Clic")<br>
 [Documentación - Ver ejemplos para Lenguajes](https://documenter.getpostman.com/view/1431398/U16onhgw "Clic")<br>
 

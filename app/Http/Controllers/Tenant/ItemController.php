@@ -98,6 +98,7 @@ class ItemController extends Controller
             'lot_code' => 'Código lote',
             'active' => 'Habilitados',
             'inactive' => 'Inhabilitados',
+            'category' => 'Categoria'
         ];
     }
 
@@ -116,13 +117,22 @@ class ItemController extends Controller
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function getRecords(Request $request){
-
-        $records = Item::whereTypeUser()->whereNotIsSet();
-        switch ($request->column) {
+    public function getRecords(Request $request)
+    {
+ 
+        // $records = Item::whereTypeUser()->whereNotIsSet();
+        $records = $this->getInitialQueryRecords();
+        
+        switch ($request->column) 
+        {
 
             case 'brand':
                 $records->whereHas('brand',function($q) use($request){
+                                    $q->where('name', 'like', "%{$request->value}%");
+                                });
+                break;
+            case 'category':
+                $records->whereHas('category',function($q) use($request){
                                     $q->where('name', 'like', "%{$request->value}%");
                                 });
                 break;
@@ -137,9 +147,19 @@ class ItemController extends Controller
 
             default:
                 if($request->has('column'))
-                $records->where($request->column, 'like', "%{$request->value}%");
+                {
+                    if($this->applyAdvancedRecordsSearch() && $request->column === 'description')
+                    {
+                        if($request->value) $records->whereAdvancedRecordsSearch($request->column, $request->value);
+                    }
+                    else
+                    {
+                        $records->where($request->column, 'like', "%{$request->value}%");
+                    }
+                }
                 break;
         }
+
         if ($request->type) {
             if($request->type ==='PRODUCTS') {
                 // listar solo productos en la lista de productos
@@ -159,6 +179,29 @@ class ItemController extends Controller
         return $records->orderBy('description');
 
     }
+
+    
+    /**
+     * 
+     * Aplicar filtros iniciales a la consulta
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function getInitialQueryRecords()
+    {
+        
+        if(Configuration::getRecordIndividualColumn('list_items_by_warehouse'))
+        {
+            $records = Item::whereWarehouse()->whereNotIsSet();
+        }
+        else
+        {
+            $records = Item::whereTypeUser()->whereNotIsSet();
+        }
+
+        return $records;
+    }
+
 
     public function create()
     {

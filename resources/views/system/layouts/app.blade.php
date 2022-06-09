@@ -51,9 +51,7 @@
 
     <link rel="stylesheet" href="{{asset('porto-light/vendor/jquery-loading/dist/jquery.loading.css')}}" />
 
-    @stack('styles')
-
-
+    @stack('styles') 
     <script src="{{ asset('porto-light/vendor/modernizr/modernizr.js') }}"></script>
 
     <style>
@@ -136,6 +134,33 @@
     <script src="{{ mix('js/app.js') }}"></script>
     <!-- Theme Base, Components and Settings -->
     <script src="{{asset('porto-light/js/theme.js')}}"></script>
-    <!-- <script src="//code.tidio.co/1vliqewz9v7tfosw5wxiktpkgblrws5w.js"></script> -->
+
+<?php echo config('app.limite_reseller'); ?>
+<script>
+var btn_crear_cliente = document.querySelector('#client-list .card-body .row .col button');
+var tabla_clientes = document.querySelector('#client-list .table');
+var limite_reseller = "{{ config('app.limite_reseller') }}";
+
+btn_crear_cliente.disabled = true;
+
+var esperar_tabla = setInterval(function(){
+  if(tabla_clientes && tabla_clientes.rows.length > 1){
+    console.log('existe tabla');
+
+    if(tabla_clientes.rows.length >= limite_reseller){
+      btn_crear_cliente.innerText = 'Clientes máximos creados. Actualice su plan llamando al 944999965';
+      btn_crear_cliente.disabled = true;
+    } else {
+	 btn_crear_cliente.disabled = false;
+    }
+    clearInterval(esperar_tabla);
+  } else {
+    console.log('Aún no existe tabla de clientes');
+  }
+
+}, 1000);
+
+</script>
 </body>
+
 </html>

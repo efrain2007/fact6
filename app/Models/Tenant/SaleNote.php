@@ -1289,4 +1289,78 @@
         }
 
         
+        /**
+         * 
+         * Obtener la fecha de vencimiento y aplicar formato
+         *
+         * @return string
+         */
+        public function getFormatDueDate()
+        {
+            return $this->due_date ? $this->generalFormatDate($this->due_date) : null;
+        }
+
+
+        /**
+         * 
+         * Obtener descripción del tipo de documento
+         *
+         * @return string
+         */
+        public function getDocumentTypeDescription()
+        {
+            return 'NOTA DE VENTA';
+        }
+
+
+        /**
+         * 
+         * Obtener pagos en efectivo
+         *
+         * @return Collection
+         */
+        public function getCashPayments()
+        {
+            return $this->payments()->whereFilterCashPayment()->get()->transform(function($row){{
+                return $row->getRowResourceCashPayment();
+            }});
+        }
+        
+
+        /**
+         * 
+         * Validar si el registro esta rechazado o anulado
+         * 
+         * @return bool
+         */
+        public function isVoidedOrRejected()
+        {
+            return in_array($this->state_type_id, self::VOIDED_REJECTED_IDS);
+        }
+        
+
+        /**
+         * 
+         * Retornar el total de pagos
+         *
+         * @return float
+         */
+        public function getTotalAllPayments()
+        {
+
+            $total_payments = 0;
+
+            if(!$this->isVoidedOrRejected())
+            {
+                $total_payments = $this->payments->sum('payment');
+    
+                if($this->currency_type_id === 'USD')
+                {
+                    $total_payments = $this->generalConvertValueToPen($total_payments, $this->exchange_rate_sale);
+                }
+            }
+
+            return $total_payments;
+        }
+
     }

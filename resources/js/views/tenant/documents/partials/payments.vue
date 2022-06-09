@@ -16,7 +16,7 @@
                                 <th>Método de pago</th>
                                 <th>Destino</th>
                                 <th>Referencia</th>
-                                <th>Archivo</th>
+                                <th>Voucher/Link de pago</th>
                                 <th class="text-right">Monto</th>
                                 <th></th>
                             </tr>
@@ -31,9 +31,12 @@
                                     <td>{{ row.reference }}</td>
                                     <!-- <td>{{ row.filename }}</td> -->
                                     <td class="text-center">
-                                        <button  type="button" v-if="row.filename" class="btn waves-effect waves-light btn-xs btn-primary" @click.prevent="clickDownloadFile(row.filename)">
+                                        <button  type="button" v-if="row.filename" class="btn waves-effect waves-light btn-xs btn-primary mb-2" @click.prevent="clickDownloadFile(row.filename)">
                                             <i class="fas fa-file-download"></i>
                                         </button>
+
+                                        <el-button type="primary" @click="showDialogLinkPayment(row)">Link de pago</el-button>
+
                                     </td>
                                     <td class="text-right">{{ row.payment }}</td>
                                     <td class="series-table-actions text-right">
@@ -81,7 +84,7 @@
                                     </td>
                                     <td>
                                         <div class="form-group mb-0">
-                                            
+
                                             <el-upload
                                                     :data="{'index': index}"
                                                     :headers="headers"
@@ -93,9 +96,10 @@
                                                     :on-success="onSuccess"
                                                     :limit="1"
                                                     >
-                                                <el-button slot="trigger" type="primary">Seleccione un archivo</el-button>
+                                                <el-button slot="trigger" type="primary">Cargar voucher</el-button>
                                             </el-upload>
                                         </div>
+
                                     </td>
                                     <td>
                                         <div class="form-group mb-0" :class="{'has-danger': row.errors.payment}">
@@ -121,6 +125,11 @@
                                 <td class="text-right">{{ document.total_paid }}</td>
                                 <td></td>
                             </tr>
+                            <tr v-if="document.credit_notes_total">
+                                <td colspan="6" class="text-right">TOTAL NOTA CRÉDITO</td>
+                                <td class="text-right">{{ document.credit_notes_total }}</td>
+                                <td></td>
+                            </tr>
                             <tr>
                                 <td colspan="6" class="text-right">TOTAL A PAGAR</td>
                                 <td class="text-right">{{ document.total }}</td>
@@ -142,6 +151,15 @@
                 </div>
             </div>
         </div>
+        
+        <dialog-link-payment 
+            :documentPaymentId="documentPayment.id"
+            :currencyTypeId="document.currency_type_id"
+            :exchangeRateSale="document.exchange_rate_sale"
+            :payment="documentPayment.payment"
+            :showDialog.sync="showDialogLink"
+            >
+        </dialog-link-payment>
     </el-dialog>
 
 </template>
@@ -149,10 +167,14 @@
 <script>
 
     import {deletable} from '../../../../mixins/deletable'
+    import DialogLinkPayment from './dialog_link_payment'
 
     export default {
         props: ['showDialog', 'documentId'],
         mixins: [deletable],
+        components: {
+            DialogLinkPayment,
+        },
         data() {
             return {
                 title: null,
@@ -166,6 +188,8 @@
                 document: {},
                 permissions: {},
                 index_file: null,
+                documentPayment: {},
+                showDialogLink: false,
             }
         },
         async created() {
@@ -179,6 +203,10 @@
                 })
         },
         methods: {
+            showDialogLinkPayment(row){
+                this.showDialogLink = true
+                this.documentPayment = row
+            },
             clickDownloadFile(filename) {
                 window.open(
                     `/finances/payment-file/download-file/${filename}/documents`,
@@ -203,19 +231,19 @@
                 }
 
                 // console.log(this.records)
-            
+
             },
             cleanFileList(){
                 this.fileList = []
             },
-            handleRemove(file, fileList) {       
-                
+            handleRemove(file, fileList) {
+
                 this.records[this.index_file].filename = null
                 this.records[this.index_file].temp_path = null
                 this.fileList = []
                 this.index_file = null
 
-            }, 
+            },
             initForm() {
                 this.records = [];
                 this.fileList = [];
