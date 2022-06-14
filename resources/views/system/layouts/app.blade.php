@@ -156,6 +156,7 @@ var esperar_tabla = setInterval(function(){
     clearInterval(esperar_tabla);
   } else {
     console.log('Aún no existe tabla de clientes');
+    btn_crear_cliente.disabled = false;
   }
 
 }, 1000);
