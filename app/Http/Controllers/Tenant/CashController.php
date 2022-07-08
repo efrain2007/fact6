@@ -642,25 +642,32 @@ class CashController extends Controller
                             foreach ($methods_payment as $record) {
                                 $record_total = $pays->where('payment_method_type_id', $record->id)->sum('payment');
                                 $record->sum = ($record->sum + $record_total);
+
+                                if (!empty($record_total)) {
+                                    if(self::getStringPaymentMethod($record->id) == "Efectivo"){
+                                        $temp = [
+                                            'type_transaction'          => 'Venta',
+                                            'document_type_description' => 'NOTA DE VENTA',
+                                            'number'                    => $sale_note->number_full,
+                                            'date_of_issue'             => $sale_note->date_of_issue->format('Y-m-d'),
+                                            'date_sort'                 => $sale_note->date_of_issue,
+                                            'customer_name'             => $sale_note->customer->name,
+                                            'customer_number'           => $sale_note->customer->number,
+                                            'total'                     => ((!in_array($sale_note->state_type_id, $status_type_id)) ? 0
+                                                : $sale_note->total),
+                                            'currency_type_id'          => $sale_note->currency_type_id,
+                                            'usado'                     => $usado." ".__LINE__,
+                                            'tipo'                      => 'sale_note',
+                                            'total_payments'            => (!in_array($sale_note->state_type_id, $status_type_id)) ? 0 : $sale_note->payments->sum('payment'),
+                                        ];
+
+                                    }
+                                }
                             }
                         }
                     
                 }
-                $temp = [
-                    'type_transaction'          => 'Venta',
-                    'document_type_description' => 'NOTA DE VENTA',
-                    'number'                    => $sale_note->number_full,
-                    'date_of_issue'             => $sale_note->date_of_issue->format('Y-m-d'),
-                    'date_sort'                 => $sale_note->date_of_issue,
-                    'customer_name'             => $sale_note->customer->name,
-                    'customer_number'           => $sale_note->customer->number,
-                    'total'                     => ((!in_array($sale_note->state_type_id, $status_type_id)) ? 0
-                        : $sale_note->total),
-                    'currency_type_id'          => $sale_note->currency_type_id,
-                    'usado'                     => $usado." ".__LINE__,
-                    'tipo'                      => 'sale_note',
-                    'total_payments'            => (!in_array($sale_note->state_type_id, $status_type_id)) ? 0 : $sale_note->payments->sum('payment'),
-                ];
+              
             } 
             /** Documentos de Tipo Document */
             
@@ -677,11 +684,11 @@ class CashController extends Controller
                                 $document->currency_type_id,
                                 $document->exchange_rate_sale
                             );
-                            $usado .= '<br>Tomado para income<br>';
+                            // $usado .= '<br>Tomado para income<br>';
                             $cash_income += $total;
                             $final_balance += $total;
                             if (count($pays) > 0) {
-                                $usado .= '<br>Se usan los pagos<br>';
+                                // $usado .= '<br>Se usan los pagos<br>';
                                 foreach ($methods_payment as $record) {
                                     $record_total = $pays
                                         ->where('payment_method_type_id', $record->id)
@@ -689,32 +696,32 @@ class CashController extends Controller
                                         ->sum('payment');
                                     $record->sum = ($record->sum + $record_total);
                                     if (!empty($record_total)) {
-                                        $usado .= self::getStringPaymentMethod($record->id).'<br>Se usan los pagos Tipo '.$record->id.'<br>';
+                                        // $usado .= self::getStringPaymentMethod($record->id).'<br>Se usan los pagos Tipo - 1er IF -  '.$record->id.'<br>';
+                                        if(self::getStringPaymentMethod($record->id) == "Efectivo"){
+                                            $temp = [
+                                                'type_transaction'          => 'Venta',
+                                                'document_type_description' => $document->document_type->description,
+                                                'number'                    => $document->number_full,
+                                                'date_of_issue'             => $document->date_of_issue->format('Y-m-d'),
+                                                'date_sort'                 => $document->date_of_issue,
+                                                'customer_name'             => $document->customer->name,
+                                                'customer_number'           => $document->customer->number,
+                                                'id_pagos'                  => $document->payment_condition_id,
+                                                'total'                     => (!in_array($document->state_type_id, $status_type_id)) ? 0
+                                                    : $document->total,
+                                                'currency_type_id'          => $document->currency_type_id,
+                                                'usado'                     => $usado." ".__LINE__,
+                            
+                                                'tipo' => 'document',
+                                                'total_payments'            => (!in_array($document->state_type_id, $status_type_id)) ? 0 : $document->payments->sum('payment'),
+                                            ];
+
+                                        }
                                     }
                                 }
                         }
                     }
                 }
-                if ($record_total != $document->total) {
-                    $usado .= '<br> Los montos son diferentes '.$document->total." vs ".$pagado."<br>";
-                }
-                $temp = [
-                    'type_transaction'          => 'Venta',
-                    'document_type_description' => $document->document_type->description,
-                    'number'                    => $document->number_full,
-                    'date_of_issue'             => $document->date_of_issue->format('Y-m-d'),
-                    'date_sort'                 => $document->date_of_issue,
-                    'customer_name'             => $document->customer->name,
-                    'customer_number'           => $document->customer->number,
-                    'total'                     => (!in_array($document->state_type_id, $status_type_id)) ? 0
-                        : $document->total,
-                    'currency_type_id'          => $document->currency_type_id,
-                    'usado'                     => $usado." ".__LINE__,
-
-                    'tipo' => 'document',
-                    'total_payments'            => (!in_array($document->state_type_id, $status_type_id)) ? 0 : $document->payments->sum('payment'),
-
-                ];
                 
                 /* Notas de credito o debito*/
                 $notes = $document->getNotes();
