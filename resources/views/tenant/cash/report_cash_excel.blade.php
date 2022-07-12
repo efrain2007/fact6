@@ -59,7 +59,7 @@
 </head>
 <body>
 <div>
-    <p align="center" class="title"><strong>Reporte Punto de Venta</strong></p>
+    <p align="center" class="title"><strong>Reporte Efectivo - Punto de Venta</strong></p>
 </div>
 <div style="margin-top:20px; margin-bottom:20px;">
     <table>
@@ -166,6 +166,7 @@
                     <th>Cliente/Proveedor</th>
                     <th>N° Documento</th>
                     <th>Moneda</th>
+                    <th>T.Pagado</th>
                     <th>Total</th>
                 </tr>
                 </thead>
@@ -196,6 +197,9 @@
                         </td>
                         <td class="celda">
                             {{ $value['currency_type_id'] }}
+                        </td>
+                        <td class="celda">
+                            {{ $value['total_payments'] }}
                         </td>
                         <td class="celda">
                             {{ $value['total_string'] }}
