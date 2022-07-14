@@ -15,6 +15,32 @@ use Modules\Pos\Exports\ReportCashExport;
 use Modules\Pos\Mail\CashEmail;
 use Mpdf\Mpdf;
 
+
+//Inicio: Deyvis: pendiente revisar para que funke
+use App\Exports\CashProductExport;
+use App\Exports\CashPaymentExport;
+use App\Http\Requests\Tenant\CashRequest;
+use App\Http\Resources\Tenant\CashCollection;
+use App\Http\Resources\Tenant\CashResource;
+use App\Models\Tenant\CashDocument;
+use App\Models\Tenant\DocumentItem;
+use App\Models\Tenant\PurchaseItem;
+use App\Models\Tenant\SaleNoteItem;
+use App\Models\Tenant\SaleNote;
+use App\Models\Tenant\Document;
+use App\Models\Tenant\User;
+use Barryvdh\DomPDF\Facade as PDF;
+
+use Illuminate\Support\Facades\DB;
+use Modules\Finance\Traits\FinanceTrait;
+use Modules\Pos\Models\CashTransaction;
+use App\Models\Tenant\CashDocumentCredit;
+use Modules\Finance\Models\Income;
+use App\CoreFacturalo\Helpers\Template\ReportHelper;
+use Carbon\Carbon;
+//Fin - Deyvis: pendiente revisar para que funke
+
+
 class CashController extends Controller
 {
     
@@ -560,6 +586,86 @@ class CashController extends Controller
             }
 
         }
+
+
+//Inicio: Deyvis: pendiente revisar para que funke
+        // finanzas ingresos
+        $id_income=$cash->user_id;
+        $incomes=Income::where('user_id', $id_income)->whereTypeUser();
+        $date_closed = Carbon::now()->format('Y-m-d');
+        $time_closed = Carbon::now()->format('H:m:s');
+        if($cash->date_closed){
+            $incomes=$incomes->whereBetween('date_of_issue',[$cash->date_opening,$cash->date_closed]);
+            $incomes=$incomes->whereBetween('time_of_issue',[$cash->time_opening,$cash->time_closed]);
+        }else{
+            $incomes=$incomes->whereBetween('date_of_issue',[$cash->date_opening,$date_closed]);
+            $incomes=$incomes->whereBetween('time_of_issue',[$cash->time_opening,$time_closed]);
+        }
+
+        $incomes=$incomes->get();
+        
+        if (isset($incomes[0])) {
+
+            $data['cash_documents_total'] = (int)$incomes->count();
+            /* dd(isset($incomes[0])); */
+            foreach ($incomes as $income) {
+                
+                $usado = '';                
+                if( $income->payments[0]['payment_method_type']['id'] == "01"){
+                    if (in_array($income->state_type_id, $status_type_id)){
+                        $payments=$income->payments;
+                            $record_total = 0;
+        
+                            $total = self::CalculeTotalOfCurency(
+                                $income->total,
+                                $income->currency_type_id,
+                                $income->exchange_rate_sale
+                            );
+        
+                            $cash_income += $total;
+                            $final_balance += $total;
+
+                            if (count($income->payments) > 0) 
+                            {
+                                $pays = $income->payments;
+                                foreach ($methods_payment as $record) {
+                                    $record_total = $pays->where('payment_method_type_id', $record->id)->sum('payment');
+                                    $record->sum = ($record->sum + $record_total);
+                                }
+                            }
+
+                            $temp = [
+                                'type_transaction'          => 'Ingresos (finanzas)',
+                                'document_type_description' => $income->income_type->description,
+                                'number'                    => $income->number,
+                                'date_of_issue'             => $income->date_of_issue->format('Y-m-d'),
+                                'date_sort'                 => $income->date_of_issue,
+                                'customer_name'             => $income->customer,
+                                'customer_number'           => '-',
+                                'total'                     => ((!in_array($income->state_type_id, $status_type_id)) ? 0 : $income->total),
+                                'currency_type_id'          => $income->currency_type_id,
+                                'usado'                     => $usado." ".__LINE__,
+                                'tipo'                      => 'finance',
+                                'total_payments'            => (!in_array($income->state_type_id, $status_type_id)) ? 0 : $income->payments->sum('payment'),
+                            ];
+                    }
+                } else {
+                    // $temp = [];
+                }
+            
+                /* dd((!in_array($income->state_type_id, $status_type_id)) ? 0 : $income->payments->sum('payment')); */                
+                
+                if (!empty($temp)) {
+                    $temp['usado'] = isset($temp['usado']) ? $temp['usado'] : '--';
+                    $temp['total_string'] = self::FormatNumber($temp['total']);
+                    $temp['total_payments'] = self::FormatNumber($temp['total_payments']);
+                    $all_documents[] = $temp;
+                }
+            }
+        }
+//Fin: Deyvis: pendiente revisar para que funke
+
+
 //        $all_documents = collect($all_documents)->sortBy('date_sort')->all();
         /************************/
         /************************/

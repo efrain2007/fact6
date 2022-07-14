@@ -909,6 +909,8 @@ class CashController extends Controller
                             'currency_type_id'          => $document->currency_type_id,
                             'usado'                     => $usado.' '.__LINE__,
                             'tipo'                      => 'document',
+                            'total_payments'            => (!in_array($document->state_type_id, $status_type_id)) ? 0
+                            : $document->total,
                         ];
 
                         $temp['usado'] = isset($temp['usado']) ? $temp['usado'] : '--';
