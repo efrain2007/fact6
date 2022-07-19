@@ -980,7 +980,8 @@ $withEstablishment = true){
     public function getAppPermission()
     {
         // si es usuario principal y no tiene permisos asignados
-        if($this->id === 1 && $this->type === 'admin' && $this->app_modules->count() === 0)
+        if($this->id === 1 && $this->type === 'admin')
+        // if($this->id === 1 && $this->type === 'admin' && $this->app_modules->count() === 0)
         {
             return $this->getTransformPermissionsApp(AppModule::get());
         }
@@ -1003,7 +1004,22 @@ $withEstablishment = true){
             return $row->getPermissionsApp();
         });
     }
-
     
+
+    /**
+     * 
+     * Obtener datos generales del usuario
+     * 
+     * Usado para carga inicial en app
+     *
+     * @return array
+     */
+    public function getGeneralDataApp()
+    {
+        return [
+            'type' => $this->type,
+            'establishment_id' => $this->establishment_id,
+        ];
+    }
 
 }
