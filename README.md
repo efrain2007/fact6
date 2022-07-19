@@ -65,7 +65,8 @@ Linux - Ubuntu 18 - Docker - SSL opcional<br>
 [demo.fastura.app](https://demo.fastura.app/login "Clic")
 <br>
 Usuario: demo@fastura.app<br>
-Contraseña: demo@fastura.app
+Contraseña: demo@fastura.app<br>
+Cualquier duda puede comunicarse a la central Buho 944999965
 
 
 ## Manuales adicionales
