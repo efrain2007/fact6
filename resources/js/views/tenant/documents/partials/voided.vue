@@ -17,6 +17,7 @@
             </div>
             <div class="row form-actions mt-4">
                 <div class="col-md-8">
+                    <b class="text-danger">Recuerda completar la anulación en la sección de Anulaciones</b>
                     <!--
                     <span v-if="hasSaleNote">
                         <label> Tiene asociado la(s) siguiente(s) nota de venta(s): </label>

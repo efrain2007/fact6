@@ -225,7 +225,7 @@
                                   class="badge bg-secondary text-white"
                                   :class="{'bg-danger': (row.state_type_id === '11'), 'bg-warning': (row.state_type_id === '13'), 'bg-secondary': (row.state_type_id === '01'), 'bg-info': (row.state_type_id === '03'), 'bg-success': (row.state_type_id === '05'), 'bg-secondary': (row.state_type_id === '07'), 'bg-dark': (row.state_type_id === '09')}">
                                 {{ row.state_type_description }}
-                            </span>
+                            </span> <a v-if="row.state_type_id === '13'" href="voided" class="small"><br>Ir a anulaciones</a>
                             <template v-if="row.regularize_shipping && row.state_type_id === '01'">
                                 <el-tooltip class="item"
                                             effect="dark"

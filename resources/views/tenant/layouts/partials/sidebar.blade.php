@@ -168,19 +168,19 @@
                                         {{ ($firstLevel === 'summaries')?'nav-active nav-expanded':'' }}
                                         {{ ($firstLevel === 'voided')?'nav-active nav-expanded':'' }}
                                             ">
-                                            <a class="nav-link"
+                                            <a class="nav-link text-danger"
                                                href="#">
                                                 Resúmenes y Anulaciones
                                             </a>
                                             <ul class="nav nav-children">
                                                 <li class="{{ ($firstLevel === 'summaries')?'nav-active':'' }}">
-                                                    <a class="nav-link"
+                                                    <a class="nav-link text-danger"
                                                        href="{{route('tenant.summaries.index')}}">
                                                         Resúmenes
                                                     </a>
                                                 </li>
                                                 <li class="{{ ($firstLevel === 'voided')?'nav-active':'' }}">
-                                                    <a class="nav-link"
+                                                    <a class="nav-link text-danger"
                                                        href="{{route('tenant.voided.index')}}">
                                                         Anulaciones
                                                     </a>
