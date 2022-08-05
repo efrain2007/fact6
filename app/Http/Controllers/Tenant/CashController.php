@@ -808,6 +808,51 @@ class CashController extends Controller
                 }
                 
             }
+
+            /** Documentos de Tipo Gastos */
+            elseif ($cash_document->expense_payment) 
+            {
+                $expense_payment = $cash_document->expense_payment;
+                $total_expense_payment = 0;
+
+                if ($expense_payment->expense->state_type_id == '05') 
+                {
+                    $total_expense_payment = self::CalculeTotalOfCurency(
+                        $expense_payment->payment,
+                        $expense_payment->expense->currency_type_id,
+                        $expense_payment->expense->exchange_rate_sale
+                    );
+
+                    $cash_egress += $total_expense_payment;
+                    $final_balance -= $total_expense_payment;
+                    // $cash_egress += $total;
+                    // $final_balance -= $total;
+                }
+
+                $order_number = 9;
+
+                $temp = [
+                    'type_transaction'          => 'Gasto diverso',
+                    'document_type_description' => $expense_payment->expense->expense_type->description,
+                    'number'                    => $expense_payment->expense->number,
+                    'date_of_issue'             => $expense_payment->expense->date_of_issue->format('Y-m-d'),
+                    'date_sort'                 => $expense_payment->expense->date_of_issue,
+                    'customer_name'             => $expense_payment->expense->supplier->name,
+                    'customer_number'           => $expense_payment->expense->supplier->number,
+                    'total'                     => -$total_expense_payment,
+                    // 'total'                     => -$expense_payment->payment,
+                    'currency_type_id'          => $expense_payment->expense->currency_type_id,
+                    'usado'                     => $usado." "._LINE_,
+
+                    'tipo' => 'expense_payment',
+                    'total_payments'            => $total_expense_payment,
+                    // 'total_payments'            => -$expense_payment->payment,
+                    'type_transaction_prefix'   => 'egress',
+                    'order_number_key'          => $order_number.'_'.$expense_payment->expense->created_at->format('YmdHis'),
+
+                ];
+            }
+
             /** Cotizaciones */
             else if ($cash_document->quotation) 
             {
