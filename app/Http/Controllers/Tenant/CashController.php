@@ -842,7 +842,7 @@ class CashController extends Controller
                     'total'                     => -$total_expense_payment,
                     // 'total'                     => -$expense_payment->payment,
                     'currency_type_id'          => $expense_payment->expense->currency_type_id,
-                    'usado'                     => $usado." "._LINE_,
+                    'usado'                     => $usado." ".__LINE__,
 
                     'tipo' => 'expense_payment',
                     'total_payments'            => $total_expense_payment,
