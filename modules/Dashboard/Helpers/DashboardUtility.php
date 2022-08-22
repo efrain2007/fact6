@@ -139,8 +139,8 @@ class DashboardUtility
                         'label' => 'Utilidades',
                         'data' => [round($total_income,2), round($total_egress,2)],
                         'backgroundColor' => [
-                            'rgb(54, 162, 235)',
-                            'rgb(255, 99, 132)',
+                            'rgb(20, 120, 250)',
+                            'rgb(252, 78, 75)',
                         ]
                     ]
                 ],

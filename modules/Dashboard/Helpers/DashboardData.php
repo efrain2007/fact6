@@ -150,8 +150,8 @@ class DashboardData
                         'label' => 'Notas de venta',
                         'data' => [round($sale_note_total_payment,2), round($sale_note_total_to_pay,2)],
                         'backgroundColor' => [
-                            'rgb(54, 162, 235)',
-                            'rgb(255, 99, 132)',
+                            'rgb(20, 120, 250)',
+                            'rgb(252, 78, 75)',
                         ]
                     ]
                 ],
@@ -292,8 +292,8 @@ class DashboardData
                         'label' => 'Comprobantes',
                         'data' => [round($document_total_payment,2), round($document_total_to_pay,2)],
                         'backgroundColor' => [
-                            'rgb(54, 162, 235)',
-                            'rgb(255, 99, 132)',
+                            'rgb(20, 120, 250)',
+                            'rgb(252, 78, 75)',
                         ]
                     ]
                 ],
@@ -510,8 +510,8 @@ class DashboardData
                     [
                         'label' => 'Total notas de venta',
                         'data' => array_values($data_array['sale_notes_array']),
-                        'backgroundColor' => 'rgb(255, 99, 132)',
-                        'borderColor' => 'rgb(255, 99, 132)',
+                        'backgroundColor' => 'rgb(252, 78, 75)',
+                        'borderColor' => 'rgb(252, 78, 75)',
                         'borderWidth' => 1,
                         'fill' => false,
                         'lineTension' => 0,
@@ -519,8 +519,8 @@ class DashboardData
                     [
                         'label' => 'Total comprobantes',
                         'data' => array_values($data_array['documents_array']),
-                        'backgroundColor' => 'rgb(54, 162, 235)',
-                        'borderColor' => 'rgb(54, 162, 235)',
+                        'backgroundColor' => 'rgb(20, 120, 250)',
+                        'borderColor' => 'rgb(20, 120, 250)',
                         'borderWidth' => 1,
                         'fill' => false,
                         'lineTension' => 0,
@@ -528,8 +528,8 @@ class DashboardData
                     [
                         'label' => 'Total',
                         'data' => array_values($data_array['total_array']),
-                        'backgroundColor' => 'rgb(201, 203, 207)',
-                        'borderColor' => 'rgb(201, 203, 207)',
+                        'backgroundColor' => 'rgb(177, 184, 194)',
+                        'borderColor' => 'rgb(177, 184, 194)',
                         'borderWidth' => 1,
                         'fill' => false,
                         'lineTension' => 0,
@@ -830,8 +830,8 @@ class DashboardData
                         'label' => 'Grafico',
                         'data' => [round($all_totals,2), round($all_totals_payment,2)],
                         'backgroundColor' => [
-                            'rgb(54, 162, 235)',
-                            'rgb(255, 99, 132)',
+                            'rgb(20, 120, 250)',
+                            'rgb(252, 78, 75)',
                         ]
                     ]
                 ],

@@ -220,8 +220,8 @@ class DashboardSalePurchase
                     [
                         'label' => 'Total percepciones',
                         'data' => $this->arrayPurchasesbyMonth($purchases_by_month, 'total_perception_purchase'),
-                        'backgroundColor' => 'rgb(255, 99, 132)',
-                        'borderColor' => 'rgb(255, 99, 132)',
+                        'backgroundColor' => 'rgb(252, 78, 75)',
+                        'borderColor' => 'rgb(252, 78, 75)',
                         'borderWidth' => 1,
                         'fill' => false,
                         'lineTension' => 0,
@@ -229,8 +229,8 @@ class DashboardSalePurchase
                     [
                         'label' => 'Total compras',
                         'data' => $this->arrayPurchasesbyMonth($purchases_by_month, 'total_purchase'),
-                        'backgroundColor' => 'rgb(54, 162, 235)',
-                        'borderColor' => 'rgb(54, 162, 235)',
+                        'backgroundColor' => 'rgb(20, 120, 250)',
+                        'borderColor' => 'rgb(20, 120, 250)',
                         'borderWidth' => 1,
                         'fill' => false,
                         'lineTension' => 0,
@@ -238,8 +238,8 @@ class DashboardSalePurchase
                     [
                         'label' => 'Total',
                         'data' => $data_array,
-                        'backgroundColor' => 'rgb(201, 203, 207)',
-                        'borderColor' => 'rgb(201, 203, 207)',
+                        'backgroundColor' => 'rgb(177, 184, 194)',
+                        'borderColor' => 'rgb(177, 184, 194)',
                         'borderWidth' => 1,
                         'fill' => false,
                         'lineTension' => 0,
