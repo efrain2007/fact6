@@ -1,9 +1,19 @@
+<img src="icon_pro5.png" width="120">
+
 # **Facturador PRO 5**
+
 
 ## Términos y condiciones del uso de este repositorio
 
-Revisar [https://buho.la/terminos#fastura](https://buho.la/terminos#fastura)
+1.- Este repositorio es de código abierto pero de acceso privado, se permite la distribución y/o modificaciones si se hace referencio a la casa matriz del desarrollo de este es software es [https://facturaloperu.com](https://facturaloperu.com)
 
+2.- Esta sección de términos y condiciones no puede ser removida al compartir o distribuir el repositorio de alguna forma, de hacerlo, [https://facturaloperu.com](https://facturaloperu.com) se reserva el derecho de remover el acceso y limitar el uso a quien lo distribuya de esa forma o a quien se atribuya el desarrollo del mismo.
+
+3.- Si desea distribuir el código fuente como propio, debe tener al menos un 30% de modificaciones en todo el código, y previamente debe validarse dicho % por [https://facturaloperu.com](https://facturaloperu.com)
+
+4.- El uso del software a nivel funcional es marca blanca, sin embargo a nivel de distribución del código fuente, debe contener esta sección de términos y condiciones.
+
+5.- [https://facturaloperu.com](https://facturaloperu.com) no se hace responsable por los daños o perjuicios del uso del código de este software cuando no ha sido distribuido directamente por [https://facturaloperu.com](https://facturaloperu.com)
 
 ## Manuales de Instalación
 
@@ -21,8 +31,8 @@ Revisar [https://buho.la/terminos#fastura](https://buho.la/terminos#fastura)
 ### Scripts de instalación con Docker
 
 Linux - Ubuntu 18 - Docker - SSL opcional<br>
-[Guia](https://gitlab.com/b.mendoza/facturadorpro3/snippets/1971490 "Clic")<br>
-[Script](https://gitlab.com/b.mendoza/facturadorpro3/snippets/1971490/raw "Clic")<br>
+[Guia](https://gitlab.com/-/snippets/2079063 "Clic")<br>
+[Script](https://gitlab.com/-/snippets/2079063/raw/master/install.sh "Clic")<br>
 
 
 ### Manuales de actualización
@@ -32,17 +42,14 @@ Linux - Ubuntu 18 - Docker - SSL opcional<br>
 [Con Docker](https://docs.google.com/document/d/1ekGySBjGHspbPEE3OLkMGlWwjLvudmyLKo9Et-Cxejk/edit "Clic")
 <br>
 
-* Docker - Script automático
-
-[Pasos para la ejecución](https://gitlab.com/b.mendoza/facturadorpro3/-/wikis/Script-Update-Docker)<br>
-[Script](https://gitlab.com/-/snippets/2359859)<br>
-
 
 ### Manuales de actualización de SSL gratuito
 
 * Docker
 
 [SSL](https://docs.google.com/document/d/1kcgtIDrOWnGKQbWO3sW2KEkUoNdadIB5YHBgaSb87uA/edit "Clic")
+[Script](https://gitlab.com/b.mendoza/facturadorpro3/-/snippets/1955372/raw/master/updateSSL.sh "Clic")
+[Video](https://www.loom.com/share/577a32e168a44cc7afc6e2919589de56 "Clic")
 
 
 ### Manuales de Usuario
@@ -60,13 +67,19 @@ Linux - Ubuntu 18 - Docker - SSL opcional<br>
 
 ## Pruebas online
 
+### Panel de administración
+
+[URL](https://facturalo.pro "Clic")
+<br>
+Usuario: admin@gmail.com<br>
+Contraseña: 123456
+
 ### Panel de cliente
 
-[demo.fastura.app](https://demo.fastura.app/login "Clic")
+[URL](https://demo.facturalo.pro "Clic")
 <br>
-Usuario: demo@fastura.app<br>
-Contraseña: demo@fastura.app<br>
-Cualquier duda puede comunicarse a la central Buho 944999965
+Usuario: demo@gmail.com<br>
+Contraseña: 123456
 
 
 ## Manuales adicionales
@@ -121,3 +134,17 @@ Procedimiento para solucionar error 1033 SUNAT: [Guía](https://docs.google.com/
 Recreación de documentos: [Guía](https://drive.google.com/open?id=1_ZvNpA3_IyvEiQ2NSaiW_rsBhVNbK7YD-_l1kbrEGwQ "Clic")<br>
 Manual de cambios privados: [Guía](https://drive.google.com/open?id=1ePniWwGvylJDzHTcPOj6E_nQtD_eO6PCReB_xwzOn98 "Clic")<br>
 Validador documentos: [Guía](https://docs.google.com/document/d/1v6XpJrEwCx3suRzRsa4-3-kcAghRvS9DHS5esb89SuI/edit "Clic")<br>
+
+## Soporte
+
+* Use Issues como sistema de tickets para añadir sus sugerencias, problemas o inquietudes
+* Inconvenientes con facturación serán atendidos con prioridad
+* Una vez obtiene acceso al repositorio tendrá un año de vigencia, pasado el año debe renovar su contrato
+* Toda instalación es gestionada mediante los canales de Slack
+* Nuevas instalaciones o actualizaciones deben ser programadas y gestionadas, para ser ejecutada el mismo día debe haber un problema previo
+
+## FacturaloPeru
+
+[facturaloperu.com](http://facturaloperu.com "Clic")<br>
+soporte@facturaloperu.com<br>
+wsapp: 930 973 902<br>
