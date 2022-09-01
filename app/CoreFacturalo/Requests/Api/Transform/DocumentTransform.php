@@ -64,6 +64,7 @@ class DocumentTransform
             'related' => self::related($inputs),
             'legends' => LegendTransform::transform($inputs),
             'additional_information' => Functions::valueKeyInArray($inputs, 'informacion_adicional'),
+            'additional_data' => Functions::valueKeyInArray($inputs, 'dato_adicional'),
             'actions' => ActionTransform::transform($inputs),
             'hotel' => Functions::valueKeyInArray($inputs, 'hotel',[]),
             'transport' => Functions::valueKeyInArray($inputs, 'transport',[]),
@@ -130,6 +131,7 @@ class DocumentTransform
                     'lots' => Functions::valueKeyInArray($row, 'lots', []),
                     'update_description' => Functions::valueKeyInArray($row, 'actualizar_descripcion', true), //variable para determinar si se actualiza la descripcion del item cuando se envia desde api
                     'name_product_pdf' => Functions::valueKeyInArray($row, 'nombre_producto_pdf'),
+                    'additional_data' => Functions::valueKeyInArray($row, 'dato_adicional'),
                 ];
             }
 
