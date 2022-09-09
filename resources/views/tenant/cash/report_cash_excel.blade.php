@@ -9,6 +9,12 @@
     $title = "Rep POS - ".$data['cash_user_name']." - ".$data['cash_date_opening']." ".$data['cash_time_opening'];
     $title = str_replace(['*', ':', '/', '\\', '?', '[', ']'],'',$title);
     $title = substr($title,0,31);
+    $totalEfectivo = 0;
+
+    foreach($data['methods_payment'] as $item){
+        $totalEfectivo = $item['sum'];
+    }
+
     ?>
     <title>{{ $title }}</title>
     <style>
@@ -106,18 +112,18 @@
         </tr>
         <tr>
             <td class="td-custom">
-                <p><strong>Saldo inicial: </strong>S/. {{$data['cash_beginning_balance']}}</p>
+                <p><strong>Saldo inicial efectivo:</strong>&nbsp; S/ {{$data['cash_beginning_balance']}}</p>
             </td>
             <td class="td-custom">
-                <p><strong>Ingreso: </strong>S/. {{$data['cash_income']}} </p>
+                <p><strong>Ingreso efectivo:</strong>&nbsp; S/ {{ $totalEfectivo }}</p>
             </td>
         </tr>
         <tr>
             <td class="td-custom">
-                <p><strong>Saldo final: </strong>S/. {{$data['cash_final_balance']}} </p>
+                <p><strong>Saldo final efectivo:</strong>&nbsp; S/ {{ $data['cash_beginning_balance'] + $totalEfectivo - $data['cash_egress'] }} </p>
             </td>
             <td class="td-custom">
-                <p><strong>Egreso: </strong>S/. {{$data['cash_egress']}} </p>
+                <p><strong>Egreso efectivo:</strong>&nbsp; S/ {{$data['cash_egress']}} </p>
             </td>
         </tr>
 
@@ -130,31 +136,6 @@
 @if($data['cash_documents_total']>0)
     <div class="">
         <div class=" ">
-            <table>
-                <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Descripcion</th>
-                    <th>Suma</th>
-                </tr>
-                </thead>
-                <tbody>
-                @foreach($data['methods_payment'] as $item)
-                    <tr>
-                        <td class="celda">
-                            {{ $item['iteracion'] }}
-                        </td>
-                        <td class="celda">
-                            {{ $item['name'] }}
-                        </td>
-                        <td class="celda">
-                            {{ $item['sum'] }}
-                        </td>
-                    </tr>
-                @endforeach
-                </tbody>
-            </table>
-            <br>
             <table class="">
                 <thead>
                 <tr>

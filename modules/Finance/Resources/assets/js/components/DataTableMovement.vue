@@ -55,8 +55,7 @@
                     </template>
 
                     <div class="col-md-3 mt-4">
-                        <el-checkbox v-model="form.last_cash_opening" @change="getRecordsByFilter">Última apertura de
-                                                                                                   caja
+                        <el-checkbox v-model="form.last_cash_opening" @change="getRecordsByFilter">Última apertura de caja
                         </el-checkbox>
                     </div>
 
