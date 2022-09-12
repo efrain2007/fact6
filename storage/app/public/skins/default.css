@@ -257,12 +257,12 @@ html.sidebar-gray .userbox.show .dropdown-menu a:hover {
 
 /* --------------------------- tema blanco --------------------------- */
 html.sidebar-white ul.nav-main li.nav-active:not(.nav-parent) > a {
-  background: #08c;
+  background: #5f769a;
   box-shadow: none;
   color: #fff !important;
 }
 html.sidebar-white .card-header.bg-info {
-  background: #08c !important;
+  background: #5f769a !important;
 }
 
 /* --------------------------- tema oscuro / sin modo noche --------------------------- */
