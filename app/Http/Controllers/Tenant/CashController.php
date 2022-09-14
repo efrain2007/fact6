@@ -855,6 +855,7 @@ class CashController extends Controller
                     // 'total_payments'            => -$expense_payment->payment,
                     'type_transaction_prefix'   => 'egress',
                     'order_number_key'          => $order_number.'_'.$expense_payment->expense->created_at->format('YmdHis'),
+                    'document_items_description' => $this->getDocumentItemsDescription($expense_payment->expense),
 
                 ];
             }
@@ -1032,6 +1033,7 @@ class CashController extends Controller
                                 'usado'                     => $usado." ".__LINE__,
                                 'tipo'                      => 'finance',
                                 'total_payments'            => (!in_array($income->state_type_id, $status_type_id)) ? 0 : $income->payments->sum('payment'),
+                                'document_items_description' => $this->getDocumentItemsDescription($income),
                             ];
                     }
                 } else {
@@ -1089,6 +1091,28 @@ class CashController extends Controller
                 ->download($filename.'.xlsx');
 
     }
+    
+
+    /**
+     * 
+     * Descripcion de los items
+     *
+     * @param  $record
+     * @return string
+     */
+    private function getDocumentItemsDescription($record)
+    {
+        $data = $record->items->pluck('description')->toArray();
+        $full_description = "";
+
+        foreach ($data as $value) 
+        {
+            $full_description .= "- {$value}<br>";
+        }
+
+        return $full_description;
+    }
+
 
     public static function CalculeTotalOfCurency(
         $total = 0,

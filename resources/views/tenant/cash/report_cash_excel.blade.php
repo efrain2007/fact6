@@ -141,6 +141,7 @@
                 <tr>
                     <th>#</th>
                     <th>Tipo transacción</th>
+                    <th>Detalle de ingresos/gastos</th>
                     <th>Tipo documento</th>
                     <th>Documento</th>
                     <th>Fecha emisión</th>
@@ -161,6 +162,11 @@
                         <td class="celda">
                             {{ $value['type_transaction'] }}
                         </td>
+                        
+                        <td class="celda">
+                            {!! $value['document_items_description'] ?? '' !!}
+                        </td>
+
                         <td class="celda">
                             {{ $value['document_type_description'] }}
                         </td>
