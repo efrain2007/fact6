@@ -9,10 +9,12 @@
     $title = "Rep POS - ".$data['cash_user_name']." - ".$data['cash_date_opening']." ".$data['cash_time_opening'];
     $title = str_replace(['*', ':', '/', '\\', '?', '[', ']'],'',$title);
     $title = substr($title,0,31);
-    $totalEfectivo = 0;
+    $totalIngresoEfectivo = 0;
 
-    foreach($data['methods_payment'] as $item){
-        $totalEfectivo = $item['sum'];
+    if($data['cash_documents_total']>0){
+        foreach($data['methods_payment'] as $item){
+            $totalIngresoEfectivo = $item['sum'];
+        }
     }
 
     ?>
@@ -115,12 +117,12 @@
                 <p><strong>Saldo inicial efectivo:</strong>&nbsp; S/ {{$data['cash_beginning_balance']}}</p>
             </td>
             <td class="td-custom">
-                <p><strong>Ingreso efectivo:</strong>&nbsp; S/ {{ $totalEfectivo }}</p>
+                <p><strong>Ingreso efectivo:</strong>&nbsp; S/ {{ $totalIngresoEfectivo }}</p>
             </td>
         </tr>
         <tr>
             <td class="td-custom">
-                <p><strong>Saldo final efectivo:</strong>&nbsp; S/ {{ $data['cash_beginning_balance'] + $totalEfectivo - $data['cash_egress'] }} </p>
+                <p><strong>Saldo final efectivo:</strong>&nbsp; S/ {{$data['cash_final_balance']}} </p>
             </td>
             <td class="td-custom">
                 <p><strong>Egreso efectivo:</strong>&nbsp; S/ {{$data['cash_egress']}} </p>
