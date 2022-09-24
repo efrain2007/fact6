@@ -28,6 +28,7 @@ use Modules\Sale\Models\TechnicalService;
 use phpDocumentor\Reflection\Utils;
 use Modules\Pos\Models\Tip;
 use Illuminate\Support\Facades\DB;
+use Modules\Sale\Models\Agent;
 
 
 /**
@@ -258,7 +259,8 @@ class Document extends ModelTenant
         'ticket_single_shipment',
         'point_system',
         'point_system_data',
-        'folio'
+        'folio',
+        'agent_id',
     ];
 
     protected $casts = [
@@ -461,6 +463,14 @@ class Document extends ModelTenant
     {
         $arr = explode('|', $value);
         return $arr;
+    }
+
+    /**
+     * @return BelongsTo
+     */
+    public function agent()
+    {
+        return $this->belongsTo(Agent::class);
     }
 
     /**
@@ -1516,6 +1526,29 @@ class Document extends ModelTenant
     {
         return $this->point_system;
     }
+    
+    
+    /**
+     * 
+     * Obtener puntos por la venta
+     *
+     * @return float
+     * 
+     */
+    public function getPointsBySale()
+    {
+        $calculate_quantity_points = 0;
 
+        if($this->isPointSystem())
+        {
+            $point_system_data = $this->point_system_data;
+            $total = $this->total;
+    
+            $value_quantity_points = ($total / $point_system_data->point_system_sale_amount) * $point_system_data->quantity_of_points;
+            $calculate_quantity_points = $point_system_data->round_points_of_sale ? intval($value_quantity_points) : round($value_quantity_points, 2);
+        }
+
+        return $calculate_quantity_points;
+    }
 
 }
