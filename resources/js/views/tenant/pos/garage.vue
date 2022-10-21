@@ -138,6 +138,9 @@
                         @keyup.native="keyupTabCustomer"
                         ref="ref_search_items"
                         class="m-bottom mt-3"
+
+                        @focus="searchFromBarcode = true"
+                        @blur="searchFromBarcode = false"
                     >
                         <el-button
                             slot="append"
@@ -275,7 +278,7 @@
                                         </el-input>
                                     </template>
 
-                                    
+
                                 </div>
                                 <div
                                     v-if="configuration.options_pos"
@@ -487,10 +490,10 @@
                                             </el-tooltip>
                                         </el-col>
 
-                                        
+
                                         <el-col :span="6" v-if="allowedChangeAffectationExoneratedIgv(item.sale_affectation_igv_type_id)">
                                             <el-tooltip class="item" effect="dark" content="Modificar el tipo de afectación" placement="bottom-end">
-                                                
+
                                                 <el-popover
                                                     placement="top"
                                                     title="Seleccionar tipo de afectación"
@@ -504,7 +507,7 @@
                                                     <button slot="reference" style="width:100%" type="button" class="btn btn-xs btn-primary-pos">
                                                         <i class="fas fa-sync-alt"></i>
                                                     </button>
-                                                    
+
                                                 </el-popover>
 
                                             </el-tooltip>
@@ -527,6 +530,7 @@
                     :records="items"
                     :typeUser="typeUser"
                     :visibleTagsCustomer="focusClienteSelect"
+                    :searchFromBarcode="searchFromBarcode"
                 ></table-items>
 
                 <div v-if="place == 'prod' || place == 'cat2'" class="row">
@@ -619,10 +623,7 @@
                                             <small>
                                                 {{ nameSets(item.item_id) }}
                                             </small>
-
                                         </td>
-
-
                                         <td style="width: 10px; text-align: center; vertical-align: top" class="pos-list-label">
                                             {{ currency_type.symbol }}
                                         </td>
@@ -859,6 +860,7 @@ export default {
             show_fast_payment_garage: false,
             itemUnitTypes: [],
             affectations_exonerated_igv: ['10', '20'],
+            searchFromBarcode: false,
         };
     },
     async created() {
@@ -938,7 +940,7 @@ export default {
     methods: {
         enabledSearchItemByBarcode()
         {
-            if (this.configuration.search_item_by_barcode) 
+            if (this.configuration.search_item_by_barcode)
             {
                 this.search_item_by_barcode = true
             }
@@ -1256,18 +1258,20 @@ export default {
                 id: this.form.customer_id
             });
             this.customer = customer;
-            
-            if (this.configuration.default_document_type_80) 
+
+            if (this.configuration.default_document_type_80)
             {
                 this.form.document_type_id = "80"
             }
-            else if (this.configuration.default_document_type_03) 
+            else if (this.configuration.default_document_type_03)
             {
                 this.form.document_type_id = "03";
             } else {
                 this.form.document_type_id =
                     customer.identity_document_type_id == "6" ? "01" : "03";
             }
+
+            // console.log(this.customer);
 
             if(this.$refs.componentFastPaymentGarage) this.$refs.componentFastPaymentGarage.filterSeries()
 
@@ -1464,6 +1468,8 @@ export default {
         },
         clickDeleteCustomer() {
             this.form.customer_id = null;
+            this.customer = null;
+            this.setLocalStorageIndex("customer", null);
             this.setFormPosLocalStorage();
         },
         async clickAddItem(item, index, input = false) {

@@ -152,6 +152,9 @@
                         @keyup.native="keyupTabCustomer"
                         ref="ref_search_items"
                         class="m-bottom mt-3"
+                        
+                        @focus="searchFromBarcode = true"
+                        @blur="searchFromBarcode = false"
                     >
                         <el-button
                             slot="append"
@@ -520,6 +523,7 @@
                     :records="items"
                     :typeUser="typeUser"
                     :visibleTagsCustomer="focusClienteSelect"
+                    :searchFromBarcode="searchFromBarcode"
                 ></table-items>
 
                 <div v-if="place == 'prod' || place == 'cat2'" class="row">
@@ -1054,6 +1058,7 @@ export default {
             category_selected: "",
             focusClienteSelect: false,
             itemUnitTypes: [],
+            searchFromBarcode: false,
         };
     },
     async created() {
@@ -1918,7 +1923,8 @@ export default {
                     total_free += parseFloat(row.total_value);
                 }
 
-                if (["10", "20", "30", "40"].indexOf(row.affectation_igv_type_id) > -1)
+                // if (["10", "20", "30", "40"].indexOf(row.affectation_igv_type_id) > -1)
+                if (["10", "20", "30", "40", '21'].indexOf(row.affectation_igv_type_id) > -1)
                 {
                     // total_igv += parseFloat(row.total_igv);
                     // total += parseFloat(row.total);
@@ -1927,7 +1933,11 @@ export default {
                 }
 
                 // total_value += parseFloat(row.total_value);
-                total_value += (row.total_value_without_rounding) ? parseFloat(row.total_value_without_rounding) : parseFloat(row.total_value)
+                
+                if(!['21', '37'].includes(row.affectation_igv_type_id)) 
+                {
+                    total_value += (row.total_value_without_rounding) ? parseFloat(row.total_value_without_rounding) : parseFloat(row.total_value)
+                }
 
                 total_plastic_bag_taxes += parseFloat(row.total_plastic_bag_taxes)
 
