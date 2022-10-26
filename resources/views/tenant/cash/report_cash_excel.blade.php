@@ -122,7 +122,7 @@
         </tr>
         <tr>
             <td class="td-custom">
-                <p><strong>Saldo final efectivo:</strong>&nbsp; S/ {{$data['cash_final_balance']}} </p>
+                <p><strong>Saldo final efectivo:</strong>&nbsp; S/ {{ $data['cash_beginning_balance'] + $totalIngresoEfectivo - $data['cash_egress'] }} </p>
             </td>
             <td class="td-custom">
                 <p><strong>Egreso efectivo:</strong>&nbsp; S/ {{$data['cash_egress']}} </p>
