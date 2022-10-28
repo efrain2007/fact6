@@ -1889,7 +1889,7 @@ export default {
             localStorage.removeItem('items');
             await this.$http.get('/documents/search-items', {params}).then(response => {
                 const itemsResponse = response.data.items.map(i => {
-                    return this.setItemFromResponse(i, itemsParsed);
+                    return this.setItemFromResponse(i, itemsParsed, true);
                 });
                 this.form.items = itemsResponse.map(i => {
                     return calculateRowItem(i, this.form.currency_type_id, this.form.exchange_rate_sale, this.percentage_igv)
@@ -2122,7 +2122,8 @@ export default {
             }
 
         },
-        setItemFromResponse(item, itemsParsed) {
+        setItemFromResponse(item, itemsParsed, sum_quantity = false)
+        {
             /* Obtiene el igv del item, si no existe, coloca el gravado*/
             if (item.sale_affectation_igv_type !== undefined) {
                 item.affectation_igv_type = item.sale_affectation_igv_type
@@ -2180,14 +2181,31 @@ export default {
 
             item.quantity = 1;
 
-            let tempItem = itemsParsed.find(ip => (ip.item_id == item.id) || (ip.id == item.id));
-            if (tempItem !== undefined) {
-                item.quantity = tempItem.quantity
+            if(sum_quantity)
+            {
+                const quantity_from_item_response = this.getQuantityFromItemResponse(item, itemsParsed)
+                if(quantity_from_item_response > 0) item.quantity = quantity_from_item_response
             }
+            else
+            {
+                let tempItem = itemsParsed.find(ip => (ip.item_id == item.id) || (ip.id == item.id));
+                if (tempItem !== undefined) {
+                    item.quantity = tempItem.quantity
+                }
+            }
+
             // item.quantity = itemsParsed.find(ip => ip.item_id == item.id).quantity;
             item.warehouse_id = null;
 
             return item
+        },
+        getQuantityFromItemResponse(item, itemsParsed)
+        {
+            const group_items = itemsParsed.filter(ip => (ip.item_id == item.id) || (ip.id == item.id))
+
+            return _.sumBy(group_items, function(row){
+                return parseFloat(row.quantity)
+            })
         },
         disabledSeries()
         {
@@ -2257,7 +2275,10 @@ export default {
             this.form.pending_amount_prepayment = data.pending_amount_prepayment || 0;
             this.form.payment_method_type_id = data.payment_method_type_id;
             this.form.charges = data.charges || [];
-            this.form.discounts = data.discounts || [];
+
+            this.form.discounts = this.prepareDataGlobalDiscount(data)
+            // this.form.discounts = data.discounts || [];
+
             this.form.seller_id = data.seller_id;
             this.form.items = this.onPrepareItems(data.items);
             // this.form.series = data.series; //form.series no llena el selector
@@ -2338,6 +2359,22 @@ export default {
             this.calculateTotal();
             // this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
         },
+        prepareDataGlobalDiscount(data)
+        {
+            const discounts = data.discounts ? Object.values(data.discounts) : []
+
+            if(discounts.length === 1)
+            {
+                if(discounts[0].is_amount !== undefined && discounts[0].is_amount !== null)
+                {
+                    this.is_amount = discounts[0].is_amount
+                }
+
+                this.total_global_discount = this.is_amount ?  discounts[0].amount : (discounts[0].factor * 100)
+            }
+
+            return discounts
+        },
         async prepareDataCustomer() {
 
             this.customer_addresses = [];
@@ -2416,10 +2453,17 @@ export default {
         onPrepareItems(items) {
             return items.map(i => {
 
-                i.unit_price_value = i.unit_value;
-                i.input_unit_price_value = (i.item.has_igv) ? i.unit_price : i.unit_value;
+                if(this.table)
+                {
+                    i.unit_price_value = i.unit_value;
+                    i.input_unit_price_value = (i.item.has_igv) ? i.item.unit_price : i.unit_value;
+                }
+                else
+                {
+                    i.unit_price_value = i.unit_value;
+                    i.input_unit_price_value = (i.item.has_igv) ? i.unit_price : i.unit_value;
+                }
 
-                // i.input_unit_price_value = i.unit_price;
                 i.discounts = (i.discounts) ? Object.values(i.discounts) : []
                 // i.discounts = i.discounts || [];
                 i.charges = i.charges || [];
@@ -2439,8 +2483,17 @@ export default {
             new_item.currency_type_symbol = currency_type.symbol
 
             new_item.sale_affectation_igv_type_id = data.affectation_igv_type_id
-            new_item.sale_unit_price = data.unit_price
-            new_item.unit_price = data.unit_price
+
+            if(this.table)
+            {
+                new_item.sale_unit_price = new_item.unit_price
+                new_item.unit_price = new_item.unit_price
+            }
+            else
+            {
+                new_item.sale_unit_price = data.unit_price
+                new_item.unit_price = data.unit_price
+            }
 
             return new_item
         },
@@ -2452,7 +2505,7 @@ export default {
             return null;
         },
         onSetSeries(documentType, serie) {
-            console.log('onSetSeries')
+            // console.log('onSetSeries')
             const find = this.all_series.find(s => s.document_type_id == documentType && s.number == serie);
             if (find) {
                 return [find];
@@ -3211,7 +3264,7 @@ export default {
             })
         },
         filterSeries() {
-            console.log('filterSeries');
+            // console.log('filterSeries');
             this.form.series_id = null
             let series = _.filter(this.all_series, {
                 'establishment_id': this.form.establishment_id,
@@ -3311,6 +3364,7 @@ export default {
             this.calculateTotal()
         },
         calculateTotal() {
+
             let total_discount = 0
             let total_charge = 0
             let total_exportation = 0
@@ -3612,7 +3666,8 @@ export default {
                 description: this.global_discount_type.description,
                 factor: factor,
                 amount: amount,
-                base: base
+                base: base,
+                is_amount: this.is_amount
             })
         },
         discountGlobal() {
@@ -4097,20 +4152,20 @@ export default {
             if(this.form.has_retention) {
                 total_pay -= this.form.retention.amount;
             }
-            console.log(this.form.retention)
-            console.log(this.form.total_pending_payment)
-            console.log(this.form.total)
+            // console.log(this.form.retention)
+            // console.log(this.form.total_pending_payment)
+            // console.log(this.form.total)
 
             if (!_.isEmpty(this.form.detraction) && this.form.total_pending_payment > 0) {
                 return this.form.total_pending_payment
             }
 
             if (!_.isEmpty(this.form.retention) && this.form.total_pending_payment > 0) {
-                console.log('1');
+                // console.log('1');
                 return this.form.total_pending_payment
             }
 
-            console.log('2');
+            // console.log('2');
             return total_pay
         },
         setDescriptionOfItem(item) {
