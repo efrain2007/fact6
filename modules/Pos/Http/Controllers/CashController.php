@@ -39,7 +39,7 @@ use Modules\Pos\Models\CashTransaction;
 use App\Models\Tenant\CashDocumentCredit;
 use Modules\Finance\Models\Income;
 use App\CoreFacturalo\Helpers\Template\ReportHelper;
-use Carbon\Carbon;
+// use Carbon\Carbon;
 //Fin - Deyvis: pendiente revisar para que funke
 
 
