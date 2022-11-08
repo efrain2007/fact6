@@ -354,7 +354,7 @@ class PurchaseOrderController extends Controller
 
         $headers = [
             'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="'.$purchase_order->filename.'"'
+            'Content-Disposition' => 'inline; filename="'.$purchase_order->filename.'.pdf'.'"'
         ];
 
         return response()->file($temp, $headers);

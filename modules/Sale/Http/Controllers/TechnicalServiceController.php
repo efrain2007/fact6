@@ -409,7 +409,7 @@
 
             $headers = [
                 'Content-Type' => 'application/pdf',
-                'Content-Disposition' => 'inline; filename="'.$technical_service->filename.'"'
+                'Content-Disposition' => 'inline; filename="'.$technical_service->filename.'.pdf'.'"'
             ];
 
             return response()->file($temp, $headers);

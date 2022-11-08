@@ -330,7 +330,7 @@ class OrderFormController extends Controller
 
         $headers = [
             'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="'.$order_form->filename.'"'
+            'Content-Disposition' => 'inline; filename="'.$order_form->filename.'.pdf'.'"'
         ];
 
         return response()->file($temp, $headers);

@@ -555,7 +555,7 @@
 
             $headers = [
                 'Content-Type' => 'application/pdf',
-                'Content-Disposition' => 'inline; filename="'.$purchase->filename.'"'
+                'Content-Disposition' => 'inline; filename="'.$purchase->filename.'.pdf'.'"'
             ];
 
             return response()->file($temp, $headers);

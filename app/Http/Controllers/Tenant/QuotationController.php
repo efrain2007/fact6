@@ -577,7 +577,7 @@ class QuotationController extends Controller
 
         $headers = [
             'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="'.$quotation->filename.'"'
+            'Content-Disposition' => 'inline; filename="'.$quotation->filename.'.pdf'.'"'
         ];
 
         return response()->file($temp, $headers);

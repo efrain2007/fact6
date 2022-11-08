@@ -936,7 +936,7 @@ class SaleNoteController extends Controller
 
         $headers = [
             'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="'.$sale_note->filename.'"'
+            'Content-Disposition' => 'inline; filename="'.$sale_note->filename.'.pdf'.'"'
         ];
 
         return response()->file($temp, $headers);

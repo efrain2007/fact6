@@ -363,7 +363,7 @@ class SaleOpportunityController extends Controller
 
         $headers = [
             'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="'.$sale_opportunity->filename.'"'
+            'Content-Disposition' => 'inline; filename="'.$sale_opportunity->filename.'.pdf'.'"'
         ];
 
         return response()->file($temp, $headers);

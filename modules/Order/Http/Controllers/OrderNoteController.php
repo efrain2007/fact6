@@ -853,7 +853,7 @@
 
             $headers = [
                 'Content-Type' => 'application/pdf',
-                'Content-Disposition' => 'inline; filename="'.$order_note->filename.'"'
+                'Content-Disposition' => 'inline; filename="'.$order_note->filename.'.pdf'.'"'
             ];
 
             return response()->file($temp, $headers);

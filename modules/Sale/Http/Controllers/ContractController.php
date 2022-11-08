@@ -428,7 +428,7 @@ class ContractController extends Controller
 
         $headers = [
             'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="'.$contract->filename.'"'
+            'Content-Disposition' => 'inline; filename="'.$contract->filename.'.pdf'.'"'
         ];
 
         return response()->file($temp, $headers);
