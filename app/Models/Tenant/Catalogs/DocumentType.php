@@ -66,6 +66,8 @@
 
         public const SALE_DOCUMENT_TYPES = ['01', '03', '80'];
 
+        public const DOCUMENT_TYPE_NOTES = ['07', '08'];
+
         public $incrementing = false;
         protected $table = "cat_document_types";
         protected $fillable = [

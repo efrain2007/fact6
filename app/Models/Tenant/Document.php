@@ -1429,15 +1429,27 @@ class Document extends ModelTenant
 
     /**
      *
-     * Validar si la boleta se envio de forma individual
+     * Validar si la boleta y notas se enviaron de forma individual
      *
      * @return bool
      */
     public function isSingleDocumentShipment()
     {
-        return $this->document_type_id === self::DOCUMENT_TYPE_TICKET && $this->ticket_single_shipment;
+        return in_array($this->document_type_id, ['03', '07', '08'], true) && $this->ticket_single_shipment;
+        // return $this->document_type_id === self::DOCUMENT_TYPE_TICKET && $this->ticket_single_shipment;
     }
 
+
+    /**
+     *
+     * Validar si la boleta se envio de forma individual
+     *
+     * @return bool
+     */
+    public function isSingleTicketDocumentShipment()
+    {
+        return $this->isDocumentTypeTicket() && $this->ticket_single_shipment;
+    }
 
     /**
      *
@@ -1671,4 +1683,25 @@ class Document extends ModelTenant
         $qrCode = new QrCodeGenerate();
         return $qrCode->displayPNGBase64($text);
     }
+
+    
+    /**
+     * 
+     * Documento afectado por la nota
+     *
+     * @param  int $affected_document_id
+     * @return Document
+     * 
+     */
+    public static function getAffectedDocumentSingleShipment($affected_document_id)
+    {
+        return self::whereFilterWithOutRelations()
+                    ->select([
+                        'id',
+                        'document_type_id',
+                        'ticket_single_shipment'
+                    ])
+                    ->find($affected_document_id);
+    }
+
 }

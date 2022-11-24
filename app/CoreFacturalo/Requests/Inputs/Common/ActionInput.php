@@ -38,6 +38,11 @@ class ActionInput
 
             if($inputs['group_id'] === '02') 
             {
+                $ticket_single_shipment = $inputs['ticket_single_shipment'] ?? false;
+                    
+                return $configuration->send_auto && $send_xml_signed & $ticket_single_shipment;
+
+                /*
                 if($inputs['document_type_id'] === '03')
                 {
                     $ticket_single_shipment = $inputs['ticket_single_shipment'] ?? false;
@@ -46,6 +51,7 @@ class ActionInput
                 }
 
                 return false;
+                */
             }
             
             return $configuration->send_auto && $send_xml_signed;
