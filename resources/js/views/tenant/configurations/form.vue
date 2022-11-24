@@ -62,7 +62,7 @@
 
                             <div v-if="typeUser != 'integrator'"
                                     class="col-md-6 mt-4">
-                                <label class="control-label">Enviar boletas de forma individual</label>
+                                <label class="control-label">Enviar boletas y notas asociadas (Crédito y Débito) de forma individual</label>
                                 <div :class="{'has-danger': errors.ticket_single_shipment}"
                                         class="form-group">
                                     <el-switch v-model="form.ticket_single_shipment"
