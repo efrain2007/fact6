@@ -1806,6 +1806,10 @@ export default {
 
             return false
         },
+        isFromExternalDocument()
+        {
+            return (this.table !== undefined && this.table !== null)
+        },
     },
     async created() {
         this.loadConfiguration()
@@ -2268,10 +2272,27 @@ export default {
                 }
             }
         },
+        onPrepareDataEstablishment(data)
+        {
+            if(this.isFromExternalDocument)
+            {
+                this.form.establishment_id = this.establishment.id
+            }
+            else
+            {
+                this.form.establishment_id = data.establishment_id
+            }
+        },
         async onSetFormData(data) {
             console.log('onSetFormData')
             this.currency_type = await _.find(this.currency_types, {'id': data.currency_type_id})
+            
+            /*
             this.form.establishment_id = data.establishment_id;
+            */
+
+            this.onPrepareDataEstablishment(data)
+
             this.form.document_type_id = data.document_type_id;
             this.form.id = data.id;
             this.form.hash = data.hash;

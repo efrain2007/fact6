@@ -66,7 +66,7 @@ class DocumentInput
 
         $items = self::items($inputs, $configuration);
 
-        //configuracion para envio individual de boleta
+        //configuracion para envio individual de boleta y notas asociadas
         $ticket_single_shipment = self::getTicketSingleShipment($inputs);
         $inputs['ticket_single_shipment'] = $ticket_single_shipment;
 
@@ -754,6 +754,35 @@ class DocumentInput
         if($inputs['document_type_id'] === Document::DOCUMENT_TYPE_TICKET)
         {
             return Configuration::getRecordIndividualColumn('ticket_single_shipment');
+        }
+        else if(in_array($inputs['document_type_id'], DocumentType::DOCUMENT_TYPE_NOTES, true))
+        {
+            $ticket_single_shipment = Configuration::getRecordIndividualColumn('ticket_single_shipment');
+
+            if($ticket_single_shipment)
+            {
+                if(self::isGeneratedFromTicketSingleShipment($inputs)) return $ticket_single_shipment;
+            }
+        }
+
+        return false;
+    }
+
+    
+    /**
+     * 
+     * Determina si el documento asociado a la nota es boleta y se envio de forma individual
+     *
+     * @param  array $inputs
+     * @return bool
+     */
+    public static function isGeneratedFromTicketSingleShipment($inputs)
+    {
+        if($inputs['affected_document_id'] ?? false)
+        {
+            $document = Document::getAffectedDocumentSingleShipment($inputs['affected_document_id']);
+    
+            return $document->isSingleTicketDocumentShipment();
         }
 
         return false;
