@@ -573,7 +573,7 @@
                                 <label class="control-label">
                                     Habilitar registro de propinas
                                     <el-tooltip class="item"
-                                                content="Disponible en POS"
+                                                content="Disponible en POS - Nuevo CPE - Convertir pedido a CPE"
                                                 effect="dark"
                                                 placement="top-start">
                                         <i class="fa fa-info-circle"></i>
@@ -1159,6 +1159,31 @@
                                 </div>
                             </div>
 
+                            <div class="col-md-6 mt-4">
+                                <label class="control-label">Agregar series al XML - Datos de vehículos
+                                    <el-tooltip class="item"
+                                                effect="dark"
+                                                placement="top-start">
+                                        <div slot="content">
+                                            - Registra las series vendidas como información adicional a nivel de item.<br>
+                                            - Usa el atributo con código 5019 - Serie/Chasis del catálogo 55 - Código de identificación del concepto tributario de Sunat. <br>
+                                            - Disponible para Facturas y Boletas. <br>
+                                        </div>
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+
+                                <div :class="{'has-danger': errors.register_series_invoice_xml}"
+                                        class="form-group">
+                                    <el-switch v-model="form.register_series_invoice_xml"
+                                                active-text="Si"
+                                                inactive-text="No"
+                                                @change="submit"></el-switch>
+                                    <small v-if="errors.register_series_invoice_xml"
+                                            class="form-control-feedback"
+                                            v-text="errors.register_series_invoice_xml[0]"></small>
+                                </div>
+                            </div>
                         </div>
                     </el-tab-pane>
                     <el-tab-pane class="mb-3" name="fourth">
@@ -1939,6 +1964,32 @@
                                     </div>
                                 </div>
                             </div>
+                            
+                            <div class="col-6 mt-4">
+                                <div class="form-group">
+                                    <label>
+                                        Habilitar ticket de despacho
+                                        <el-tooltip class="item"
+                                                    effect="dark"
+                                                    placement="top-start">
+                                            <div slot="content">
+                                                Agrega el ticket de despacho al pdf formato ticket - Disponible en POS (CPE - Nota de venta)
+                                            </div>
+                                            <i class="fa fa-info-circle"></i>
+                                        </el-tooltip>
+                                    </label>
+                                    <div :class="{'has-danger': errors.enabled_dispatch_ticket_pdf}"
+                                         class="form-group">
+                                        <el-switch v-model="form.enabled_dispatch_ticket_pdf"
+                                                   active-text="Si"
+                                                   inactive-text="No"
+                                                   @change="submit"></el-switch>
+                                        <small v-if="errors.enabled_dispatch_ticket_pdf"
+                                               class="form-control-feedback"
+                                               v-text="errors.enabled_dispatch_ticket_pdf[0]"></small>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </el-tab-pane>
                     <el-tab-pane class="mb-3"  name="nine">
@@ -2413,7 +2464,9 @@ export default {
                 change_affectation_exonerated_igv: false,
                 show_load_voucher: false,
                 search_factory_code_items: false,
+                register_series_invoice_xml: false,
                 enable_discount_by_customer: false,
+                enabled_dispatch_ticket_pdf: false,
             };
         },
         UpdateFormPurchase(e) {

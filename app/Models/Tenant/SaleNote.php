@@ -224,6 +224,7 @@
             'point_system_data',
             'created_from_pos',
             'agent_id',
+            'dispatch_ticket_pdf',
 
         ];
 
@@ -270,6 +271,7 @@
 
             'point_system' => 'bool',
             'created_from_pos' => 'bool',
+            'dispatch_ticket_pdf' => 'bool',
 
         ];
 
@@ -838,10 +840,45 @@
                 'agent_name' => optional($this->agent)->search_description,
                 'reference_data' => $this->reference_data,
                 'payments' => $this->payments,
+
+                'total_discount' => $this->generalApplyNumberFormat($this->total_discount),
+                'items_for_report' => $this->getItemsforReport(),
+
             ];
         }
 
         
+        /**
+         * 
+         * Mostrar productos en reporte
+         *
+         * @return array
+         */
+        public function getItemsforReport()
+        {
+            return $this->items->map(function($row, $key){
+                return [
+                    'index' => $key+1,
+                    'description' => $this->fullDescriptionFromJsonItem($row),
+                    'quantity' => (float) $row->quantity,
+                ];
+            });
+        }
+        
+        
+        /**
+         *
+         * @param  SaleNoteItem $row
+         * @return string
+         */
+        public function fullDescriptionFromJsonItem($row)
+        {
+            $internal_id = $row->item->internal_id ?? false;
+
+            return ($internal_id ? $internal_id.' - ' : '').$row->item->description; 
+        }
+
+                
         /**
          *
          * @param  string $format
@@ -1599,6 +1636,26 @@
         public function scopeFilterCurrencyPen($query)
         {
             return $query->where('currency_type_id', self::NATIONAL_CURRENCY_ID);
+        }
+
+        
+        /**
+         *
+         * Filtrar registro para envio de mensajes por whatsapp
+         *
+         * @param Builder $query
+         * @return Builder
+         */
+        public static function scopeFilterDataForSendMessage($query)
+        {
+            return $query->whereFilterWithOutRelations()
+                        ->select([
+                            'id',
+                            'external_id',
+                            'series',
+                            'number',
+                            'filename'
+                        ]);
         }
 
     }
