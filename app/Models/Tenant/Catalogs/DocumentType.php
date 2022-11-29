@@ -69,14 +69,14 @@
         public const DOCUMENT_TYPE_NOTES = ['07', '08'];
 
         public $incrementing = false;
+        public $timestamps = false;
         protected $table = "cat_document_types";
         protected $fillable = [
+            'id',
             'active',
             'short',
             'description'
-
         ];
-
 
         /**
          * @return mixed
@@ -148,7 +148,7 @@
          */
         public function scopeOnlyAvaibleDocuments($query)
         {
-            return $query->OnlyActive()->wherein('id', ['01', '03', '07', '08', '09', '20', '40', '80', '04']);
+            return $query->OnlyActive()->wherein('id', ['01', '03', '07', '08', '09', '20', '40', '80', '04', 'U2', 'U3', 'U4']);
         }
 
         /**
@@ -299,7 +299,7 @@
 
         }
 
-        
+
         /**
          * @return Builder
          */
