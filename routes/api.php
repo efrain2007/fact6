@@ -87,7 +87,7 @@ if ($hostname) {
             //reseller
             Route::post('reseller/detail', 'System\Api\ResellerController@resellerDetail');
             // Route::post('reseller/lockedAdmin', 'System\Api\ResellerController@lockedAdmin');
-            // Route::post('reseller/lockedTenant', 'System\Api\ResellerController@lockedTenant');
+            Route::post('reseller/lockedTenant', 'System\Api\ResellerController@lockedTenant');
 
             Route::get('restaurant/partner/list', 'System\Api\RestaurantPartnerController@list');
             Route::post('restaurant/partner/store', 'System\Api\RestaurantPartnerController@store');

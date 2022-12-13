@@ -2,6 +2,8 @@
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+
 
 class DatabaseSeeder extends Seeder
 {
@@ -13,9 +15,10 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         App\Models\System\User::create([
-            'name' => 'Admin Instrador',
+            'name' => 'Administrador',
             'email' => 'admin@gmail.com',
             'password' => bcrypt('123456'),
+            'api_token' => Str::random(60),
         ]);
  
 
