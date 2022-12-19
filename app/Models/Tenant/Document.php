@@ -1431,27 +1431,15 @@ class Document extends ModelTenant
 
     /**
      *
-     * Validar si la boleta y notas se enviaron de forma individual
+     * Validar si la boleta se envio de forma individual
      *
      * @return bool
      */
     public function isSingleDocumentShipment()
     {
-        return in_array($this->document_type_id, ['03', '07', '08'], true) && $this->ticket_single_shipment;
-        // return $this->document_type_id === self::DOCUMENT_TYPE_TICKET && $this->ticket_single_shipment;
+        return $this->document_type_id === self::DOCUMENT_TYPE_TICKET && $this->ticket_single_shipment;
     }
 
-
-    /**
-     *
-     * Validar si la boleta se envio de forma individual
-     *
-     * @return bool
-     */
-    public function isSingleTicketDocumentShipment()
-    {
-        return $this->isDocumentTypeTicket() && $this->ticket_single_shipment;
-    }
 
     /**
      *
@@ -1686,7 +1674,7 @@ class Document extends ModelTenant
         return $qrCode->displayPNGBase64($text);
     }
 
-
+                
     /**
      *
      * @param  string $format
@@ -1759,24 +1747,80 @@ class Document extends ModelTenant
         return false;
     }
 
+        
+    /**
+     * 
+     * Tipo de transaccion para caja
+     *
+     * @return string
+     */
+    public function getTransactionTypeCash()
+    {
+        return 'income';
+    }
+
+
+    /**
+     * 
+     * Tipo de documento para caja
+     *
+     * @return string
+     */
+    public function getDocumentTypeCash()
+    {
+        return $this->getTable();
+    }
+
     
     /**
      * 
-     * Documento afectado por la nota
+     * Datos para resumen diario de operaciones
      *
-     * @param  int $affected_document_id
-     * @return Document
-     * 
+     * @return array
      */
-    public static function getAffectedDocumentSingleShipment($affected_document_id)
+    public function applySummaryDailyOperations()
     {
-        return self::whereFilterWithOutRelations()
-                    ->select([
-                        'id',
-                        'document_type_id',
-                        'ticket_single_shipment'
-                    ])
-                    ->find($affected_document_id);
+        return [
+            'transaction_type' => $this->getTransactionTypeCash(),
+            'document_type' => $this->getDocumentTypeCash(),
+            'apply' => $this->hasAcceptedState(),
+        ];
+    }
+
+
+    /**
+     *
+     * Obtener total de pagos en efectivo sin considerar destino
+     *
+     * @return float
+     */
+    public function totalCashPaymentsWithoutDestination()
+    {
+        return $this->payments()->filterCashPaymentWithoutDestination()->sum('payment');
+    }
+
+    
+    /**
+     *
+     * Obtener total de pagos en transferencia
+     *
+     * @return float
+     */
+    public function totalTransferPayments()
+    {
+        return $this->payments()->filterTransferPayment()->sum('payment');
+    }
+    
+
+    /**
+     * 
+     * Validar si tiene estado permitido para calculos/etc
+     *
+     * @return bool
+     */
+    public function hasAcceptedState()
+    {
+        return in_array($this->state_type_id, self::STATE_TYPES_ACCEPTED, true);
     }
 
 }
