@@ -97,8 +97,11 @@ class Dispatch extends ModelTenant
         'container_number',
         'origin',
         'delivery',
+        'dispatcher_id',
         'dispatcher',
+        'driver_id',
         'driver',
+        'transport_id',
         'license_plate',
 
         'legends',
@@ -130,14 +133,18 @@ class Dispatch extends ModelTenant
         'additional_data',
         'ticket',
         'reception_date',
-        'qr_url'
+        'qr_url',
+        'origin_address_id',
+        'delivery_address_id',
+        'transport_data'
     ];
 
     protected $casts = [
         'date_of_issue' => 'date',
         'date_of_shipping' => 'date',
         'send_to_pse' => 'bool',
-        'reception_date' => 'timestamp'
+        'reception_date' => 'timestamp',
+        'transport_data' => 'array'
     ];
 
     public function getAdditionalDataAttribute($value)
@@ -488,11 +495,13 @@ class Dispatch extends ModelTenant
         if ($this->reference_document) $documents [] = ['description' => $this->reference_document->number_full];
 
 
-        $btn_pdf = false;
+        $btn_pdf = true;
         $btn_send = false;
         $btn_options = false;
         $btn_status_ticket = false;
-        $btn_generate_document = false;
+        $btn_edit = false;
+        $btn_generate_document = config('tenant.internal_dispatch') ? config('tenant.internal_dispatch') : false;
+
         if ($this->state_type_id === '01') {
             $btn_send = true;
         }
@@ -500,11 +509,21 @@ class Dispatch extends ModelTenant
             $btn_status_ticket = true;
         }
         if($this->state_type_id === '05') {
-            $btn_pdf = true;
+            //$btn_pdf = true;
             $btn_options = true;
             $btn_generate_document = true;
         }
-        //
+
+        if ($this->state_type_id !== '05') {
+            $btn_edit = true;
+        }
+
+//        if(!is_null($this->reference_sale_note_id) || !is_null($this->reference_document_id) ||
+//            !is_null($this->reference_quotation_id) || !is_null($this->reference_order_form_id) ||
+//            !is_null($this->reference_order_note_id) ) {
+//            $btn_edit = false;
+//        }
+
         return [
             'id' => $this->id,
             'external_id' => $this->external_id,
@@ -544,6 +563,7 @@ class Dispatch extends ModelTenant
             'btn_send' => $btn_send,
             'btn_pdf' => $btn_pdf,
             'btn_options' => $btn_options,
+            'btn_edit' => $btn_edit,
          ];
     }
 

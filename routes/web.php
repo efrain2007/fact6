@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+
 $hostname = app(Hyn\Tenancy\Contracts\CurrentHostname::class);
 
 if ($hostname) {
@@ -125,6 +127,9 @@ if ($hostname) {
             Route::get('configurations/templates/ticket/records', 'Tenant\ConfigurationController@getTicketFormats');
             Route::post('configurations/templates/ticket/update', 'Tenant\ConfigurationController@changeTicketFormat');
             Route::get('configurations/apiruc', 'Tenant\ConfigurationController@apiruc');
+
+            Route::post('configurations/pdf-footer-images', 'Tenant\ConfigurationController@pdfFooterImages');
+            Route::get('configurations/get-pdf-footer-images', 'Tenant\ConfigurationController@getPdfFooterImages');
 
             //Certificates
             Route::get('certificates/record', 'Tenant\CertificateController@record');
@@ -389,7 +394,10 @@ if ($hostname) {
                 Route::get('/search/customer/{id}', 'Tenant\DispatchController@searchClientById');
                 Route::post('/status_ticket', 'Tenant\Api\DispatchController@statusTicket');
                 Route::get('create_new/{table}/{id}', 'Tenant\DispatchController@createNew');
+                Route::get('/get_origin_addresses/{establishment_id}', 'Tenant\DispatchController@getOriginAddresses');
+                Route::get('/get_delivery_addresses/{person_id}', 'Tenant\DispatchController@getDeliveryAddresses');
             });
+
 
             Route::get('customers/list', 'Tenant\PersonController@clientsForGenerateCPE');
             Route::get('reports/consistency-documents', 'Tenant\ReportConsistencyDocumentController@index')->name('tenant.consistency-documents.index')->middleware('tenant.internal.mode');
