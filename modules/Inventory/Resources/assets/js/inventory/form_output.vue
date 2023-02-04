@@ -17,7 +17,9 @@
                                        remote
                                        :remote-method="searchRemoteItems"
                                        :loading="loading_search"
-                                       @change="changeItem">
+                                       @change="changeItem"
+                                       ref="select_barcode"
+                                       >
                                 <el-option v-for="option in items"
                                            :key="option.id"
                                            :value="option.id"
@@ -25,6 +27,7 @@
                             </el-select>
                             <small class="form-control-feedback" v-if="errors.item_id"
                                    v-text="errors.item_id[0]"></small>
+                            <el-checkbox v-model="search_item_by_barcode">Buscar por código de barras</el-checkbox>
                         </div>
                     </div>
                     <div class="col-md-4">
@@ -136,11 +139,15 @@ import LotsGroup from '../../../../../../resources/js/views/tenant/documents/par
 import SelectLotsForm from '../../../../../../resources/js/views/tenant/documents/partials/lots.vue'
 //import SelectLotsForm from './lots.vue'
 import {filterWords} from "../../../../../../resources/js/helpers/functions";
+import { inventory_search_item_barcode } from '../mixins/functions'
 
 
 export default {
     components: {LotsGroup, SelectLotsForm},
     props: ['showDialog', 'recordId'],
+    mixins: [
+        inventory_search_item_barcode,
+    ],
     data() {
         return {
             type: 'output',
@@ -238,12 +245,20 @@ export default {
         async searchRemoteItems(search) {
             this.loading_search = true;
             this.items = [];
-            await this.$http.post(`/${this.resource}/search_items`, {'search': search})
+
+            const params = {
+                search: search,
+                search_item_by_barcode: this.search_item_by_barcode ? 1 : 0
+            }
+
+            await this.$http.post(`/${this.resource}/search_items`, params)
                 .then(response => {
                     let items = response.data.items;
                     if (items.length > 0) {
                         this.items = items; //filterWords(search, items);
                     }
+
+                    this.enabledSearchItemsBarcode()
                 })
             this.loading_search = false;
         },

@@ -132,9 +132,11 @@ class InventoryController extends Controller
     public function searchItems(Request $request)
     {
         $search = $request->input('search');
+        $search_item_by_barcode = $request->has('search_item_by_barcode') && (bool) $request->search_item_by_barcode;
+        $take = $search_item_by_barcode ? 1 : 20;
 
         return [
-            'items' => $this->optionsItemFull($search, 20),
+            'items' => $this->optionsItemFull($search, $take),
         ];
     }
 
