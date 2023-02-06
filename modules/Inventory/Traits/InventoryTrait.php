@@ -158,15 +158,30 @@ trait InventoryTrait
     /**
      * @param null $search
      * @param null $take
+     * @param boolean $search_item_by_barcode
      *
      * @return Item[]|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Support\Collection
      */
-    public function optionsItemFull($search = null, $take = null)
+    public function optionsItemFull($search = null, $take = null, $search_item_by_barcode = false)
     {
         $query = Item::query()
             ->with('item_lots', 'item_lots.item_loteable', 'lots_group')
             ->where([['item_type_id', '01'], ['unit_type_id', '!=', 'ZZ']])
             ->whereNotIsSet();
+
+        if($search)
+        {
+            if($search_item_by_barcode)
+            {
+                $query->filterByBarcode($search);
+            }
+            else
+            {
+                $query = func_filter_items($query, $search);
+            }
+        }
+
+        /*
         if ($search) {
             $query = func_filter_items($query, $search);
 //            $query->whereRaw(
@@ -177,6 +192,8 @@ trait InventoryTrait
 //                ->orWhere('barcode', 'like', "%{$search}%")
 //                ->orWhere('internal_id', 'like', "%{$search}%");
         }
+        */
+
         if ($take) {
             $query->take($take);
         }

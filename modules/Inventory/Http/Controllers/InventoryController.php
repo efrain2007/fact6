@@ -128,7 +128,15 @@ class InventoryController extends Controller
             'inventory_transactions' => $this->optionsInventoryTransaction($type),
         ];
     }
-
+    
+    
+    /**
+     * 
+     * Busqueda de productos en movimientos - ingresos y salidas
+     *
+     * @param  Request $request
+     * @return array
+     */
     public function searchItems(Request $request)
     {
         $search = $request->input('search');
@@ -136,9 +144,10 @@ class InventoryController extends Controller
         $take = $search_item_by_barcode ? 1 : 20;
 
         return [
-            'items' => $this->optionsItemFull($search, $take),
+            'items' => $this->optionsItemFull($search, $take, $search_item_by_barcode),
         ];
     }
+
 
     public function ExtraDataList()
     {

@@ -1,27 +1,43 @@
 <template>
     <el-dialog :title="titleDialog" :visible="showDialog" @close="close" @open="create">
+
+        <div class="row" v-if="search_item_by_barcode">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label class="control-label">Código de barras</label>
+                    <el-input
+                        placeholder="Buscar"
+                        v-model="input_search_barcode"
+                        @change="searchRemoteItems(input_search_barcode)"
+                        ref="input_search_barcode"
+                    >
+                    </el-input>
+                </div>
+            </div>
+        </div>
+
         <form autocomplete="off" @submit.prevent="submit" v-loading="loading">
             <div class="form-body">
                 <div class="row">
                     <div class="col-md-8">
                         <div class="form-group" :class="{'has-danger': errors.item_id}">
                             <label class="control-label">Producto</label>
+
                             <el-select v-model="form.item_id"
                                        filterable
                                        remote
                                        :remote-method="searchRemoteItems"
                                        :loading="loading_search"
                                        @change="changeItem"
-                                       ref="select_barcode"
+                                       :disabled="search_item_by_barcode"
                                        >
                                 <el-option v-for="option in items"
                                            :key="option.id"
                                            :value="option.id"
                                            :label="option.description"></el-option>
                             </el-select>
-                            <small class="form-control-feedback" v-if="errors.item_id"
-                                   v-text="errors.item_id[0]"></small>
-                                   
+                            <small class="form-control-feedback" v-if="errors.item_id" v-text="errors.item_id[0]"></small>
+
                             <el-checkbox v-model="search_item_by_barcode">Buscar por código de barras</el-checkbox>
                         </div>
                     </div>

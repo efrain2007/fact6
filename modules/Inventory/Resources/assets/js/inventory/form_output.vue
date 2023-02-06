@@ -6,6 +6,22 @@
                append-to-body
                @close="close"
                @open="create">
+
+        <div class="row" v-if="search_item_by_barcode">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label class="control-label">Código de barras</label>
+                    <el-input
+                        placeholder="Buscar"
+                        v-model="input_search_barcode"
+                        @change="searchRemoteItems(input_search_barcode)"
+                        ref="input_search_barcode"
+                    >
+                    </el-input>
+                </div>
+            </div>
+        </div>
+
         <form autocomplete="off" @submit.prevent="submit">
             <div class="form-body">
                 <div class="row">
@@ -18,7 +34,7 @@
                                        :remote-method="searchRemoteItems"
                                        :loading="loading_search"
                                        @change="changeItem"
-                                       ref="select_barcode"
+                                       :disabled="search_item_by_barcode"
                                        >
                                 <el-option v-for="option in items"
                                            :key="option.id"
