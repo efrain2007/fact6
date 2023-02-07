@@ -7,10 +7,35 @@
             key-event="keyup"
             @success="handleFn112"
         />
+        
+        <div class="row">
+            <div class="col-md-12">
+                <h2>
+                    <el-switch
+                        v-model="search_item_by_barcode"
+                        active-text="Buscar con escaner de código de barras"
+                        @change="changeSearchItemBarcode"
+                    ></el-switch>
+                </h2>
+            </div>
+            <div class="col-md-12" v-if="search_item_by_barcode">
+                <div class="form-group">
+                    <label class="control-label">Código de barras</label>
+                    <el-input   
+                        v-model="input_search_barcode"
+                        :loading="loading_search"
+                        placeholder="Buscar"
+                        ref="input_search_barcode"
+                        @change="searchBarCode"
+                    ></el-input>
+                </div>
+            </div>
+        </div>
+
         <form autocomplete="off"
               @submit.prevent="clickAddItem">
             <div class="form-body row">
-                <div class="col-md-12">
+                <!-- <div class="col-md-12">
                     <h2>
                         <el-switch
                             v-model="search_item_by_barcode"
@@ -18,7 +43,7 @@
                             @change="changeSearchItemBarcode"
                         ></el-switch>
                     </h2>
-                </div>
+                </div> -->
                 <div class="col-md-12">
                     <div :class="{'has-danger': errors.item_id}"
                          class="form-group">
@@ -27,7 +52,7 @@
                             <a href="#"
                                @click.prevent="showDialogNewItem = true">[+ Nuevo]</a>
                         </label>
-                        <el-select v-show="!search_item_by_barcode"
+                        <el-select 
                                    v-model="form.item_id"
                                    :loading="loading_search"
                                    :remote-method="searchRemoteItems"
@@ -35,6 +60,7 @@
                                    placeholder="Buscar"
                                    remote
                                    @change="changeItem"
+                                   :disabled="search_item_by_barcode"
                         >
                             <el-tooltip
                                 v-for="option in items"
@@ -51,12 +77,15 @@
 
                             </el-tooltip>
                         </el-select>
-                        <el-input v-show="search_item_by_barcode"
-                                  v-model="form.barcode"
+
+                        <!-- <el-input v-show="search_item_by_barcode"
+                                  v-model="input_search_barcode"
                                   :loading="loading_search"
                                   placeholder="Buscar"
+                                  ref="input_search_barcode"
                                   @change="searchBarCode"
-                        ></el-input>
+                        ></el-input> -->
+
                         <small v-if="errors.item_id"
                                class="form-control-feedback"
                                v-text="errors.item_id[0]"></small>
@@ -692,6 +721,7 @@ export default {
             editors: {
                 classic: ClassicEditor
             },
+            input_search_barcode: null,
         }
     },
     created() {
@@ -730,28 +760,43 @@ export default {
         handleFn112(response) {
             this.search_item_by_barcode = !this.search_item_by_barcode;
         },
-        searchBarCode(input) {
+        async searchBarCode(input) 
+        {
             this.loading_search = true
-            let parameters = `barcode=${input}`
-            this.$http.get(`/${this.resource}/search-items/?${parameters}`)
+            
+            const search_by_barcode = this.search_item_by_barcode ? 1 : 0
+
+            let parameters = `input=${input}&search_by_barcode=${search_by_barcode}`
+
+            await this.$http.get(`/${this.resource}/search-items?${parameters}`)
                 .then(response => {
                     let items = response.data.items
                     this.items = items
                     this.loading_search = false
-                    if (items === undefined || items.length == 0) {
-                        this.initFilterItems()
-                    } else if (this.items.length > 2) {
-                        // varios items
-                    } else {
-                        if (items.length == 1) {
-                            this.form.item_id = items[0].id
-                            this.items = response.data.items
-                            this.form.item = items[0]
-                            this.form.item_id = items[0].id
-                            this.changeItemAlt();
-                        }
+
+                    if (items.length == 1) 
+                    {
+                        this.form.item_id = items[0].id
+
+                        this.changeItem()
+                        this.form.quantity = parseInt(this.form.quantity) + 1
+                        this.setInputFocus()
                     }
+                    else
+                    {
+                        this.$message.info('No se encontró el producto.')
+                    }
+
+                    this.cleanInputSearch()
                 })
+        },
+        cleanInputSearch()
+        {
+            this.input_search_barcode = null
+        },
+        setInputFocus()
+        {
+            this.$refs.input_search_barcode.$el.getElementsByTagName('input')[0].focus()
         },
         async searchRemoteItems(input) {
 
@@ -1042,6 +1087,10 @@ export default {
             this.cleanInput();
             if (!this.search_item_by_barcode) {
                 this.initFilterItems()
+            }
+            else
+            {
+                this.form.quantity = 0
             }
         },
         cleanInput() {
