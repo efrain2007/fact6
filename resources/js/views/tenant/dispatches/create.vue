@@ -422,10 +422,10 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr v-for="(row, index) in form.items">
+                                <tr v-for="(row, index) in form.items" :key="index">
                                     <td>{{ index + 1 }}</td>
                                     <td>{{ row.unit_type_id }}</td>
-                                    <td>{{ row.description }}</td>
+                                    <td v-html="setDescriptionOfItem(row)" class="text-dark"></td>
                                     <td class="text-right">{{ getFormatQuantity(row.quantity) }}</td>
                                     <!-- <td class="text-right">{{ row.quantity }}</td> -->
                                     <td class="text-right">
@@ -594,7 +594,7 @@
                    :showDialog.sync="showDialogNewItem"></item-form>
         <lots-group
             v-if="item"
-            :lots_group="item.lots_group"
+            :lotsGroup="item.lots_group"
             :quantity="quantity"
             :showDialog.sync="showDialogLots"
             @addRowLotGroup="addRowLotGroup">
@@ -816,6 +816,23 @@ export default {
                 origin_address_id: null,
                 delivery_address_id: null,
             }
+        },
+        setDescriptionOfItem(item) {
+            console.log(this.config.show_pdf_name)
+            console.log(item.item == undefined)
+            if (this.config.show_pdf_name) {
+                if(item.item != undefined && item.item.name_product_pdf != undefined) {
+                    if (item.item.name_product_pdf !== '' && !_.isNull(item.item.name_product_pdf)) {
+                        return item.item.name_product_pdf;
+                    }
+                }
+                if(item.name_product_pdf != undefined) {
+                    if (item.name_product_pdf !== '' && !_.isNull(item.name_product_pdf)) {
+                        return item.name_product_pdf;
+                    }
+                }
+            }
+            return item.description;
         },
         setDefaults() {
             if (this.origin_addresses.length > 0) {
