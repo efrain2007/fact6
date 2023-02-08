@@ -124,7 +124,8 @@
                                  class="form-group">
                                 <label class="control-label">Cantidad</label>
                                 <el-input-number v-model="form.quantity"
-                                                 :min="0.01"></el-input-number>
+                                                 :min="0.01"
+                                                 ></el-input-number>
                                 <small v-if="errors.quantity"
                                        class="form-control-feedback"
                                        v-text="errors.quantity[0]"></small>
@@ -873,6 +874,8 @@ export default {
             this.item_unit_type = {};
             this.lots = []
             this.lot_code = null
+
+            this.initQuantityForBarcode()
         },
         clickAddDiscount() {
             this.form.discounts.push({
@@ -1088,10 +1091,12 @@ export default {
             if (!this.search_item_by_barcode) {
                 this.initFilterItems()
             }
-            else
-            {
-                this.form.quantity = 0
-            }
+            
+            this.initQuantityForBarcode()
+        },
+        initQuantityForBarcode()
+        {
+            this.form.quantity = this.search_item_by_barcode ? 0 : 1
         },
         cleanInput() {
             this.input_item = null;
