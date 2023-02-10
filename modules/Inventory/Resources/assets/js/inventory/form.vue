@@ -1,24 +1,44 @@
 <template>
     <el-dialog :title="titleDialog" :visible="showDialog" @close="close" @open="create">
+
+        <div class="row" v-if="search_item_by_barcode">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label class="control-label">Código de barras</label>
+                    <el-input
+                        placeholder="Buscar"
+                        v-model="input_search_barcode"
+                        @change="searchRemoteItems(input_search_barcode)"
+                        ref="input_search_barcode"
+                    >
+                    </el-input>
+                </div>
+            </div>
+        </div>
+
         <form autocomplete="off" @submit.prevent="submit" v-loading="loading">
             <div class="form-body">
                 <div class="row">
                     <div class="col-md-8">
                         <div class="form-group" :class="{'has-danger': errors.item_id}">
                             <label class="control-label">Producto</label>
+
                             <el-select v-model="form.item_id"
                                        filterable
                                        remote
                                        :remote-method="searchRemoteItems"
                                        :loading="loading_search"
-                                       @change="changeItem">
+                                       @change="changeItem"
+                                       :disabled="search_item_by_barcode"
+                                       >
                                 <el-option v-for="option in items"
                                            :key="option.id"
                                            :value="option.id"
                                            :label="option.description"></el-option>
                             </el-select>
-                            <small class="form-control-feedback" v-if="errors.item_id"
-                                   v-text="errors.item_id[0]"></small>
+                            <small class="form-control-feedback" v-if="errors.item_id" v-text="errors.item_id[0]"></small>
+
+                            <el-checkbox v-model="search_item_by_barcode">Buscar por código de barras</el-checkbox>
                         </div>
                     </div>
                     <div class="col-md-4">
@@ -127,13 +147,18 @@
 </template>
 
 <script>
+
 import InputLotsForm from '../../../../../../resources/js/views/tenant/items/partials/lots.vue'
 import OutputLotsForm from './partials/lots.vue'
 import {filterWords} from "../../../../../../resources/js/helpers/functions";
+import { inventory_search_item_barcode } from '../mixins/functions'
 
 export default {
     components: {InputLotsForm, OutputLotsForm},
     props: ['showDialog', 'recordId', 'type'],
+    mixins: [
+        inventory_search_item_barcode,
+    ],
     data() {
         return {
             loading: false,
@@ -233,13 +258,20 @@ export default {
         async searchRemoteItems(search) {
             this.loading_search = true;
             this.items = [];
-            await this.$http.post(`/${this.resource}/search_items`, {'search': search})
+
+            const params = {
+                search: search,
+                search_item_by_barcode: this.search_item_by_barcode ? 1 : 0
+            }
+
+            await this.$http.post(`/${this.resource}/search_items`, params)
                 .then(response => {
                     let items = response.data.items;
                     if(items.length > 0) {
                         this.items = items; //filterWords(search, items);
                     }
 
+                    this.enabledSearchItemsBarcode()
                 })
             this.loading_search = false;
         },

@@ -2801,5 +2801,20 @@ class Item extends ModelTenant
         });
     }
 
+    
+    /**
+     * 
+     * Filtrar por codigo de barras
+     * 
+     * @param Builder $query
+     * @param string $barcode
+     * @return Builder
+     */
+    public function scopeFilterByBarcode(Builder $query, $barcode)
+    {
+        return $query->where('barcode', $barcode);
+    }
+
+
 }
 
