@@ -40,6 +40,7 @@ if($current_hostname) {
 
                 Route::get('general-with-payments/{cash_id}', 'CashReportController@generalCashReportWithPayments');
 
+                Route::get('cash-payment-report-excel/{cash_id}', 'CashReportController@cashPaymentReportExcel');
             });
 
 

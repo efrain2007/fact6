@@ -5,11 +5,49 @@ namespace Modules\Pos\Traits;
 use App\CoreFacturalo\Helpers\Functions\GeneralPdfHelper;
 use Mpdf\Mpdf;
 use App\Models\Tenant\PaymentMethodType;
+use App\Exports\GeneralFormatExport;
 
 
 trait CashReportTrait
 {
        
+    /**
+     *
+     * Reporte excel v2 de caja para pagos en efectivo con destino caja, ingresos y egresos
+     * 
+     * @return void
+     */
+    public function setDataCashPaymentReportExcel($cash, &$data)
+    {
+        $payments = collect();
+
+        foreach ($cash->global_destination as $global_payment) 
+        {
+            $payments->push($global_payment->payment->getDataCashPaymentReport());
+        }
+
+        $payments_pen = $payments->where('currency_type_id', PaymentMethodType::NATIONAL_CURRENCY_ID);
+        $payments_usd = $payments->where('currency_type_id', PaymentMethodType::DOLAR_CURRENCY_ID);
+        
+        $data['payments_pen'] = $payments_pen;
+        $data['payments_usd'] = $payments_usd;
+
+        $data['cash_income_pen'] = GeneralPdfHelper::setNumberFormat($payments_pen->where('type_transaction', 'income')->sum('payment'));
+        $data['cash_egress_pen'] = GeneralPdfHelper::setNumberFormat($payments_pen->where('type_transaction', 'egress')->sum('payment'));
+        
+        //saldo inicial de caja se considera en soles
+        $data['balance_cash_pen'] = GeneralPdfHelper::setNumberFormat(($data['cash_income_pen'] + $data['cash_beginning_balance']) - $data['cash_egress_pen']); 
+
+
+        $data['cash_income_usd'] = GeneralPdfHelper::setNumberFormat($payments_usd->where('type_transaction', 'income')->sum('payment'));
+        $data['cash_egress_usd'] = GeneralPdfHelper::setNumberFormat($payments_usd->where('type_transaction', 'egress')->sum('payment'));
+
+        $data['balance_cash_usd'] = GeneralPdfHelper::setNumberFormat($data['cash_income_usd'] - $data['cash_egress_usd']);
+
+        $data['cash_beginning_balance'] = GeneralPdfHelper::setNumberFormat($data['cash_beginning_balance']);
+    }
+
+
     /**
      *
      * Data para reporte de caja v2 asociados a caja
@@ -290,6 +328,25 @@ trait CashReportTrait
         return GeneralPdfHelper::getPreviewTempPdfWithFilename($temp_folder, $filename, $pdf->output('', 'S'));
     }
 
+    
+    /**
+     * 
+     * Generar excel
+     *
+     * @param  string $filename
+     * @param  string $view
+     * @param  array $data
+     * @return GeneralFormatExport
+     */
+    public function generalExportReport($filename, $view, $data)
+    {
+        $general_format_export = new GeneralFormatExport();
+
+        $general_format_export->view_name($view)
+                                ->data($data);
+
+        return $general_format_export->download($filename.'.xlsx');
+    }
 
 
 }

@@ -298,4 +298,21 @@ class Cash extends ModelTenant
         ]);
     }
 
+    
+    /**
+     * 
+     * Filtro para reporte de pagos en efectivo con destino caja
+     *
+     * @param  Builder $query
+     * @return Builder
+     */
+    public function scopeFilterDataCashPaymentReport($query)
+    {
+        return $query->with([
+            'global_destination' => function($query){
+                return $query->getDataCashPaymentReport()->latest();
+            }
+        ]);
+    }
+
 }

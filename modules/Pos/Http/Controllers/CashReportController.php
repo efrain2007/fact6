@@ -19,6 +19,25 @@ class CashReportController extends Controller
     
     /**
      * 
+     * Reporte de caja para pagos en efectivo con destino caja, ingresos y egresos
+     *
+     * @param  int $cash_id
+     */
+    public function cashPaymentReportExcel($cash_id)
+    {
+        $cash = Cash::filterDataCashPaymentReport()->findOrFail($cash_id);
+        $data = app(CashController::class)->getHeaderCommonDataToReport($cash);
+
+        $this->setDataCashPaymentReportExcel($cash, $data);
+
+        $filename = 'Reporte_pagos_efectivo_caja_'.date('YmdHis');
+
+        return $this->generalExportReport($filename, 'pos::cash.reports.cash_payment_report_excel', ['data' => $data]);
+    }
+
+    
+    /**
+     * 
      * Reporte general de caja v2, asociado a pagos
      *
      * @param  int $cash_id

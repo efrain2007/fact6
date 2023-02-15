@@ -958,4 +958,82 @@
             return $query;
         }
 
+
+        /**
+         * 
+         * Filtros/Queries para mejorar rendimiento cuando se accede a los pagos asociados y documentos
+         * 
+         * @param Builder $query
+         * @return Builder
+         */
+        public function scopeApplyFiltersPerformancePayments(Builder $query)
+        {
+            return $query->with([
+                'payment' => function ($q){
+                    $q->filterRelationsPayments()
+                        ->with(['associated_record_payment' => function($query){
+                            $query->filterRelationsGlobalPayment();
+                        }]);
+                }
+            ]);
+        }
+
+
+        /**
+         * 
+         * Filtro para reporte excel de pagos en efectivo con destino caja
+         *
+         * @param  Builder $query
+         * @return Builder
+         */
+        public function scopeGetDataCashPaymentReport($query)
+        {
+            return $query->getCashPayments();
+        }
+
+
+        /**
+         * 
+         * Filtro para reporte de pagos en efectivo
+         * 
+         * @param Builder $query
+         * @return Builder
+         * 
+         */
+        public function scopeGetCashPayments($query)
+        {
+            $query->applyFiltersPerformancePayments()
+                    // ingresos
+                    ->whereHas('doc_payments', function ($payment) {
+                        $payment->filterCashPaymentWithDocument();
+                    })
+                    ->orWhereHas('sln_payments', function ($payment) {
+                        $payment->filterCashPaymentWithDocument();
+                    })
+                    ->orWhereHas('quo_payment', function ($payment) {
+                        $payment->filterCashPaymentWithDocument();
+                    })
+                    ->orWhereHas('tec_serv_payment', function ($payment) {
+                        $payment->filterCashPaymentWithDocument();
+                    })
+                    ->orWhereHas('inc_payment', function ($payment) {
+                        $payment->filterCashPaymentWithDocument();
+                    })
+                    // ingresos
+
+                    // egresos
+                    ->orWhereHas('pur_payment', function ($payment) {
+                        $payment->filterCashPaymentWithDocument();
+                    })
+
+                    ->orWhereHas('exp_payment', function ($payment) {
+                        $payment->filterCashPaymentWithDocument();
+                    });
+                    // egresos
+
+            return $query;
+        }
+
+
+
     }
