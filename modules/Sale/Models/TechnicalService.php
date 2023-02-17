@@ -1650,4 +1650,16 @@
         }
 
 
+        /**
+         * 
+         * Validar que no tenga notas de venta asociadas
+         *
+         * @param  Builder $query
+         * @return Builder
+         */
+        public function scopeWhereNotHasSaleNotes($query)
+        {
+            return $query->whereDoesntHave('sale_note');
+        }
+
     }

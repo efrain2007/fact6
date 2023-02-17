@@ -65,4 +65,74 @@ class IncomePayment extends ModelTenant
                     ]);
     }
 
+    
+    /**
+     * 
+     * Filtros para obtener pagos en efectivo
+     *
+     * @param  Builder $query
+     * @return Builder
+     */
+    public function scopeFilterCashPaymentWithoutDestination($query)
+    {
+        return $query->where('payment_method_type_id', PaymentMethodType::CASH_PAYMENT_ID);
+    }
+
+
+    /**
+     * 
+     * Filtros para obtener pagos en efectivo de un registro aceptado
+     *
+     * @param  Builder $query
+     * @return Builder
+     */
+    public function scopeFilterCashPaymentWithDocument($query)
+    {
+        return $query->whereHas('associated_record_payment', function ($document) {
+                        $document->whereStateTypeAccepted();
+                    })
+                    ->filterCashPaymentWithoutDestination();
+    }
+
+
+    /**
+     * 
+     * Obtener informacion del pago y registro origen relacionado
+     *
+     * @return array
+     */
+    public function getRowResourceCashPayment()
+    {
+        return [
+            'type' => 'income',
+            'type_transaction' => 'income',
+            'type_transaction_description' => 'Ingresos (finanzas)',
+            'date_of_issue' => $this->associated_record_payment->date_of_issue->format('Y-m-d'),
+            'number_full' => $this->associated_record_payment->number_full,
+            'acquirer_name' => $this->associated_record_payment->customer,
+            'acquirer_number' => null,
+            'currency_type_id' => $this->associated_record_payment->currency_type_id,
+            'document_type_description' => $this->associated_record_payment->getDocumentTypeDescription(),
+            'payment_method_type_id' => $this->payment_method_type_id,
+            'payment' => $this->associated_record_payment->isVoidedOrRejected() ? 0 : $this->payment,
+        ];
+    }
+
+
+    /**
+     * 
+     * Obtener informacion del pago, registro origen y items(opcional) relacionado
+     *
+     * @return array
+     */
+    public function getDataCashPaymentReport()
+    {
+        $data = [
+            'total' => $this->associated_record_payment->isVoidedOrRejected() ? 0 : $this->associated_record_payment->total,
+            'items_description_html' => $this->getGeneralHtmlItemsDescription($this->associated_record_payment)
+        ];
+
+        return array_merge($this->getRowResourceCashPayment(), $data);
+    }
+
 }

@@ -136,4 +136,38 @@ class TechnicalServicePayment extends ModelTenant
         return $query->where('payment_method_type_id', PaymentMethodType::TRANSFER_PAYMENT_ID);
     }
     
+
+    /**
+     * 
+     * Filtros para obtener pagos en efectivo de un registro aceptado
+     *
+     * @param  Builder $query
+     * @return Builder
+     */
+    public function scopeFilterCashPaymentWithDocument($query)
+    {
+        return $query->whereHas('associated_record_payment', function ($document) {
+                        $document->whereNotHasDocuments()
+                                ->whereNotHasSaleNotes();
+                    })
+                    ->filterCashPaymentWithoutDestination();
+    }
+
+    
+    /**
+     * 
+     * Obtener informacion del pago, registro origen y items(opcional) relacionado
+     *
+     * @return array
+     */
+    public function getDataCashPaymentReport()
+    {
+        $data = [
+            'total' => $this->associated_record_payment->total_record,
+            'items_description_html' => ''
+        ];
+
+        return array_merge($this->getRowResourceCashPayment(), $data);
+    }
+
 }

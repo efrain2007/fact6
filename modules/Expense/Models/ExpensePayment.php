@@ -235,4 +235,37 @@
             ];
         }
 
+
+        /**
+         * 
+         * Filtros para obtener pagos en efectivo de un registro aceptado
+         *
+         * @param  Builder $query
+         * @return Builder
+         */
+        public function scopeFilterCashPaymentWithDocument($query)
+        {
+            return $query->whereHas('associated_record_payment', function ($document) {
+                            $document->whereStateTypeAccepted();
+                        });
+        }
+
+
+        /**
+         * 
+         * Obtener informacion del pago, registro origen y items(opcional) relacionado
+         *
+         * @return array
+         */
+        public function getDataCashPaymentReport()
+        {
+            $data = [
+                'type_transaction_description' => 'Gasto diverso',
+                'total' => $this->associated_record_payment->isVoidedOrRejected() ? 0 : $this->associated_record_payment->total,
+                'items_description_html' => $this->getGeneralHtmlItemsDescription($this->associated_record_payment)
+            ];
+
+            return array_merge($this->getRowResourceCashPayment(), $data);
+        }
+
     }

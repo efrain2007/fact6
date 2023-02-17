@@ -36,6 +36,8 @@
 
         public const NATIONAL_CURRENCY_ID = 'PEN';
 
+        public const DOLAR_CURRENCY_ID = 'USD';
+
         public const INVOICE_DOCUMENTS_IDS = ['01', '03'];
 
         /**
@@ -215,6 +217,27 @@
         public function getGeneralFilePublicPath($folder, $filename)
         {
             return public_path('storage' . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . $folder . DIRECTORY_SEPARATOR . $filename);
+        }
+
+        
+        /**
+         * 
+         * Descripcion de los items
+         *
+         * @param  mixed $model
+         * @return string
+         */
+        public function getGeneralHtmlItemsDescription($model)
+        {
+            $data = $model->items->pluck('description')->toArray();
+            $full_description = "";
+
+            foreach ($data as $value) 
+            {
+                $full_description .= "- {$value}<br>";
+            }
+
+            return $full_description;
         }
 
     }
