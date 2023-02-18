@@ -145,7 +145,7 @@ export default {
             }
         },
         async create() {
-            this.titleDialog = 'Retirar producto de almacén 3'
+            this.titleDialog = 'Retirar producto de almacén'
             await this.$http.get(`/${this.resource}/record/${this.recordId}`)
                 .then(response => {
                     let data = response.data.data;

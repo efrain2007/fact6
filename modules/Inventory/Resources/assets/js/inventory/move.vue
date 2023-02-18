@@ -56,7 +56,7 @@
                         <a href="#" class="text-center font-weight-bold text-info" @click.prevent="clickLotcodeOutput">[&#10004;
                             Seleccionar series]</a>
                     </div>
-                    <div style="padding-top: 3%;" class="col-md-2 col-sm-2"
+                    <div style="padding-top: 3%;" class="col-md-4 col-sm-4"
                          v-if="form.item_id && form.lots_enabled">
                         <a href="#" class="text-center font-weight-bold text-info" @click.prevent="clickLotsGroup">[&#10004;
                             Seleccionar lote]</a>
@@ -148,7 +148,7 @@ export default {
             }
         },
         async create() {
-            this.titleDialog = 'Traslado entre almacenes 3'
+            this.titleDialog = 'Traslado entre almacenes'
             await this.$http.get(`/${this.resource}/record/${this.recordId}`)
                 .then(response => {
                     let data = response.data.data;

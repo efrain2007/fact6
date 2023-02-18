@@ -426,8 +426,14 @@
                                             <div v-show="form.unit_type_id !='ZZ' && form.lots_enabled">
                                                 <div :class="{'has-danger': errors.lot_code}"
                                                      class="form-group">
+
+                                                     <el-tooltip class="item"
+                                                    content="Si va a usar el mismo LOTE en otros almacenes coloque un prefijo para diferenciarlos."
+                                                    effect="dark"
+                                                    placement="top">
                                                     <el-input v-model="form.lot_code"
                                                               placeholder="Código de lote"></el-input>
+                                                    </el-tooltip>
                                                     <small v-if="errors.lot_code"
                                                            class="form-control-feedback"
                                                            v-text="errors.lot_code[0]"></small>

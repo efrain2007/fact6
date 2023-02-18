@@ -34,7 +34,7 @@
                             Seleccionar series]</a>
                     </div>
 
-                    <div class="col-md-4 mt-4" v-if="form.item_id && form.warehouse_id && form.lots_enabled">
+                    <div class="col-md-4 mt-4" style="display:none" v-if="form.item_id && form.warehouse_id && form.lots_enabled">
                         <a href="#" class="text-center font-weight-bold text-info"
                            @click.prevent="clickSelectLotsGroup">[&#10004; Seleccionar lotes]</a>
                     </div>
@@ -128,7 +128,7 @@ export default {
             }
         },
         async create() {
-            this.titleDialog = 'Ajuste de stock 3'
+            this.titleDialog = 'Ajuste de stock'
             await this.$http.get(`/${this.resource}/record/${this.recordId}`)
                 .then(response => {
                     let data = response.data.data;

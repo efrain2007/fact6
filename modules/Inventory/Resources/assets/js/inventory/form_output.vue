@@ -243,7 +243,7 @@ export default {
         },
         async create() {
             this.loading = true;
-            this.titleDialog = 'Salida de producto del almacén 3'
+            this.titleDialog = 'Salida de producto del almacén'
             await this.initTables();
             this.initForm();
             this.loading = false;
