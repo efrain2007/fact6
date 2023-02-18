@@ -23,6 +23,7 @@ use Modules\Inventory\Models\DevolutionReason;
 use Modules\Inventory\Http\Resources\DevolutionCollection;
 use Modules\Inventory\Http\Requests\DevolutionRequest;
 use App\Models\Tenant\Configuration;
+use Illuminate\Support\Facades\Storage;
 
 
 class DevolutionController extends Controller
@@ -261,7 +262,15 @@ class DevolutionController extends Controller
 
         if (!$devolution) throw new Exception("El código {$external_id} es inválido, no se encontro el documento relacionado");
 
-        return $this->downloadStorage($devolution->filename, 'devolution');
+        $document = $this->getStorage($devolution->filename, 'devolution', null);
+
+        // dd($devolution);-
+        $this->createPdf($devolution, "a4", $devolution->filename);
+
+        $path = Storage::disk('tenant')->path($this->_folder.DIRECTORY_SEPARATOR.$this->_filename);
+        return response()->download($path, $this->_filename, ['Content-Type' => 'application/pdf'] , 'inline');
+
+        // return $this->downloadStorage($devolution->filename, 'devolution');
     }
 
 

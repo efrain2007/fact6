@@ -240,7 +240,7 @@ export default {
             }
 
             // this.form.IdLoteSelected = IdLoteSelected
-            this.form.IdLoteSelected = null;
+            // this.form.IdLoteSelected = null;
             this.$emit('add', this.form);
 
             this.initForm();
