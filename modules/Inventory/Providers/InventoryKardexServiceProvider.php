@@ -635,9 +635,12 @@ class InventoryKardexServiceProvider extends ServiceProvider
             {
                 if($devolution_item->item->IdLoteSelected != null)
                 {
-                    $lot = ItemLotsGroup::find($devolution_item->item->IdLoteSelected);
-                    $lot->quantity = $lot->quantity - $devolution_item->quantity;
-                    $lot->save();
+                    $lots = json_decode($devolution_item->item->IdLoteSelected, true);
+                    foreach($lots as $item){
+                        $lot = ItemLotsGroup::find($item['id']);
+                        $lot->quantity = $lot->quantity - $devolution_item->quantity;
+                        $lot->save();
+                    }
                 }
             }
 
