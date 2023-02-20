@@ -92,6 +92,7 @@
     </thead>
     <tbody>
     @foreach($document->items as $row)
+    {{-- {{dd($document->items)}} --}}
         <tr>
             <td class="text-center align-top">
                 @if(((int)$row->quantity != $row->quantity))
@@ -103,29 +104,22 @@
             <td class="text-center align-top">{{ $row->item->unit_type_id }}</td>
             <td class="text-left align-top">
                 {!!$row->item->description!!}
-
             </td>
             <td class="text-center align-top">
-                @inject('itemLotGroup', 'App\Services\ItemLotsGroupService')
-                @php
-                    $lots = json_decode($row->item->IdLoteSelected);
-                @endphp
-                {{-- @if($lots != null)
-                    @foreach($lots as $item)
-                        {{ $itemLotGroup->getLote($item->id) }}
+                @if(isset($row->item->lots_group_selected))
+                    @foreach($row->item->lots_group_selected as $item)
+                        {{ $item->code }}
                     @endforeach
-                @endif --}}
+                @endif
             </td>
             <td class="text-center align-top">
-                {{dd($row->item->lots)}}
-                @isset($row->item->lots)
-                    @foreach($row->item->lots as $lot)
+                @if(isset($row->item->lots_selected))
+                    @foreach($row->item->lots_selected as $lot)
                         @if( isset($lot->has_sale) && $lot->has_sale)
-                            <span style="font-size: 9px">{{ $lot->series }}</span><br>
+                            {{ $lot->series }}<br>
                         @endif
                     @endforeach
-                @endisset
-
+                @endif
             </td>
         </tr>
         <tr>

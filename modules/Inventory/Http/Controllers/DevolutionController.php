@@ -111,9 +111,9 @@ class DevolutionController extends Controller
                         'description' => trim($row['item']['description']),
                         'internal_id' => $row['item']['internal_id'],
                         'unit_type_id' => $row['item']['unit_type_id'],
-                        'lot_selected' => isset($row['item']['lot_selected']) ? $row['item']['lot_selected'] : null,
+                        'lots_group_selected' => isset($row['lots_group']) ? $row['lots_group'] : null,
 //                        'lots' => self::lots($row),
-                        'IdLoteSelected' =>  isset($row['IdLoteSelected']) ? json_encode($row['IdLoteSelected']) : null
+                        'lots_selected' =>  isset($row['item']['lots']) ? $row['item']['lots'] : null
                     ],
                     'quantity' => $row['quantity'],
                 ]);
