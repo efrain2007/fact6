@@ -446,13 +446,22 @@ class ReportKardexController extends Controller
 
         $items = [];
         foreach ($record->items as $item) {
+
+            $is_lot_group = (bool)$item->item->lots_enabled;
             $lot = ItemLotsGroup::where('item_id', $item->item_id)->where('created_at', $record->created_at)->first();
+
+            $is_serie = (bool)$item->item->series_enabled;
+            $serie = $is_serie?$item->item->item_lots->where('created_at', $record->created_at)->first():null;
+
             $items[] = [
                 'item_internal_id' => $item->item->internal_id,
                 'item_name' => $item->item_name,
                 'unit_type_id' => $item->item->unit_type_id,
                 'quantity' => $item->quantity,
-                'lot' => $lot?$lot->code:null,
+                'lot_enabled' => $is_lot_group,
+                'lot' => $is_lot_group?$lot->code:null,
+                'series_enabled' => $is_serie,
+                'serie' => $serie->series,
             ];
         }
 
