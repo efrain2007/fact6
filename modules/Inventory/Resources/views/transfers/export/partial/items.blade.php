@@ -69,7 +69,6 @@
                 */
                 // $is_serie = (bool)$inventory->item->series_enabled;
                 // $serie = $inventory->item->item_lots->where('updated_at', $inventory->inventories_transfer->created_at)->first();
-                // dd($inventory);
                 ?>
                 <tr>
                     <td class="celda text-center">{{$index + 1}}</td>
@@ -78,7 +77,7 @@
                     <td class="celda">{{$itemCollection['unit_type_text']}}</td>
                     <td class="celda">{{$qty}}</td>
                     <td class="celda">
-                        @foreach($lots as $lot)
+                        @foreach($lots->unique('code') as $lot)
                             {{ $lot['code'] }}
                             @if(!$loop->last)
                                 <br>
