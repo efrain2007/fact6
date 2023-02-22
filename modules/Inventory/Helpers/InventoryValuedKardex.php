@@ -57,9 +57,9 @@ class InventoryValuedKardex
 
     }
 
-    
+
     /**
-     * 
+     *
      * Cantidad de unidades de la presentación
      *
      * @param  DocumentItem|SaleNoteItem $row
@@ -76,9 +76,9 @@ class InventoryValuedKardex
     public static function getValuesRecords($document_items, $sale_note_items)
     {
         //quantity
-        
+
         $quantity_doc_items = $document_items->sum(function($row){
-            
+
             $quantity = ($row->document->document_type_id == '07') ? -$row->quantity : $row->quantity;
 
             return $quantity * self::getQuantityUnitByPresentation($row);
@@ -129,7 +129,7 @@ class InventoryValuedKardex
         $purchase_items = $item->purchase_item;
         $document_items = $item->document_items;
         $dispatch_items = $item->dispatch_items;
-        
+
         $all_record_items = ($purchase_items->merge($dispatch_items))->merge($document_items);
 
         // dd(($all_record_items));
@@ -141,7 +141,7 @@ class InventoryValuedKardex
         ];
 
     }
- 
+
     public static function getDataAdditional($request, $params, $item)
     {
 
@@ -153,12 +153,12 @@ class InventoryValuedKardex
 
         // dd($request->all(), $params, $item);
         if($request->period == 'month'){
-        
+
             $data['period'] = Carbon::parse($request->month_end)->format('Y');
-            $data['month'] = Carbon::parse($request->month_end)->format('m');
-        
+            $data['month'] = Carbon::parse($request->month_start)->format('m');
+
         }else{
-            
+
             $data['period'] = "{$params->date_start} - {$params->date_end}";
             $data['month'] = null;
 
@@ -172,7 +172,7 @@ class InventoryValuedKardex
      * Retorna arreglo ordenado que contiene informacion de los documentos asociados al item para poder realizar calculos en el reporte
      */
     private static function transformItems($collection)
-    { 
+    {
         return $collection->transform(function($row, $key){
                     return self::getTempData($row);
                 })
@@ -181,7 +181,7 @@ class InventoryValuedKardex
                 ->values()
                 ->all();
     }
-     
+
     private static function getRecordsFromItems($collection)
     {
 
@@ -197,7 +197,7 @@ class InventoryValuedKardex
 
         foreach ($new_collection as $key => $temp_data) {
 
-            //buscar nota de credito y asignar valores, es necesario que se encuentre el doc relacionado 
+            //buscar nota de credito y asignar valores, es necesario que se encuentre el doc relacionado
             // en el arreglo, ya que desde el mismo obtiene el doc y su costo promedio
 
             if($temp_data['model_type'] == 'document' && $temp_data['document_type_id'] == '07'){
@@ -214,7 +214,7 @@ class InventoryValuedKardex
 
             $balance_quantity +=  $temp_data['quantity'] * $temp_data['factor'];
 
-            //asignar valor acumulado del documento previo del grupo saldo - campo costo unitario 
+            //asignar valor acumulado del documento previo del grupo saldo - campo costo unitario
             if(isset($data[$key - 1]) && $temp_data['type'] == 'output')
             {
                 $temp_data['output_unit_price'] = $data[$key - 1]['balance_unit_cost'];
@@ -233,7 +233,7 @@ class InventoryValuedKardex
                 $balance_total_cost += ($temp_data['type'] == 'input') ? $temp_data['total'] * $temp_data['factor'] : $temp_data['output_total'] * $temp_data['factor'];
                 $balance_unit_cost = ($balance_quantity != 0) ? round($balance_total_cost / $balance_quantity, 4) : null;
             }
-            
+
             //asignar valores acumulados
             $temp_data['balance_quantity'] = $balance_quantity;
             $temp_data['balance_unit_cost'] = $balance_unit_cost;
@@ -249,7 +249,7 @@ class InventoryValuedKardex
 
     private static function getTempData($record_item)
     {
-        
+
         $temp_data = [];
 
         if($record_item instanceof DocumentItem){
@@ -271,9 +271,9 @@ class InventoryValuedKardex
             $output_unit_price = null;
             $output_total = null;
             $operation_type = null;
-            
+
             if($type == 'input'){
-                
+
                 $input_quantity =  $record_item->quantity;
                 $input_unit_price =  $record_item->unit_price;
                 $input_total = $record_item->total;
@@ -317,7 +317,7 @@ class InventoryValuedKardex
                 'factor' => $factor,
                 'quantity' => $record_item->quantity,
                 'total' => $record_item->total,
-                
+
                 'balance_quantity' => 0,
                 'balance_unit_cost' => 0,
                 'balance_total_cost' => 0,
@@ -352,7 +352,7 @@ class InventoryValuedKardex
                 'factor' => 1,
                 'quantity' => $record_item->quantity,
                 'total' => $record_item->total,
-                
+
                 'balance_quantity' => 0,
                 'balance_unit_cost' => 0,
                 'balance_total_cost' => 0,
@@ -374,9 +374,9 @@ class InventoryValuedKardex
             $output_unit_price = null;
             $output_total = null;
             $operation_type = null;
-            
+
             if($type == 'input'){
-                
+
                 $input_quantity =  $record_item->quantity;
                 $input_unit_price =  $record_item->relation_item->purchase_unit_price;
                 $input_total = $record_item->quantity * $record_item->relation_item->purchase_unit_price;
@@ -445,5 +445,5 @@ class InventoryValuedKardex
 
         return $temp_data;
     }
- 
+
 }
