@@ -442,27 +442,28 @@ class ReportKardexController extends Controller
             ->with('inventory_transaction', 'warehouse', 'document_type', 'items', 'items.item')
             ->find($guide_id);
 
-        // dd($record->inventory_transaction->type);
+        // dd($record->inventory_transaction);
 
         $items = [];
         foreach ($record->items as $item) {
 
             $is_lot_group = (bool)$item->item->lots_enabled;
             $is_serie = (bool)$item->item->series_enabled;
-
+            $lot = null;
+            $series = null;
             if($record->inventory_transaction->type == 'input') {
                 if($is_lot_group){
                     $lot = ItemLotsGroup::where('item_id', $item->item_id)->where('created_at', $record->created_at)->first();
                 }
                 if($is_serie){
-                    $serie = $item->item->item_lots->where('created_at', $record->created_at)->first();
+                    $series = $item->item->item_lots->where('created_at', $record->created_at)->all();
                 }
             } else {
                 if($is_lot_group){
                     $lot = ItemLotsGroup::where('item_id', $item->item_id)->where('updated_at', $record->created_at)->first();
                 }
                 if($is_serie){
-                    $serie = $item->item->item_lots->where('updated_at', $record->created_at)->first();
+                    $series = $item->item->item_lots->where('updated_at', $record->created_at)->all();
                 }
             }
 
@@ -474,7 +475,7 @@ class ReportKardexController extends Controller
                 'lot_enabled' => $is_lot_group,
                 'lot' => $is_lot_group?$lot->code:null,
                 'series_enabled' => $is_serie,
-                'serie' => $is_serie?$serie->series:null,
+                'series' => $is_serie?$series:null,
             ];
         }
 

@@ -84,7 +84,12 @@
             <td style="text-align: right">{{$row['quantity']}}</td>
             <td style="text-align: right">
                 @if($row['series_enabled'])
-                    {{$row['serie']}}
+                    @foreach($row['series'] as $serie)
+                        @if(!$loop->first)
+                            -
+                        @endif
+                        {{$serie['series']}}
+                    @endforeach
                 @endif
                 @if($row['lot_enabled'])
                     {{$row['lot']}}
