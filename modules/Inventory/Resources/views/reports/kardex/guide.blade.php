@@ -92,7 +92,12 @@
                     @endforeach
                 @endif
                 @if($row['lot_enabled'])
-                    {{$row['lot']}}
+                    @foreach($row['lot'] as $lot)
+                        @if(!$loop->first)
+                            -
+                        @endif
+                        {{$lot['code']}}
+                    @endforeach
                 @endif
             </td>
         </tr>
