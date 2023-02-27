@@ -88,7 +88,7 @@
                         <td class="text-center" v-if="columns.delivery_date.visible">{{ row.delivery_date }}</td>
                         <td>{{ row.user_name }}</td>
                         <td>{{ row.customer_name }}<br/><small v-text="row.customer_number"></small></td>
-                        <td>{{row.state_type_description}}</td>
+                        <td><StateType :id="row.state_type_id" :description="row.state_type_description" /></td>
                         <td>{{ row.identifier }}
                         </td>
                         <td>
@@ -194,6 +194,8 @@
     import {deletable} from '@mixins/deletable'
     import {mapActions, mapState} from "vuex";
 
+    import StateType from "../../../../../../OrderNote/Resources/assets/js/components/StateType.vue"
+
     export default {
         props:[
             'typeUser',
@@ -207,7 +209,8 @@
             DataTable,
             QuotationOptions,
             MiTiendaPe,
-            QuotationOptionsPdf
+            QuotationOptionsPdf,
+            StateType
         },
         created() {
             this.$store.commit('setConfiguration',this.configuration)
