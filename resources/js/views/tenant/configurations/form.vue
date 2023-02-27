@@ -776,7 +776,7 @@
                                             v-text="errors.search_factory_code_items[0]"></small>
                                 </div>
                             </div>
-                            
+
                             <div class="col-md-6 mt-4">
 
                                 <label class="control-label">
@@ -1560,7 +1560,7 @@
                             </template>
 
                             <div class="col-md-6 mt-4">
-                                <!-- <label class="control-label">Agregar imágenes al pdf 
+                                <!-- <label class="control-label">Agregar imágenes al pdf
                                     <el-tooltip
                                         class="item"
                                         content="Agrega las imágenes en el footer del pdf - Disponible para Cotización en formato A4, usando la plantilla pdf Default/Default3"
@@ -2061,7 +2061,7 @@
                                 </div>
                             </div>
 
-                            
+
                             <div class="col-6 mt-4">
                                 <div class="form-group">
                                     <label>
@@ -2089,7 +2089,7 @@
                             </div>
 
 
-                            
+
                             <div class="col-6 mt-4">
                                 <div class="form-group">
                                     <label>
@@ -2141,6 +2141,21 @@
                                     <small v-if="errors.mi_tienda_pe"
                                            class="form-control-feedback"
                                            v-text="errors.mi_tienda_pe[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mt-4">
+                                <label class="control-label">
+                                    Gestión avanzada de pedidos
+                                </label>
+                                <div :class="{'has-danger': errors.order_node_advanced}"
+                                     class="form-group">
+                                    <el-switch v-model="form.order_node_advanced"
+                                               active-text="Si"
+                                               inactive-text="No"
+                                               @change="submit"></el-switch>
+                                    <small v-if="errors.order_node_advanced"
+                                           class="form-control-feedback"
+                                           v-text="errors.order_node_advanced[0]"></small>
                                 </div>
                             </div>
                         </div>
@@ -2602,6 +2617,7 @@ export default {
                 price_selected_add_product: false,
                 restrict_sale_items_cpe: false,
                 show_convert_cpe_pos: false,
+                order_node_advanced: false,
             };
         },
         UpdateFormPurchase(e) {
