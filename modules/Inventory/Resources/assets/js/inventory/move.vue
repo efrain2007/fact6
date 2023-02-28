@@ -84,7 +84,7 @@
             :lots-group="form.lots_group"
             :quantity="form.quantity_move"
             :warehouseId="form.warehouse_id"
-            @addRowOutputLot="addRowOutputLot">
+            @addRowLotGroup="addRowLotGroup">
         </output-lots-group-form>
     </el-dialog>
 
@@ -193,6 +193,9 @@ export default {
         close() {
             this.$emit('update:showDialog', false)
             this.initForm()
+        },
+        addRowLotGroup(id) {
+            this.form.lots_group = id
         },
     }
 }

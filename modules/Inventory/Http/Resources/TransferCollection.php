@@ -78,6 +78,6 @@ class TransferCollection extends ResourceCollection
             return $value['item_id'] == $item_id;
         });
 
-        return $response;
+        return $response->unique('lot_code');
     }
 }

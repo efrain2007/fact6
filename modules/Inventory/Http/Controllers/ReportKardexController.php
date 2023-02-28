@@ -442,17 +442,40 @@ class ReportKardexController extends Controller
             ->with('inventory_transaction', 'warehouse', 'document_type', 'items', 'items.item')
             ->find($guide_id);
 
-        // dd($record);
+        // dd($record->inventory_transaction);
 
         $items = [];
         foreach ($record->items as $item) {
-            $lot = ItemLotsGroup::where('item_id', $item->item_id)->where('created_at', $record->created_at)->first();
+
+            $is_lot_group = (bool)$item->item->lots_enabled;
+            $is_serie = (bool)$item->item->series_enabled;
+            $lots = null;
+            $series = null;
+            if($record->inventory_transaction->type == 'input') {
+                if($is_lot_group){
+                    $lots = ItemLotsGroup::where('item_id', $item->item_id)->where('created_at', $record->created_at)->get();
+                }
+                if($is_serie){
+                    $series = $item->item->item_lots->where('created_at', $record->created_at)->all();
+                }
+            } else {
+                if($is_lot_group){
+                    $lots = ItemLotsGroup::where('item_id', $item->item_id)->where('updated_at', $record->created_at)->get();
+                }
+                if($is_serie){
+                    $series = $item->item->item_lots->where('updated_at', $record->created_at)->all();
+                }
+            }
+
             $items[] = [
                 'item_internal_id' => $item->item->internal_id,
                 'item_name' => $item->item_name,
                 'unit_type_id' => $item->item->unit_type_id,
                 'quantity' => $item->quantity,
-                'lot' => $lot?$lot->code:null,
+                'lot_enabled' => $is_lot_group,
+                'lot' => $is_lot_group?$lots:null,
+                'series_enabled' => $is_serie,
+                'series' => $is_serie?$series:null,
             ];
         }
 

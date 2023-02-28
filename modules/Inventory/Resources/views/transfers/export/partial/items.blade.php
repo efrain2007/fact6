@@ -41,13 +41,14 @@
                 <th class="fourteen-width text-left">DESCRIPCIÓN PRODUCTO</th>
                 <th class="ten-width">UNIDAD</th>
                 <th class="ten-width">CANTIDAD</th>
-                <th class="ten-width">LOTE</th>
+                <th class="ten-width">LOTE/SERIE</th>
                 <!--        <th width="10%">SERIE</th>-->
             </tr>
             </thead>
             <tbody>
             @foreach ($inventories as $index => $inventory)
                 <?php
+                // dd($inventory->inventories_transfer);
                 /** @var \Modules\Inventory\Models\Inventory $inventory */
                 $item = $inventory->item;
                 $itemCollection = $item->getCollectionData($configuration);
@@ -66,6 +67,8 @@
                 /*
                 @todo BUSCAR DONDE SE GUARDA LA SERIE en modules/Inventory/Http/Controllers/TransferController.php 237
                 */
+                // $is_serie = (bool)$inventory->item->series_enabled;
+                // $serie = $inventory->item->item_lots->where('updated_at', $inventory->inventories_transfer->created_at)->first();
                 ?>
                 <tr>
                     <td class="celda text-center">{{$index + 1}}</td>
@@ -74,14 +77,13 @@
                     <td class="celda">{{$itemCollection['unit_type_text']}}</td>
                     <td class="celda">{{$qty}}</td>
                     <td class="celda">
-                        @foreach($lots as $lot)
+                        @foreach($lots->unique('code') as $lot)
                             {{ $lot['code'] }}
                             @if(!$loop->last)
                                 <br>
                             @endif
                         @endforeach
                     </td>
-                    <!--            <td>SERIE</td>-->
                 </tr>
             @endforeach
 

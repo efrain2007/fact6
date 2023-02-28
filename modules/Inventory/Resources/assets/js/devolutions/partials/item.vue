@@ -71,14 +71,6 @@
             </div>
         </form>
 
-<!--        <lots-group-->
-<!--            :showDialog.sync="showDialogLots"-->
-<!--            :itemId="form.item_id"-->
-<!--            :quantity="form.quantity"-->
-<!--            :lots_group="form.lots_group"-->
-<!--            @addRowLotGroup="addRowLotGroup">-->
-<!--        </lots-group>-->
-
         <lots-group
             :showDialog.sync="showDialogLots"
             :itemId="form.item_id"
@@ -219,7 +211,7 @@ export default {
             this.validateQuantity()
 
             if (this.form.item.lots_enabled) {
-                if (!this.form.IdLoteSelected)
+                if (!this.form.lots_group)
                     return this.$message.error('Debe seleccionar un lote.');
             }
 
@@ -240,7 +232,7 @@ export default {
             }
 
             // this.form.IdLoteSelected = IdLoteSelected
-            this.form.IdLoteSelected = null;
+            // this.form.IdLoteSelected = null;
             this.$emit('add', this.form);
 
             this.initForm();
@@ -248,7 +240,7 @@ export default {
         },
         addRowLotGroup(id) {
             // console.log(id);
-            this.form.IdLoteSelected = id
+            this.form.lots_group = id
         },
         clickLotGroup() {
             this.showDialogLots = true

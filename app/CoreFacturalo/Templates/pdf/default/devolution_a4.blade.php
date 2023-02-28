@@ -2,7 +2,7 @@
     $establishment = $document->establishment;
 
     $document_number = $document->prefix.'-'.str_pad($document->id, 8, '0', STR_PAD_LEFT);
-  
+
 @endphp
 <html>
 <head>
@@ -65,20 +65,20 @@
         <td width="120px">FECHA DE EMISIÓN</td>
         <td width="8px">:</td>
         <td>{{$document->date_of_issue->format('Y-m-d')}}</td>
-    </tr>  
+    </tr>
     <tr>
         <td width="120px">MOTIVO</td>
         <td width="8px">:</td>
         <td>{{$document->devolution_reason->description}}</td>
-    </tr>  
+    </tr>
     <tr>
         <td width="120px">OBSERVACIÓN</td>
         <td width="8px">:</td>
         <td>{{$document->observation}}</td>
-    </tr>  
+    </tr>
 
 </table>
- 
+
 
 <table class="full-width mt-10 mb-10">
     <thead class="">
@@ -92,6 +92,7 @@
     </thead>
     <tbody>
     @foreach($document->items as $row)
+    {{-- {{dd($document->items)}} --}}
         <tr>
             <td class="text-center align-top">
                 @if(((int)$row->quantity != $row->quantity))
@@ -103,23 +104,22 @@
             <td class="text-center align-top">{{ $row->item->unit_type_id }}</td>
             <td class="text-left align-top">
                 {!!$row->item->description!!}
-                
             </td>
             <td class="text-center align-top">
-                @inject('itemLotGroup', 'App\Services\ItemLotsGroupService')
-                {{ $itemLotGroup->getLote($row->item->IdLoteSelected) }}
-
+                @if(isset($row->item->lots_group_selected))
+                    @foreach($row->item->lots_group_selected as $item)
+                        {{ $item->code }}
+                    @endforeach
+                @endif
             </td>
             <td class="text-center align-top">
-
-                @isset($row->item->lots)
-                    @foreach($row->item->lots as $lot)
+                @if(isset($row->item->lots_selected))
+                    @foreach($row->item->lots_selected as $lot)
                         @if( isset($lot->has_sale) && $lot->has_sale)
-                            <span style="font-size: 9px">{{ $lot->series }}</span><br>
+                            {{ $lot->series }}<br>
                         @endif
                     @endforeach
-                @endisset
-
+                @endif
             </td>
         </tr>
         <tr>
@@ -128,6 +128,6 @@
     @endforeach
 
     </tbody>
-</table>   
+</table>
 </body>
 </html>
