@@ -128,6 +128,10 @@
 
             }
 
+            if($request->state) {
+                $records->where('state_type_id', $request->state);
+            }
+
             return $records;
         }
 

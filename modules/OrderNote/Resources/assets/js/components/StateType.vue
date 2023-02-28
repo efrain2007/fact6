@@ -1,5 +1,5 @@
 <template>
-  <div>{{ state }}</div>
+  <span :class="state.class">{{ state.description }}</span>
 </template>
 
 <script>
@@ -10,12 +10,15 @@ export default {
   data() {
     return {
       resource: 'order-notes',
-      state: '',
+      state: {
+        description: 'Registrado',
+        class: ''
+      },
       options: [
-        {id:'01', description: 'Pendiente'},
-        {id:'03', description: 'Por Entregar'},
-        {id:'05', description: 'Entregado'},
-        {id:'11', description: 'Anulado'}
+        {id:'01', description: 'Pendiente', class: 'text-warning'},
+        {id:'03', description: 'Por Entregar', class: 'text-info'},
+        {id:'05', description: 'Entregado', class: 'text-success'},
+        {id:'11', description: 'Anulado', class: 'text-danger'}
       ]
     }
   },
@@ -37,9 +40,9 @@ export default {
     ]),
     setDescription(){
       if(this.config.order_node_advanced){
-        this.state = this.options.find(e => e.id = this.id).description
+        this.state = this.options.find(e => e.id == this.id)
       } else {
-        this.state = this.description
+        this.state.description = this.description
       }
     }
   },

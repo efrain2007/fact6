@@ -88,7 +88,7 @@
                         <td class="text-center" v-if="columns.delivery_date.visible">{{ row.delivery_date }}</td>
                         <td>{{ row.user_name }}</td>
                         <td>{{ row.customer_name }}<br/><small v-text="row.customer_number"></small></td>
-                        <td><StateType :id="row.state_type_id" :description="row.state_type_description" /></td>
+                        <td><StateType :key="row.id" :id="row.state_type_id" :description="row.state_type_description" /></td>
                         <td>{{ row.identifier }}
                         </td>
                         <td>
