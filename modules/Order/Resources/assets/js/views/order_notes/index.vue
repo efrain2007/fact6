@@ -88,7 +88,12 @@
                         <td class="text-center" v-if="columns.delivery_date.visible">{{ row.delivery_date }}</td>
                         <td>{{ row.user_name }}</td>
                         <td>{{ row.customer_name }}<br/><small v-text="row.customer_number"></small></td>
-                        <td><StateType :key="row.id" :id="row.state_type_id" :description="row.state_type_description" /></td>
+                        <td>
+                            <StateType
+                                :key="'state_type_'+row.id"
+                                :id="row.state_type_id"
+                                :description="row.state_type_description" />
+                        </td>
                         <td>{{ row.identifier }}
                         </td>
                         <td>
@@ -154,7 +159,11 @@
                             <button @click="duplicate(row.id)"  type="button" class="btn waves-effect waves-light btn-xs btn-info">Duplicar</button>
                             <a :href="`/dispatches/create_new/order_note/${row.id}`" class="btn waves-effect waves-light btn-xs btn-warning m-1__2">Guía</a>
 
-
+                            <ChangeStateType
+                                :key="'change_state_type_'+row.id"
+                                :state="row.state_type_id"
+                                :id="row.id"
+                                v-if="config.order_node_advanced"/>
                         </td>
 
                     </tr>
@@ -195,6 +204,7 @@
     import {mapActions, mapState} from "vuex";
 
     import StateType from "../../../../../../OrderNote/Resources/assets/js/components/StateType.vue"
+    import ChangeStateType from "../../../../../../OrderNote/Resources/assets/js/components/ChangeStateType.vue"
 
     export default {
         props:[
@@ -210,7 +220,8 @@
             QuotationOptions,
             MiTiendaPe,
             QuotationOptionsPdf,
-            StateType
+            StateType,
+            ChangeStateType,
         },
         created() {
             this.$store.commit('setConfiguration',this.configuration)

@@ -29,6 +29,9 @@ export default {
   mounted(){
     this.setDescription()
   },
+  watch: {
+    id: function(){ this.setDescription() }
+  },
   computed:{
     ...mapState([
         'config',
