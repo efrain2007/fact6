@@ -27,6 +27,8 @@
     use App\Models\Tenant\Configuration;
     use App\Models\Tenant\Establishment;
     use App\Models\Tenant\Item;
+    use App\Models\Tenant\Document;
+    use App\Models\Tenant\SaleNote;
     use App\Models\Tenant\PaymentMethodType;
     use App\Models\Tenant\Person;
     use App\Models\Tenant\Quotation;
@@ -106,7 +108,10 @@
         {
             $records = $this->getRecords($request);
 
-            return new OrderNoteCollection($records->paginate(config('tenant.items_per_page')));
+            // $collect = new OrderNoteCollection($records->paginate(config('tenant.items_per_page')));
+            $collect = new OrderNoteCollection($records->paginate(5));
+
+            return $collect;
         }
 
         private function getRecords($request)
@@ -130,6 +135,22 @@
 
             if($request->state) {
                 $records->where('state_type_id', $request->state);
+            }
+
+            if($request->state_payment != '') {
+                $ids = $records->pluck('id');
+                $documents = Document::whereIn('order_note_id', $ids)
+                                    ->where('total_canceled', $request->state_payment)
+                                    ->pluck('order_note_id');
+                $sale_note = SaleNote::whereIn('order_note_id', $ids)
+                                    ->where('total_canceled', $request->state_payment)
+                                    ->pluck('order_note_id');
+
+                $union = $documents->union($sale_note);
+
+                $records = OrderNote::whereIn('id', $union)
+                                    ->whereTypeUser()
+                                    ->latest();
             }
 
             return $records;

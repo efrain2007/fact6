@@ -593,6 +593,32 @@
                     ];
             }
 
+            $documents = $this->documents->transform(function ($row) {
+                /** @var Document $row */
+                return [
+                    'id' => $row->id,
+                    'number_full' => $row->number_full,
+                    'state_type_id' => $row->state_type_id,
+                    'order_note_id' => $row->order_note_id,
+                    'series' => $row->series,
+                    'total_payments' => $row->payments->sum('payment'),
+                ];
+            });
+            $total_payment_documents = $documents->sum('total_payments');
+
+            $sale_notes = $this->sale_notes->transform(function ($row) {
+                /** @var Document $row */
+                return [
+                    'id' => $row->id,
+                    'number_full' => $row->series.'-'.$row->number,
+                    'state_type_id' => $row->state_type_id,
+                    'order_note_id' => $row->order_note_id,
+                    'series' => $row->series,
+                    'total_payments' => $row->payments->sum('payment'),
+                ];
+            });
+            $total_payment_sale_notes = $sale_notes->sum('total_payments');
+
             return [
                 'id' => $this->id,
                 'quotation' => (object)$quotation,
@@ -617,28 +643,10 @@
                 'total' => number_format($this->total, 2),
                 'state_type_id' => $this->state_type_id,
                 'state_type_description' => $state_type_description,
-                'documents' => $this->documents->transform(function ($row) {
-                    /** @var Document $row */
-                    return [
-                        'id' => $row->id,
-                        'number_full' => $row->number_full,
-                        'state_type_id' => $row->state_type_id,
-                        'order_note_id' => $row->order_note_id,
-                        'series' => $row->series,
-                        'total_payments' => $row->payments->sum('payment')
-                    ];
-                }),
-                'sale_notes' => $this->sale_notes->transform(function ($row) {
-                    /** @var Document $row */
-                    return [
-                        'id' => $row->id,
-                        'number_full' => $row->series.'-'.$row->number,
-                        'state_type_id' => $row->state_type_id,
-                        'order_note_id' => $row->order_note_id,
-                        'series' => $row->series,
-                        'total_payments' => $row->payments->sum('payment')
-                    ];
-                }),
+                'documents' => $documents,
+                'has_payment_documents' => ($total_payment_documents == $this->total),
+                'sale_notes' => $sale_notes,
+                'has_payment_sale_notes' => ($total_payment_sale_notes == $this->total),
                 'items_details' => $this->items->transform(function ($row) {
                     /** @var Document $row */
                     return [

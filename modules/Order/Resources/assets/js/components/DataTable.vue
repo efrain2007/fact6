@@ -38,6 +38,12 @@
                             <el-option v-for="(label, key) in state_types" :key="key" :value="label.id" :label="label.description"></el-option>
                         </el-select>
                     </div>
+                    <div class="col-lg-4 col-md-4 col-sm-12 pb-2" v-if="config.order_node_advanced">
+                        <label for="status">Pago</label>
+                        <el-select v-model="search.state_payment"  placeholder="Select" @change="getRecords">
+                            <el-option v-for="(label, key) in state_payments" :key="key" :value="label.id" :label="label.description"></el-option>
+                        </el-select>
+                    </div>
                 </div>
                 <div class="row">
                     <div class="col-lg-3 col-md-4 col-sm-12 pb-2">
@@ -114,6 +120,11 @@
                     {id:'05', description: 'Entregado', class: 'text-success'},
                     {id:'11', description: 'Anulado', class: 'text-danger'}
                 ],
+                state_payments: [
+                    {id:'', description: 'Todos'},
+                    {id:'0', description: 'Pendiente'},
+                    {id:'1', description: 'Completado'}
+                ]
             }
         },
         computed:{
