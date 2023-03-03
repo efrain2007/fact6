@@ -78,6 +78,7 @@
                         <th class="text-right" v-if="columns.total_exonerated.visible">T.Exonerado</th>
                         <th class="text-right" v-if="columns.total_taxed.visible">T.Gravado</th>
                         <th class="text-right" v-if="columns.total_igv.visible">T.Igv</th>
+                        <th class="text-right">Saldo</th>
                         <th class="text-right">Total</th>
                         <th class="text-center">PDF</th>
                         <th class="text-right">Acciones</th>
@@ -103,7 +104,7 @@
                         </td>
                         <td v-if="columns.sale_notes.visible">
                             <template v-for="(sale_note,i) in row.sale_notes">
-                                <label :key="i" v-text="sale_note.identifier" class="d-block"></label>
+                                <label :key="i" v-text="sale_note.number_full" class="d-block"></label>
                             </template>
                         </td>
 
@@ -135,6 +136,10 @@
                         <td class="text-right" v-if="columns.total_exonerated.visible">{{ row.total_exonerated }}</td>
                         <td class="text-right" v-if="columns.total_taxed.visible">{{ row.total_taxed }}</td>
                         <td class="text-right" v-if="columns.total_igv.visible">{{ row.total_igv }}</td>
+                        <td class="text-right">
+                            <label v-if="row.documents.length > 0" :key="'doc_payment_'+index" v-text="calculatePayments(row.documents)"></label>
+                            <label v-if="row.sale_notes.length > 0" :key="'sale_note_payment_'+index" v-text="calculatePayments(row.sale_notes)"></label>
+                        </td>
                         <td class="text-right">{{ row.total }}</td>
                         <td class="text-right">
 
@@ -376,7 +381,6 @@
                 })
                 this.$eventHub.$emit('reloadData')
             },
-
             getMiTiendaDataData(){
                 this.$http.post(`/mi_tienda_pe/getdata`)
                     .then((response) => {
@@ -385,6 +389,14 @@
 
                     });
 
+            },
+            calculatePayments(documents){
+                let payments = 0
+                documents.forEach(doc => {
+                    payments = payments + doc.total_payments
+                })
+
+                return payments.toFixed(2)
             },
         }
     }
