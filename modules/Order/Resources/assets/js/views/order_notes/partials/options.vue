@@ -1,6 +1,6 @@
 <template>
 <div>
-    <el-dialog :title="titleDialog" :visible="showDialog" @open="create" width="30%" :close-on-click-modal="false" :close-on-press-escape="false" :show-close="false">
+    <el-dialog :title="titleDialog" :visible="showDialog" @open="create" width="60%" :close-on-click-modal="false" :close-on-press-escape="false" :show-close="false">
         <div class="row" v-show="!showGenerate">
             <div class="col text-center font-weight-bold">
                 <p>Imprimir A4</p>
@@ -614,11 +614,29 @@ export default {
                     this.titleDialog = `Pedido ${type}: ` + this.form.identifier;
                 });
 
-            await this.clickAddPayment()
-            await this.assignDocument();
+            await this.assignDocument()
+            await this.assignPrepayments()
 
             this.load_list_document_items = true
 
+        },
+        async assignPrepayments() {
+            if(this.form.order_note.prepayments) {
+                Object.values(this.form.order_note.prepayments).forEach(pay => {
+                    this.document.payments.push({
+                        id:  pay.id,
+                        document_id:  pay.document_id,
+                        date_of_payment:  pay.date_of_payment,
+                        payment_method_type_id:  pay.payment_method_type_id,
+                        payment_destination_id:  pay.payment_destination_id,
+                        reference: pay.reference,
+                        payment: pay.payment
+                    })
+                })
+
+            } else {
+                await this.clickAddPayment()
+            }
         },
         changeDocumentType() {
             // this.filterSeries()
