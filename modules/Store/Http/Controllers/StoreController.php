@@ -118,25 +118,24 @@ class StoreController extends Controller
         $document_item_id = $request->input('document_item_id');
         $sale_note_item_id = $request->input('sale_note_item_id');
 
-        return ItemLot::query()
+        $records = ItemLot::query()
             ->select('id', 'series', 'date', 'has_sale')
             ->where('series', 'like', "%$input%")
             ->where('item_id', $item_id)
             ->where('has_sale', false)
             ->where('warehouse_id', $warehouse->id)
-            ->latest()
-            ->get()
-            ->transform(function ($row) {
-                return [
-                    'id' => $row->id,
-                    'series' => $row->series,
-                    'date' => $row->date,
-//                    'item_id'      => $row->item_id,
-//                    'warehouse_id' => $row->warehouse_id,
-                    'has_sale' => $row->has_sale,
-//                    'lot_code'     => ($row->item_loteable_type) ? $lot_code : null,
-                ];
-            });
+            ->latest();
+//             ->transform(function ($row) {
+//                 return [
+//                     'id' => $row->id,
+//                     'series' => $row->series,
+//                     'date' => $row->date,
+// //                    'item_id'      => $row->item_id,
+// //                    'warehouse_id' => $row->warehouse_id,
+//                     'has_sale' => $row->has_sale,
+// //                    'lot_code'     => ($row->item_loteable_type) ? $lot_code : null,
+//                 ];
+//             });
 
 //        $sale_note_item_id = $request->has('sale_note_item_id') ? $request->sale_note_item_id : null;
 //
@@ -167,7 +166,7 @@ class StoreController extends Controller
 //                ->latest();
 //        }
 
-//        return new ItemLotCollection($records->paginate(config('tenant.items_per_page')));
+       return new ItemLotCollection($records->paginate(config('tenant.items_per_page')));
     }
 
     public function getIgv(Request $request)
