@@ -86,7 +86,7 @@
                             </div>
                             <!--                            Fecha de inicio-->
                             <div class="col-md-3">
-                                <label class="control-label">
+                                <label class="control-label" style="font-size: .9em;">
                                     Fecha de primer pago
                                 </label>
                                 <el-date-picker v-model="form.start_date"
@@ -95,12 +95,14 @@
                                                 format="dd/MM/yyyy"
                                                 type="date"
                                                 value-format="yyyy-MM-dd"
-                                                @change="changeStartDate"></el-date-picker>
+                                                @change="changeStartDate"
+                                                placeholder="00/00/0000"
+                                ></el-date-picker>
                             </div>
 
                             <!--                            Fecha de fin-->
                             <div class="col-md-3">
-                                <label class="control-label">
+                                <label class="control-label" style="font-size: .9em;">
                                     Fecha de último pago
                                 </label>
                                 <el-date-picker v-model="end_date"
@@ -108,6 +110,7 @@
                                                 format="dd/MM/yyyy"
                                                 type="date"
                                                 value-format="yyyy-MM-dd"
+                                                placeholder="00/00/0000"
                                 ></el-date-picker>
                             </div>
 
@@ -674,7 +677,7 @@ export default {
                         this.changeCurrencyType()
                     })
                     .finally(() => {
-                        this.titleDialog = (this.form.id) ? 'Editar matrícula' : 'Nueva matrícula'
+                        this.titleDialog = (this.form.id) ? 'Editar suscripción' : 'Nueva suscripción'
                         this.$emit('clearSuscriptionId', null)
                     })
             } else {
@@ -684,7 +687,7 @@ export default {
                 this.is_editable = true;
             }
             this.changeStartDate()
-            this.titleDialog = (this.form.id) ? 'Editar matrícula' : 'Nueva matrícula'
+            this.titleDialog = (this.form.id) ? 'Editar suscripción' : 'Nueva suscripción'
 
         },
 

@@ -203,7 +203,7 @@
 
             $payments_credit = PaymentMethodType::select('id')->NonCredit()->get()->toArray();
             $payments_credit = PaymentMethodType:: getPaymentMethodTypes($payments_credit);
-            $startDate = Carbon::createFromFormat('Y-m-d', '2022-01-01')->format('Y-m-d');
+            $startDate = Carbon::createFromFormat('Y-m-d', '')->format('Y-m-d');
 
             return compact('unit_types',
                 'currency_types',
