@@ -63,6 +63,8 @@ if ($hostname) {
 
                     Route::get('checkout-tables', 'HotelRentController@checkoutTables');
 
+                    Route::get('rent-products-tables', 'HotelRentController@rentProductsTables');
+
                 });
 			});
 	});

@@ -317,6 +317,71 @@
                                     v-text="errors.output_time[0]"
                                 ></small>
                             </div>
+                            
+                            <!-- mostrar campos adicionales para pago, si tiene estado pagado -->
+                            <template v-if="isPaid">
+                                
+                                <div
+                                    class="col-12 col-md-4 form-group"
+                                    :class="{ 'has-danger': errors['rent_payment.payment_method_type_id'] }"
+                                >
+                                    <label for="rate">Método de pago</label>
+
+                                    <el-select
+                                        v-model="form.rent_payment.payment_method_type_id"
+                                        filterable
+                                    >
+                                        <el-option
+                                            v-for="option in payment_method_types"
+                                            :key="option.id"
+                                            :value="option.id"
+                                            :label="option.description"
+                                        ></el-option>
+                                    </el-select>
+
+                                    <small
+                                        class="form-control-feedback"
+                                        v-if="errors['rent_payment.payment_method_type_id']"
+                                        v-text="errors['rent_payment.payment_method_type_id'][0]"
+                                    ></small>
+                                </div>
+
+                                <div
+                                    class="col-12 col-md-4 form-group"
+                                    :class="{ 'has-danger': errors['rent_payment.payment_destination_id'] }"
+                                >
+                                    <label for="rate">Destino</label>
+
+                                    <el-select
+                                        v-model="form.rent_payment.payment_destination_id"
+                                        filterable
+                                    >
+                                        <el-option
+                                            v-for="option in payment_destinations"
+                                            :key="option.id"
+                                            :value="option.id"
+                                            :label="option.description"
+                                        ></el-option>
+                                    </el-select>
+
+                                    <small
+                                        class="form-control-feedback"
+                                        v-if="errors['rent_payment.payment_destination_id']"
+                                        v-text="errors['rent_payment.payment_destination_id'][0]"
+                                    ></small>
+                                </div>
+                                
+                                <div
+                                    class="col-12 col-md-4 form-group"
+                                >
+                                    <label for="rate">Referencia</label>
+
+                                    <el-input
+                                        v-model="form.rent_payment.reference"
+                                    ></el-input>
+                                </div>
+                            </template>
+
                         </div>
                         <div class="d-flex justify-content-between pt-5">
                             <el-button
@@ -388,6 +453,12 @@ export default {
                 affectation_igv_type_id: null,
                 date_of_issue: moment().format("YYYY-MM-DD"),
                 establishment_id: null,
+                rent_payment: {
+                    payment_method_type_id: null,
+                    payment_destination_id: null,
+                    reference: null,
+                    payment: 0,
+                },
             },
             rate: null,
             loading: false,
@@ -398,7 +469,9 @@ export default {
             errors: {
                 customer: {},
             },
-            recordItem: null
+            recordItem: null,
+            payment_method_types: [],
+            payment_destinations: [],
         };
     },
     async mounted() {
@@ -411,6 +484,10 @@ export default {
         });
     },
     computed: {
+        isPaid()
+        {
+            return this.form.payment_status === 'PAID'
+        },
         ...mapState([
             'config',
         ]),
@@ -492,6 +569,11 @@ export default {
         onUpdateTotalToPay() {
             this.form.total_to_pay = this.form.rate_price * this.form.duration;
             this.onUpdateOutputDate();
+            this.setTotalPayment()
+        },
+        setTotalPayment()
+        {
+            this.form.rent_payment.payment = this.form.total_to_pay
         },
         onUpdateOutputDate() {
             const newDate = moment().add(this.form.duration, "days");
@@ -544,6 +626,11 @@ export default {
                 .then((response) => {
                     this.customers = response.data.customers;
                     this.configuration = response.data.configuration
+                    
+                    this.payment_method_types = response.data.payment_method_types
+                    this.payment_destinations = response.data.payment_destinations
+                    this.setDefaultDataPayments()
+
                     this.setAffectationIgvType()
                 })
                 .finally(() => {
@@ -551,6 +638,10 @@ export default {
                 });
             this.form.establishment_id = this.config.establishment.id;
             await this.getPercentageIgv();
+        },
+        setDefaultDataPayments()
+        {
+            this.form.rent_payment.payment_method_type_id = this.payment_method_types.length > 0 ? this.payment_method_types[0].id : null
         },
         setAffectationIgvType() {
 

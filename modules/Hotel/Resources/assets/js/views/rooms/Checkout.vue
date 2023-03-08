@@ -595,7 +595,10 @@ export default {
 
             if(this.document.payments.length == 0)
             {
-                payment = (this.totalDebt > 0) ? this.totalDebt : this.document.total
+                if(this.totalDebt > 0)
+                {
+                    payment = this.totalDebt
+                }
             }
 
             this.document.payments.push({

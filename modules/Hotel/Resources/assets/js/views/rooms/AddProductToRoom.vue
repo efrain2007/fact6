@@ -41,11 +41,15 @@
                                 <th class="text-center">Precio</th>
                                 <th class="text-right">Importe</th>
                                 <th class="text-center">Estado del pago</th>
+
+                                <th class="text-center">M. Pago</th>
+                                <th class="text-center">Destino</th>
+
                                 <th class="text-right"></th>
                             </tr>
                             </thead>
                             <tbody>
-                            <tr v-for="p in form.products"
+                            <tr v-for="(p, index) in form.products"
                                 :key="p.item_id">
                                 <td>{{ p.item.description }}</td>
                                 <td class="text-center">{{ p.quantity | toDecimals }}</td>
@@ -59,6 +63,7 @@
                                         <el-select
                                             v-model="p.payment_status"
                                             placeholder="Proceso de pago"
+                                            :disabled="p.is_registered"
                                         >
                                             <el-option label="Cancelado"
                                                        value="PAID"></el-option>
@@ -75,6 +80,59 @@
                                         </div>
                                     </div>
                                 </td>
+
+                                <td style="max-width: 150px">
+                                    
+                                    <template v-if="isPaid(p)">
+                                        <div class="form-group mb-2 mr-2" :class="{ 'has-danger': errors[`products.${index}.rent_payment.payment_method_type_id`] }">
+                                            <el-select
+                                                v-model="p.rent_payment.payment_method_type_id"
+                                                filterable
+                                                :disabled="p.is_registered"
+                                            >
+                                                <el-option
+                                                    v-for="option in payment_method_types"
+                                                    :key="option.id"
+                                                    :value="option.id"
+                                                    :label="option.description"
+                                                ></el-option>
+                                            </el-select>
+
+                                            <small
+                                                class="form-control-feedback"
+                                                v-if="errors[`products.${index}.rent_payment.payment_method_type_id`]"
+                                                v-text="errors[`products.${index}.rent_payment.payment_method_type_id`][0]"
+                                            ></small>
+                                        </div>
+                                    </template>
+
+                                </td>
+                                <td style="max-width: 150px">
+                                    
+                                    <template v-if="isPaid(p)">
+                                        <div class="form-group mb-2 mr-2" :class="{ 'has-danger': errors[`products.${index}.rent_payment.payment_destination_id`] }">
+                                            <el-select
+                                                v-model="p.rent_payment.payment_destination_id"
+                                                filterable
+                                                :disabled="p.is_registered"
+                                            >
+                                                <el-option
+                                                    v-for="option in payment_destinations"
+                                                    :key="option.id"
+                                                    :value="option.id"
+                                                    :label="option.description"
+                                                ></el-option>
+                                            </el-select>
+
+                                            <small
+                                                class="form-control-feedback"
+                                                v-if="errors[`products.${index}.rent_payment.payment_destination_id`]"
+                                                v-text="errors[`products.${index}.rent_payment.payment_destination_id`][0]"
+                                            ></small>
+                                        </div>
+                                    </template>
+                                </td>
+
                                 <td>
                                     <el-button type="danger"
                                                @click="onDeleteProduct(p)">
@@ -115,7 +173,7 @@
                                 <td></td>
                             </tr>
                             <tr>
-                                <td colspan="5"></td>
+                                <td colspan="7"></td>
                                 <td>
                                     <el-button
                                         :disabled="loading"
@@ -219,6 +277,8 @@ export default {
             errors: {},
             typeUser: "admin",
             loading: false,
+            payment_method_types: [],
+            payment_destinations: [],
         };
     },
     computed: {
@@ -227,22 +287,41 @@ export default {
         ]),
     },
     mounted() {
-        console.log(this.configuration);
+        // console.log(this.configuration);
         this.form.establishment_id = this.establishment.id;
         this.getPercentageIgv();
         if (this.products) {
             const products = this.products.map((p) => {
                 p.item.payment_status = p.payment_status;
+                p.item.is_registered = p.id ? true : false
                 return p.item;
             });
             this.form.products = products;
             this.onCalculateTotals();
         }
     },
-    created() {
+    async created() 
+    {
         this.title = `Habitación ${this.rent.room.name} - Agregar productos`;
+        await this.getTables()
     },
     methods: {
+        isPaid(row)
+        {
+            return row.payment_status === 'PAID'
+        },
+        async getTables()
+        {
+            this.loading = true
+            await this.$http.get('/hotels/reception/rent-products-tables')
+                            .then((response) => {
+                                this.payment_method_types = response.data.payment_method_types
+                                this.payment_destinations = response.data.payment_destinations
+                            })
+                            .finally(() => {
+                                this.loading = false
+                            })
+        },
         onSubmit() {
             this.loading = true;
             this.$http
@@ -351,7 +430,13 @@ export default {
                 //   lots: product.item.lots,
                 //   IdLoteSelected: product.item.IdLoteSelected,
                 // },
-                item: this.getNewItem(product)
+                item: this.getNewItem(product),
+                rent_payment: {
+                    payment_method_type_id: null,
+                    payment_destination_id: null,
+                    reference: null,
+                    payment: product.total
+                },
             };
 
             const repeteads = this.form.products.filter(
