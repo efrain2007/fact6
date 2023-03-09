@@ -84,7 +84,7 @@ class HotelRentItemPayment extends ModelTenant
             'acquirer_name' => $this->associated_record_payment->hotel_rent->customer->name,
             'acquirer_number' => $this->associated_record_payment->hotel_rent->customer->number,
             'currency_type_id' => $this->associated_record_payment->hotel_rent->getDefaultCurrency(),
-            'document_type_description' => 'RENTA HABITACIÓN (HOTEL)',
+            'document_type_description' => 'R. HABITACIÓN (HOTEL)',
             'payment_method_type_id' => $this->payment_method_type_id,
             'payment' => $this->payment,
         ];

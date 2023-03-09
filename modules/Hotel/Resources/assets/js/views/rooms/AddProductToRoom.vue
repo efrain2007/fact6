@@ -64,6 +64,7 @@
                                             v-model="p.payment_status"
                                             placeholder="Proceso de pago"
                                             :disabled="p.is_registered"
+                                            @change="changePaymentStatus(index)"
                                         >
                                             <el-option label="Cancelado"
                                                        value="PAID"></el-option>
@@ -306,6 +307,11 @@ export default {
         await this.getTables()
     },
     methods: {
+        changePaymentStatus(index)
+        {
+            this.form.products[index].rent_payment.payment_destination_id = null
+            this.form.products[index].rent_payment.payment_method_type_id = null
+        },
         isPaid(row)
         {
             return row.payment_status === 'PAID'
@@ -386,7 +392,31 @@ export default {
                 .reduce((a, p) => a + p, 0);
             this.form.total = this.form.subtotal + this.form.igv;
         },
-        onAddItem(product) {
+        getDefaultValuesRentPayment()
+        {
+            let payment_method_type_id = null
+            let payment_destination_id = null
+
+            if(this.payment_method_types.length > 0)
+            {
+                payment_method_type_id = this.payment_method_types[0].id
+            }
+
+            if(this.payment_destinations.length > 0)
+            {
+                const exist_cash = _.find(this.payment_destinations, { id : 'cash'})
+                payment_destination_id = (exist_cash) ? exist_cash.id : this.payment_destinations[0].id
+            }
+
+            return {
+                payment_method_type_id,
+                payment_destination_id
+            }
+        },
+        async onAddItem(product) {
+
+            const { payment_method_type_id, payment_destination_id } = await this.getDefaultValuesRentPayment()
+
             const newProduct = {
                 payment_status: "PAID",
                 affectation_igv_type_id: product.affectation_igv_type_id,
@@ -432,8 +462,8 @@ export default {
                 // },
                 item: this.getNewItem(product),
                 rent_payment: {
-                    payment_method_type_id: null,
-                    payment_destination_id: null,
+                    payment_method_type_id: payment_method_type_id,
+                    payment_destination_id: payment_destination_id,
                     reference: null,
                     payment: product.total
                 },

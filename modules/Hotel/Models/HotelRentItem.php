@@ -76,7 +76,7 @@ class HotelRentItem extends ModelTenant
 					'customer_id',
 					'customer',
 					'payment_status',
-					'input_date',
+					'input_date'
 				]);
 			},
 		]);
