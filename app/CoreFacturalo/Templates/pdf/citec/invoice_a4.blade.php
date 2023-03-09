@@ -171,7 +171,7 @@
                 width="10%">CANTIDAD
             </th>
             <th class="border-top-bottom text-right text-white"
-                width="12%">V.UNIT
+                width="12%">P.UNIT
             </th>
             <th class="border-top-bottom text-right text-white"
                 width="12%">TOTAL

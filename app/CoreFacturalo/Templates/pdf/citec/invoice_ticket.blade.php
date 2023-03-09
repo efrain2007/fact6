@@ -140,7 +140,7 @@
         <th class="border-top-bottom desc-9 text-left">CANT.</th>
         <th class="border-top-bottom desc-9 text-left">UNIDAD</th>
         <th class="border-top-bottom desc-9 text-left">DESCRIPCIÓN</th>
-        <th class="border-top-bottom desc-9 text-left">V.UNIT</th>
+        <th class="border-top-bottom desc-9 text-left">P.UNIT</th>
         <th class="border-top-bottom desc-9 text-left">TOTAL</th>
     </tr>
     </thead>
