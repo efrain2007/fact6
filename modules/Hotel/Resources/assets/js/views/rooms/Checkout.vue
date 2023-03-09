@@ -462,6 +462,10 @@ export default {
                 return true;
             }
             return false;
+        },
+        hasDebt()
+        {
+            return this.totalDebt > 0
         }
     },
     created() {
@@ -527,7 +531,9 @@ export default {
         await this.onCalculateTotals();
         // console.log(this.document);
         await this.onCalculatePaidAndDebts();
-        await this.clickAddPayment();
+        
+        if(this.hasDebt) await this.clickAddPayment();
+        
         this.validateIdentityDocumentType();
         const date = moment().format("YYYY-MM-DD");
         await this.searchExchangeRateByDate(date).then((res) => {
