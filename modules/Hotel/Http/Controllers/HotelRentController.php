@@ -62,6 +62,9 @@ class HotelRentController extends Controller
 			$item->payment_status = $request->payment_status;
 			$item->save();
 
+			//registrar pago
+			$this->saveHotelRentItemPayment($request->rent_payment, $item);
+
 			DB::connection('tenant')->commit();
 
 			return response()->json([
@@ -77,6 +80,47 @@ class HotelRentController extends Controller
 			], 500);
 		}
 	}
+
+	
+	/**
+	 * 
+	 * Registrar pago si la habitacion/producto fueron pagados
+	 *
+	 * @param  array $rent_payment
+	 * @param  HotelRentItem $item
+	 * @return void
+	 */
+	public function saveHotelRentItemPayment($rent_payment, HotelRentItem $item)
+	{
+		if($item->isPaid())
+		{
+			$record = $item->payments()->create([
+				'date_of_payment' => date('Y-m-d'),
+				'payment_method_type_id' => $rent_payment['payment_method_type_id'],
+				'reference' => $rent_payment['reference'],
+				'payment' => $rent_payment['payment'],
+			]);
+
+			$this->createGlobalPayment($record, $rent_payment);
+		}
+	}
+
+
+	/**
+	 * 
+	 * Eliminar pago
+	 *
+	 * @param  HotelRentItem $item
+	 * @return void
+	 */
+	public function deleteHotelRentItemPayment(HotelRentItem $item)
+	{
+		if(!is_null($item->payments))
+		{
+			$item->payments->delete();
+		}
+	}
+
 
 	public function searchCustomers()
 	{
@@ -100,7 +144,16 @@ class HotelRentController extends Controller
 
 		return view('hotel::rooms.add-product-to-room', compact('rent', 'configuration', 'products', 'establishment'));
 	}
+	
 
+	/**
+	 * 
+	 * Agregar productos al rentar habitacion
+	 *
+	 * @param  HotelRentItemRequest $request
+	 * @param  int $rentId
+	 * @return array
+	 */
 	public function addProductsToRoom(HotelRentItemRequest $request, $rentId)
 	{
         $idInRequest = [];
@@ -113,19 +166,29 @@ class HotelRentController extends Controller
 				$item->type = 'PRO';
 				$item->hotel_rent_id = $rentId;
 				$item->item_id = $product['item_id'];
+				$item->payment_status = $product['payment_status'];
+				$item->save();
+				
+				//registrar pago
+				$this->saveHotelRentItemPayment($product['rent_payment'], $item);
 			}
 			$item->item = $product;
 			$item->payment_status = $product['payment_status'];
 			$item->save();
             $idInRequest[] = $item->id;
+			
 		}
 
         // Borrar los items que no esten asignados con PRO
         $rent = HotelRent::find($rentId);
         $itemsToDelete =$rent->items->where('type','PRO')->whereNotIn('id',$idInRequest);
-        foreach($itemsToDelete as $deleteable){
+
+        foreach($itemsToDelete as $deleteable)
+		{
+			$this->deleteHotelRentItemPayment($deleteable);
             $deleteable->delete();
         }
+		
 		return response()->json([
 			'success' => true,
 			'message' => 'Información actualizada.'
@@ -232,9 +295,33 @@ class HotelRentController extends Controller
 		$customers = $this->customers();
 		$configuration = Configuration::select('affectation_igv_type_id')->first();
 
+        $payment_method_types = PaymentMethodType::getTableCashPaymentMethodTypes();
+        $payment_destinations = $this->getPaymentDestinations();
+
 		return response()->json([
 			'customers' => $customers,
 			'configuration' => $configuration,
+			'payment_method_types' => $payment_method_types,
+			'payment_destinations' => $payment_destinations
 		], 200);
 	}
+
+		
+	/**
+	 * 
+	 * Datos relacionados para agregar productos al rentar habitacion
+	 *
+	 * @return array
+	 */
+	public function rentProductsTables()
+	{
+        $payment_method_types = PaymentMethodType::getTableCashPaymentMethodTypes();
+        $payment_destinations = $this->getPaymentDestinations();
+
+		return [
+			'payment_method_types' => $payment_method_types,
+			'payment_destinations' => $payment_destinations
+		];
+	}
+
 }

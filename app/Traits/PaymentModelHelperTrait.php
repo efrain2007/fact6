@@ -15,6 +15,7 @@
          * Models\Tenant\DocumentPayment
          * Models\Tenant\SaleNotePayment
          * Models\Tenant\QuotationPayment
+         * Modules\Hotel\Models\HotelRentItemPayment
          *
          * @param  Builder $query
          * @return Builder

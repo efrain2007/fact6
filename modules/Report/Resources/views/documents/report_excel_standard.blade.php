@@ -213,7 +213,7 @@
                         @php
                             $customer = \App\Models\Tenant\Person::find($value->customer_id);
                         @endphp
-                        <td class="celda">{{$customer->person_type->description}}</td>
+                        <td class="celda">{{ optional($customer->person_type)->description}}</td>
                         <td class="celda">{{$value->customer->name}}</td>
                         <td class="celda">{{$value->customer->number}}</td>
                         <td class="celda">{{$value->state_type->description}}</td>
