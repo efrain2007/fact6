@@ -559,13 +559,12 @@ export default {
                     this.$store.commit('setAffectationIgvTypes', response.data.affectation_igv_types)
                     this.$store.commit('setUnitTypes', response.data.unit_types)
                     this.defaultStartDate = response.data.startDate;
-
                 })
                 .then(() => {
                     // console.error(this.currency_type);
                     // this.changeCurrencyType()
-                    this.form.start_date = this.defaultStartDate
-                    this.changeStartDate()
+                    // this.form.start_date = this.defaultStartDate
+                    // this.changeStartDate()
                 })
         },
 
