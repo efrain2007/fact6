@@ -168,6 +168,7 @@
             'observation',
             'total_igv_free',
             'additional_data',
+            'subtotal',
 
         ];
 
