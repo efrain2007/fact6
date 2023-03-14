@@ -526,7 +526,7 @@ export default {
 
             return calculateRowItem(i.item, "PEN", 3, this.percentage_igv)
         });
-        
+
         // console.log(this.document.items);
         await this.onCalculateTotals();
         // console.log(this.document);

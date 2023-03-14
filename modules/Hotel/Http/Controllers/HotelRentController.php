@@ -6,6 +6,7 @@ use App\Models\Tenant\Person;
 use App\Models\Tenant\Series;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
 use Modules\Hotel\Models\HotelRent;
 use Modules\Hotel\Models\HotelRoom;
 use App\Models\Tenant\Configuration;
@@ -81,9 +82,9 @@ class HotelRentController extends Controller
 		}
 	}
 
-	
+
 	/**
-	 * 
+	 *
 	 * Registrar pago si la habitacion/producto fueron pagados
 	 *
 	 * @param  array $rent_payment
@@ -107,7 +108,7 @@ class HotelRentController extends Controller
 
 
 	/**
-	 * 
+	 *
 	 * Eliminar pago
 	 *
 	 * @param  HotelRentItem $item
@@ -120,6 +121,25 @@ class HotelRentController extends Controller
 			$item->payments->delete();
 		}
 	}
+
+  public function extendTime(Request $request, $rentId)
+  {
+    $rent = HotelRent::findOrFail($rentId);
+
+    $item = $rent->items->where('type', 'HAB')->first();
+
+    $item->item = $request->item;
+    $item->save();
+    $rent->duration = $request->duration;
+    $rent->output_date = $request->output_date;
+    $rent->output_time = $request->output_time;
+    $rent->save();
+
+    return response()->json([
+      'success' => true,
+      'message' => 'Habitación actualizada de forma correcta.',
+    ], 200);
+  }
 
 
 	public function searchCustomers()
@@ -144,10 +164,10 @@ class HotelRentController extends Controller
 
 		return view('hotel::rooms.add-product-to-room', compact('rent', 'configuration', 'products', 'establishment'));
 	}
-	
+
 
 	/**
-	 * 
+	 *
 	 * Agregar productos al rentar habitacion
 	 *
 	 * @param  HotelRentItemRequest $request
@@ -168,7 +188,7 @@ class HotelRentController extends Controller
 				$item->item_id = $product['item_id'];
 				$item->payment_status = $product['payment_status'];
 				$item->save();
-				
+
 				//registrar pago
 				$this->saveHotelRentItemPayment($product['rent_payment'], $item);
 			}
@@ -176,7 +196,7 @@ class HotelRentController extends Controller
 			$item->payment_status = $product['payment_status'];
 			$item->save();
             $idInRequest[] = $item->id;
-			
+
 		}
 
         // Borrar los items que no esten asignados con PRO
@@ -188,63 +208,63 @@ class HotelRentController extends Controller
 			$this->deleteHotelRentItemPayment($deleteable);
             $deleteable->delete();
         }
-		
+
 		return response()->json([
 			'success' => true,
 			'message' => 'Información actualizada.'
 		], 200);
 	}
 
-	public function showFormChekout($rentId)
-	{
-		$rent = HotelRent::with('room', 'room.category', 'items')
-			->findOrFail($rentId);
+  public function showFormChekout($rentId)
+  {
+    $rent = HotelRent::with('room', 'room.category', 'items')
+      ->findOrFail($rentId);
 
-		$room = $rent->items->firstWhere('type', 'HAB');
+    $room = $rent->items->firstWhere('type', 'HAB');
 
-		$customer = Person::withOut('department', 'province', 'district')
-			->findOrFail($rent->customer_id);
+    $customer = Person::withOut('department', 'province', 'district')
+      ->findOrFail($rent->customer_id);
 
         // $payment_method_types = PaymentMethodType::all();
         $payment_method_types = PaymentMethodType::getPaymentMethodTypes();
         $payment_destinations = $this->getPaymentDestinations();
         $series = Series::where('establishment_id',  auth()->user()->establishment_id)->get();
         $document_types_invoice = DocumentType::whereIn('id', ['01', '03', '80'])->get();
-		$affectation_igv_types = AffectationIgvType::whereActive()->get();
+    $affectation_igv_types = AffectationIgvType::whereActive()->get();
 
-		return view('hotel::rooms.checkout', compact(
+    return view('hotel::rooms.checkout', compact(
             'rent', 'room',
             'customer',
             'payment_method_types',
             'payment_destinations',
             'series',
             'document_types_invoice',
-			'affectation_igv_types'
+      'affectation_igv_types'
         ));
-	}
+  }
 
-	public function finalizeRent($rentId)
-	{
-		$rent = HotelRent::findOrFail($rentId);
-		$items = HotelRentItem::where('hotel_rent_id', $rentId)->get();
-		$rent->update([
-			'arrears' => request('arrears'),
-			'payment_status' => 'PAID',
-			'status'  => 'FINALIZADO'
-		]);
-		foreach ($items as $item) {
-			$item->update([
-				'payment_status' => 'PAID',
-			]);
-		}
-		HotelRoom::where('id', $rent->hotel_room_id)
-			->update([
-				'status' => 'LIMPIEZA'
-			]);
+  public function finalizeRent($rentId)
+  {
+    $rent = HotelRent::findOrFail($rentId);
+    $items = HotelRentItem::where('hotel_rent_id', $rentId)->get();
+    $rent->update([
+      'arrears' => request('arrears'),
+      'payment_status' => 'PAID',
+      'status'  => 'FINALIZADO'
+    ]);
+    foreach ($items as $item) {
+      $item->update([
+        'payment_status' => 'PAID',
+      ]);
+    }
+    HotelRoom::where('id', $rent->hotel_room_id)
+      ->update([
+        'status' => 'LIMPIEZA'
+      ]);
         $rent = HotelRent::with('room', 'room.category', 'items')->findOrFail($rentId);
-		return response()->json([
-			'success' => true,
-			'message' => 'Información procesada de forma correcta.',
+    return response()->json([
+      'success' => true,
+      'message' => 'Información procesada de forma correcta.',
             'currentRent' => $rent
 		], 200);
 	}
@@ -306,9 +326,9 @@ class HotelRentController extends Controller
 		], 200);
 	}
 
-		
+
 	/**
-	 * 
+	 *
 	 * Datos relacionados para agregar productos al rentar habitacion
 	 *
 	 * @return array
