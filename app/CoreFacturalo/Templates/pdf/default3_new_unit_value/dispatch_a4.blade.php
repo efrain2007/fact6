@@ -289,7 +289,7 @@
 
 <table class="full-width border-box mt-10 mb-10">
     <tr>
-        <td width="50%" class="border-box pl-3">
+        <td width="30%" class="border-box pl-3">
             <table class="full-width">
                 <tr>
                     <td colspan="2"><strong>OBSERVACIONES:</td>
@@ -299,9 +299,13 @@
                 </tr>
             </table>
         </td>
-        <td width="3%"></td>
+        <td width="33%">
+            @if($document->qr)
+                <img src="data:image/png;base64, {{ $document->qr }}" style="margin-right: -10px;"/>
+            @endif
+        </td>
 
-        <td width="47%" class="">
+        <td width="33%" class="">
             <table class="full-width">
                 <tr>
                     <td rowspan="2"><strong>Representación impresa de la Guía de Remisión</strong></td>
