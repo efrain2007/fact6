@@ -37,6 +37,9 @@
                             <label class="control-label">Límite de documentos</label>
                             <el-input v-model="limit_documents" @input="validateLDocuments" :disabled="documents_unlimited"></el-input>
                             <el-checkbox v-model="documents_unlimited" @change="setUnlimitDocuments">Ilimitado</el-checkbox><br>
+
+                            <el-checkbox v-model="form.include_sale_notes_limit_documents">Incluir notas de venta</el-checkbox><br>
+
                             <small class="form-control-feedback d-block" v-if="errors.limit_documents" v-text="errors.limit_documents[0]"></small>
                             <small class="form-control-feedback" v-if="errorLDocument.limit_documents" v-text="errorLDocument.limit_documents[0]"></small>
                         </div>
@@ -166,6 +169,7 @@
                     sales_limit : 0,
                     sales_unlimited : true,
                     include_sale_notes_sales_limit : false,
+                    include_sale_notes_limit_documents: false,
                 }
 
             },
