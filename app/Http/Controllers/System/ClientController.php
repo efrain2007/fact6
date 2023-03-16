@@ -192,8 +192,14 @@
                     // $row->init_cycle = $init;
                     // $row->end_cycle = $end;
                     // dd($start_end_date);
+                    $client_helper = new ClientHelper();
 
                     $row->count_doc_month = DB::connection('tenant')->table('documents')->whereBetween('date_of_issue', [$init, $end])->count();
+
+                    if($row->plan->includeSaleNotesLimitDocuments())
+                    {
+                        $row->count_doc_month += $client_helper->getQuantitySaleNotesByDates($init->format('Y-m-d'), $end->format('Y-m-d'));
+                    }
 
                     $row->count_sales_notes_month = DB::connection('tenant')->table('sale_notes')->whereBetween('date_of_issue', [$init, $end])->count();
 
@@ -213,7 +219,6 @@
                     ->quantity_sales_notes;
                     //dd($row->count_sales_notes);
 
-                    $client_helper = new ClientHelper();
                     $row->monthly_sales_total = $client_helper->getSalesTotal($init->format('Y-m-d'), $end->format('Y-m-d'), $row->plan);
                 }
                 
