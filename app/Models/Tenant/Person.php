@@ -21,6 +21,8 @@
     use Modules\Sale\Models\SaleOpportunity;
     use Modules\Sale\Models\TechnicalService;
     use App\Models\Tenant\Configuration;
+    use App\Models\Tenant\FullSuscriptionServerDatum;
+    use App\Models\Tenant\FullSuscriptionUserDatum;
 
     /**
      * App\Models\Tenant\Person
@@ -628,18 +630,18 @@
 
             }
 
-            if($servers == true){
-                $serv = FullSuscriptionServerDatum::where('person_id',$this->id)->get();
-                $extra_data = FullSuscriptionUserDatum::where('person_id',$this->id)->first();
-                if(empty($extra_data)){ $extra_data = new FullSuscriptionUserDatum();}
-                 $data['servers'] = $serv;
-                $data['person_id']=$extra_data->getPersonId();
-                $data['discord_user']=$extra_data->getDiscordUser();
-                $data['slack_channel']=$extra_data->getSlackChannel();
-                $data['discord_channel']=$extra_data->getDiscordChannel();
-                $data['gitlab_user']=$extra_data->getGitlabUser();
+            // if($servers == true){
+            //     $serv = FullSuscriptionServerDatum::where('person_id',$this->id)->get();
+            //     $extra_data = FullSuscriptionUserDatum::where('person_id',$this->id)->first();
+            //     if(empty($extra_data)){ $extra_data = new FullSuscriptionUserDatum();}
+            //      $data['servers'] = $serv;
+            //     $data['person_id']=$extra_data->getPersonId();
+            //     $data['discord_user']=$extra_data->getDiscordUser();
+            //     $data['slack_channel']=$extra_data->getSlackChannel();
+            //     $data['discord_channel']=$extra_data->getDiscordChannel();
+            //     $data['gitlab_user']=$extra_data->getGitlabUser();
 
-            }
+            // }
 
             return $data;
         }
