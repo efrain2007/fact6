@@ -58,7 +58,7 @@
                     {{ ($establishment->province_id !== '-')? ', '.$establishment->province->description : '' }}
                     {{ ($establishment->department_id !== '-')? '- '.$establishment->department->description : '' }}
                 </h6>
-                <h6>{{ ($establishment->email !== '-')? $establishment->email : '' }}</h6>
+                <h6>{{ ($establishment->email && $establishment->email !== '-')? $establishment->email : '' }}</h6>
                 <h6>{{ ($establishment->telephone !== '-')? $establishment->telephone : '' }}</h6>
             </div>
         </td>
