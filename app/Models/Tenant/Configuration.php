@@ -292,6 +292,7 @@
             'restrict_sale_items_cpe',
             'show_convert_cpe_pos',
             'order_node_advanced',
+            'remove_validation_email_establishments',
         ];
 
         protected $casts = [
@@ -415,8 +416,9 @@
             'restrict_sale_items_cpe'=>'bool',
             'show_convert_cpe_pos'=>'bool',
             'order_node_advanced' => 'boolean',
+            'remove_validation_email_establishments'=>'bool',
         ];
-
+        
         protected $hidden = [
             'smtp_password'
         ];
@@ -656,6 +658,7 @@
                 'restrict_sale_items_cpe' => $this->restrict_sale_items_cpe,
                 'show_convert_cpe_pos' => $this->show_convert_cpe_pos,
                 'order_node_advanced' => (bool)$this->order_node_advanced,
+                'remove_validation_email_establishments' => $this->remove_validation_email_establishments,
             ];
         }
 
