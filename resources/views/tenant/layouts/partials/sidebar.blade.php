@@ -1153,7 +1153,7 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                                href="#">
                                 <i class="fas fa-building"
                                    aria-hidden="true"></i>
-                                <span>Hoteles</span>
+                                <span>Hoteles <sup style="background: #ffc300;padding: 0px 3px;border-radius: 4px;">Beta</sup></span>
                             </a>
                             <ul class="nav nav-children">
                                 @if(in_array('hotels_reception', $vc_module_levels))
@@ -1294,7 +1294,7 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                                 <i class="fa fas fa-calendar-check"
                                    aria-hidden="true"></i>
                                 <span>
-                                    Suscripción Servicios SAAS
+                                    Suscripción <sup style="background: #ffc300;padding: 0px 3px;border-radius: 4px;">Beta</sup>
                                 </span>
                             </a>
                             <ul class="nav nav-children">
@@ -1478,7 +1478,7 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                                href="#">
                                 <i class="fas fa-utensils"
                                    aria-hidden="true"></i>
-                                <span>Restaurante</span>
+                                <span>Restaurante <sup style="background: #ffc300;padding: 0px 3px;border-radius: 4px;">Beta</sup></span>
                             </a>
                             <ul class="nav nav-children">
                                 <li class="nav-parent
