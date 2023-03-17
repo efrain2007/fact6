@@ -127,7 +127,7 @@
                                     <div class="form-group col-6 col-md-2">
                                         <label>Vendedor</label>
                                         <el-select v-model="form.seller_id" clearable>
-                                            <el-option v-for="sel in sellers" :key="sel.id" :value="sel.id" :label="sel.name">{{ sel.name }}</el-option>
+                                            <el-option v-for="sel in sellers" :key="sel.id" :value="sel.id" :label="sel.name"></el-option>
                                         </el-select>
                                     </div>
                                 </div>
@@ -416,7 +416,7 @@
                     this.payment_destinations = data.payment_destinations
                     // this.configuration = data.configuration
                     this.sellers = data.sellers;
-                    this.form.seller_id = (this.sellers.length > 0)?this.sellers[0].id:null
+                    // this.form.seller_id = (this.sellers.length > 0)?this.sellers[0].id:null
 
                     this.changeEstablishment()
                     this.changeDateOfIssue()
@@ -571,6 +571,13 @@
                 return _.round(unit_price, 6)
                 // return unit_price.toFixed(6)
             },
+            // handleSellerSelect(event) {
+            //     const selectedSellerId = event;
+            //     const selectedSeller = this.sellers.find(seller => seller.id === selectedSellerId);
+            //     this.form.seller_name = selectedSeller ? selectedSeller.name : '';
+            //     console.log(this.form.seller_name);
+            //     this.form.label = this.form.seller_name;
+            // },
             async changePaymentMethodType(flag_submit = true){
                 // let payment_method_type = await _.find(this.payment_method_types, {'id':this.form.payment_method_type_id})
                 // if(payment_method_type){
