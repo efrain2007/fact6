@@ -5,7 +5,7 @@
 
     $document_number = $document->series.'-'.str_pad($document->number, 8, '0', STR_PAD_LEFT);
     // $document_type_driver = App\Models\Tenant\Catalogs\IdentityDocumentType::findOrFail($document->driver->identity_document_type_id);
-    $document_type_dispatcher = App\Models\Tenant\Catalogs\IdentityDocumentType::findOrFail($document->dispatcher->identity_document_type_id);
+    //$document_type_dispatcher = App\Models\Tenant\Catalogs\IdentityDocumentType::findOrFail($document->dispatcher->identity_document_type_id);
 
     $allowed_items = 65;
     $quantity_items = $document->items()->count();
@@ -135,39 +135,49 @@
 
 <table class="full-width border-box mt-10 mb-10">
     <tr>
-        <td width="45%" class="border-box pl-3">
+        <td width="45%" class="border-box pl-3 align-top">
             <table class="full-width">
                 <tr>
-                    <td style="text-decoration: underline;" colspan="2"><strong>UNIDAD DE TRANSPORTE - CONDUCTOR</td>
+                    <td class="align-top" style="text-decoration: underline;" colspan="2"><strong>UNIDAD DE TRANSPORTE - CONDUCTOR</td>
                 </tr>
-                <tr>
-                    <td><strong>N° Doc:</strong> {{ $document->driver->identity_document_type_id }}: {{ $document->driver->number }}</td>
-                </tr>
-                <tr>
-                    <td><strong>Placa N°:</strong> {{ $document->license_plate }}</td>
-                </tr>
-                <tr>
-                    <td><strong>N° Licencia:</strong> {{ $document->driver->license }}</td>
-                </tr>
+                @if($document->transport_mode_type_id !== '01')
+                    <tr>
+                        @if($document->transport_data)
+                            <td class="align-top">Número de placa del vehículo: {{ $document->transport_data['plate_number'] }}</td>
+                        @endif
+                        @if($document->driver->number)
+                            <td class="align-top">Conductor: {{ $document->driver->number }}</td>
+                        @endif
+                    </tr>
+                    <tr>
+                        @if($document->secondary_license_plates)
+                            @if($document->secondary_license_plates->semitrailer)
+                                <td class="align-top">Número de placa semirremolque: {{ $document->secondary_license_plates->semitrailer }}</td>
+                            @endif
+                        @endif
+                        @if($document->driver->license)
+                            <td class="align-top">Licencia del conductor: {{ $document->driver->license }}</td>
+                        @endif
+                    </tr>
+                @endif
             </table>
         </td>
         <td width="3%"></td>
 
-        <td width="50%" class="border-box pl-3">
+        <td width="50%" class="border-box pl-3 align-top">
             <table class="full-width">
                 <tr>
-                    <td style="text-decoration: underline;" colspan="2"><strong>EMPRESA DE TRANSPORTE</strong></td>
+                    <td class="align-top" style="text-decoration: underline;" colspan="2"><strong>EMPRESA DE TRANSPORTE</strong></td>
                 </tr>
-                <tr>
-                    <td><strong>Transportista:</strong> {{ $document->dispatcher->name }}</td>
-                </tr>
-                <tr>
-                    <td><strong>{{ $document_type_dispatcher->description }}:</strong> {{ $document->dispatcher->number }}</td>
-                </tr>
-                <tr>
-                    <td></td>
-                    {{-- <td>Dirección: {{ $document->driver->license }}</td> --}}
-                </tr>
+                @if($document->transport_mode_type_id === '01')
+                    @php
+                        $document_type_dispatcher = App\Models\Tenant\Catalogs\IdentityDocumentType::findOrFail($document->dispatcher->identity_document_type_id);
+                    @endphp
+                    <tr>
+                        <td class="align-top">Nombre y/o razón social: {{ $document->dispatcher->name }}</td>
+                        <td class="align-top">{{ $document_type_dispatcher->description }}: {{ $document->dispatcher->number }}</td>
+                    </tr>
+                @endif
             </table>
         </td>
 
@@ -279,7 +289,7 @@
 
 <table class="full-width border-box mt-10 mb-10">
     <tr>
-        <td width="50%" class="border-box pl-3">
+        <td width="30%" class="border-box pl-3">
             <table class="full-width">
                 <tr>
                     <td colspan="2"><strong>OBSERVACIONES:</td>
@@ -289,9 +299,13 @@
                 </tr>
             </table>
         </td>
-        <td width="3%"></td>
+        <td width="33%">
+            @if($document->qr)
+                <img src="data:image/png;base64, {{ $document->qr }}" style="margin-right: -10px;"/>
+            @endif
+        </td>
 
-        <td width="47%" class="">
+        <td width="33%" class="">
             <table class="full-width">
                 <tr>
                     <td rowspan="2"><strong>Representación impresa de la Guía de Remisión</strong></td>

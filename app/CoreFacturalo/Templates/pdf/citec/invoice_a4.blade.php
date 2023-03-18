@@ -171,7 +171,7 @@
                 width="10%">CANTIDAD
             </th>
             <th class="border-top-bottom text-right text-white"
-                width="12%">V.UNIT
+                width="12%">P.UNIT
             </th>
             <th class="border-top-bottom text-right text-white"
                 width="12%">TOTAL
@@ -210,8 +210,8 @@
                         {{ number_format($row->quantity, 0) }}
                     @endif
                 </td>
-                <td class="text-right align-top">{{ number_format($row->unit_value, 4) }}</td>
-                <td class="text-right align-top">{{ number_format($row->total_value, 2) }}</td>
+                <td class="text-right align-top">{{ number_format($row->unit_price, 4) }}</td>
+                <td class="text-right align-top">{{ number_format($row->total, 2) }}</td>
             </tr>
             <tr>
                 <td colspan="6"

@@ -142,10 +142,10 @@
         @php
             $document_type_dispatcher = App\Models\Tenant\Catalogs\IdentityDocumentType::findOrFail($document->dispatcher->identity_document_type_id);
         @endphp
-    <tr>
-        <td>Nombre y/o razón social: {{ $document->dispatcher->name }}</td>
-        <td>{{ $document_type_dispatcher->description }}: {{ $document->dispatcher->number }}</td>
-    </tr>
+        <tr>
+            <td>Nombre y/o razón social: {{ $document->dispatcher->name }}</td>
+            <td>{{ $document_type_dispatcher->description }}: {{ $document->dispatcher->number }}</td>
+        </tr>
     @else
     <tr>
         @if($document->transport_data)

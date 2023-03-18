@@ -43,6 +43,8 @@ class ClientCollection extends ResourceCollection
                 'max_users' => (int) $row->plan->limit_users,
                 'created_at' => $row->created_at->format('Y-m-d H:i:s'),
                 'updated_at' => $row->updated_at->format('Y-m-d H:i:s'),
+                'current_count_doc_month' => $row->current_count_doc_month,
+                'count_doc_pse' => $row->count_doc_pse,
 
                 // ciclo facturacion
                 'start_billing_cycle' => ( $row->start_billing_cycle ) ? $row->start_billing_cycle->format('Y-m-d') : '',
@@ -64,7 +66,7 @@ class ClientCollection extends ResourceCollection
                 'quantity_establishments' => $row->quantity_establishments,
                 'max_quantity_establishments' => $row->plan->establishments_limit,
                 'establishments_unlimited' => $row->plan->establishments_unlimited,
-                
+
                 // para limite de ventas mensual
                 'monthly_sales_total' => number_format($row->monthly_sales_total, 2, '.', ''),
                 'max_sales_limit' => number_format($row->plan->sales_limit, 2, '.', ''),

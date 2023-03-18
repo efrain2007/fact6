@@ -1,6 +1,6 @@
 <template>
 <div>
-    <el-dialog :title="titleDialog" :visible="showDialog" @open="create" width="30%" :close-on-click-modal="false" :close-on-press-escape="false" :show-close="false">
+    <el-dialog :title="titleDialog" :visible="showDialog" @open="create" width="60%" :close-on-click-modal="false" :close-on-press-escape="false" :show-close="false">
         <div class="row" v-show="!showGenerate">
             <div class="col text-center font-weight-bold">
                 <p>Imprimir A4</p>
@@ -366,6 +366,7 @@ export default {
                 total_other_taxes: 0,
                 total_taxes: 0,
                 total_value: 0,
+                subtotal: 0,
                 total: 0,
                 operation_type_id: null,
                 date_of_due: moment().format("YYYY-MM-DD"),
@@ -518,6 +519,7 @@ export default {
             this.document.total_other_taxes = q.total_other_taxes;
             this.document.total_taxes = q.total_taxes;
             this.document.total_value = q.total_value;
+            this.document.subtotal = q.subtotal
             this.document.total = q.total;
             this.document.operation_type_id = "0101";
             // this.document.date_of_due = q.date_of_issue
@@ -614,11 +616,29 @@ export default {
                     this.titleDialog = `Pedido ${type}: ` + this.form.identifier;
                 });
 
-            await this.clickAddPayment()
-            await this.assignDocument();
+            await this.assignDocument()
+            await this.assignPrepayments()
 
             this.load_list_document_items = true
 
+        },
+        async assignPrepayments() {
+            if(this.form.order_note.prepayments) {
+                Object.values(this.form.order_note.prepayments).forEach(pay => {
+                    this.document.payments.push({
+                        id:  pay.id,
+                        document_id:  pay.document_id,
+                        date_of_payment:  pay.date_of_payment,
+                        payment_method_type_id:  pay.payment_method_type_id,
+                        payment_destination_id:  pay.payment_destination_id,
+                        reference: pay.reference,
+                        payment: pay.payment
+                    })
+                })
+
+            } else {
+                await this.clickAddPayment()
+            }
         },
         changeDocumentType() {
             // this.filterSeries()

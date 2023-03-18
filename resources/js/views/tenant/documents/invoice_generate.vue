@@ -547,7 +547,7 @@
                                                         <!-- Crédito con cuotas -->
                                                         <div v-if="form.payment_condition_id === '03'"
                                                              class="table-responsive">
-                                                            <table 
+                                                            <table
                                                                    class="text-left table"
                                                                    width="100%">
                                                                 <thead>
@@ -1647,6 +1647,8 @@ import StoreItemSeriesIndex from "../Store/ItemSeriesIndex";
 import DocumentReportCustomer from './partials/report_customer.vue'
 import SetTip from '@components/SetTip.vue'
 
+import LotsForm from './partials/lots.vue'
+
 export default {
     props: [
         'idUser',
@@ -1670,6 +1672,7 @@ export default {
         DocumentTransportForm,
         DocumentReportCustomer,
         SetTip,
+        LotsForm,
     },
     mixins: [functions, exchangeRate, pointSystemFunctions, fnRestrictSaleItemsCpe],
     data() {
@@ -1978,8 +1981,8 @@ export default {
         {
             if(tip)
             {
-                this.form.worker_full_name_tips = tip.worker_full_name_tips 
-                this.form.total_tips = tip.total_tips 
+                this.form.worker_full_name_tips = tip.worker_full_name_tips
+                this.form.total_tips = tip.total_tips
             }
         },
         onSuccessUploadVoucher(response, file, fileList, index)
@@ -2074,7 +2077,7 @@ export default {
                 has_retention: false,
                 retention: {},
                 quotation_id: null,
-                
+
                 worker_full_name_tips: null, //propinas
                 total_tips: 0, //propinas
             }
@@ -2433,7 +2436,7 @@ export default {
                     this.clickAddFeeNew()
                     const index = 0
                     this.readonly_date_of_due = true
-                    
+
                     this.form.fee[index].payment_method_type_id = data.document_payment_method_type.id
                     this.form.fee[index].amount = _.sumBy(data.data_payments_fee, 'payment')
 
@@ -2477,7 +2480,7 @@ export default {
 
             this.form.has_retention = !_.isEmpty(this.form.retention)
 
-            if (this.form.has_retention) 
+            if (this.form.has_retention)
             {
                 this.setTotalPendingAmountRetention(this.form.retention.amount)
 
@@ -3081,7 +3084,7 @@ export default {
 
         },
         changeRetention() {
-            
+
             if (this.form.has_retention) {
 
                 let base = this.form.total

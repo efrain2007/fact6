@@ -4,8 +4,8 @@
     //$path_style = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.DIRECTORY_SEPARATOR.'pdf'.DIRECTORY_SEPARATOR.'style.css');
 
     $document_number = $document->series.'-'.str_pad($document->number, 8, '0', STR_PAD_LEFT);
-    $document_type_driver = App\Models\Tenant\Catalogs\IdentityDocumentType::findOrFail($document->driver->identity_document_type_id);
-    $document_type_dispatcher = App\Models\Tenant\Catalogs\IdentityDocumentType::findOrFail($document->dispatcher->identity_document_type_id);
+    // $document_type_driver = App\Models\Tenant\Catalogs\IdentityDocumentType::findOrFail($document->driver->identity_document_type_id);
+    // $document_type_dispatcher = App\Models\Tenant\Catalogs\IdentityDocumentType::findOrFail($document->dispatcher->identity_document_type_id);
 
 @endphp
 <html>
@@ -94,30 +94,40 @@
 </table>
 <table class="full-width border-box mt-10 mb-10">
     <thead>
-    <tr>
-        <th class="border-bottom text-left" colspan="2">TRANSPORTE</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr>
-        <td>Nombre y/o razón social: {{ $document->dispatcher->name }}</td>
-        <td>{{ $document_type_dispatcher->description }}: {{ $document->dispatcher->number }}</td>
-    </tr>
-    <tbody>
-    <tr>
-        <td>Número de placa del vehículo: {{ $document->license_plate }}</td>
-        <td>Conductor: {{ $document->driver->number }}</td>
-    </tr>
-    <tr>
-        @if($document->secondary_license_plates)
-            @if($document->secondary_license_plates->semitrailer)
-                <td>Número de placa semirremolque: {{ $document->secondary_license_plates->semitrailer }}</td>
+        <tr>
+            <th class="border-bottom text-left" colspan="2">TRANSPORTE</th>
+        </tr>
+        </thead>
+        <tbody>
+        @if($document->transport_mode_type_id === '01')
+            @php
+                $document_type_dispatcher = App\Models\Tenant\Catalogs\IdentityDocumentType::findOrFail($document->dispatcher->identity_document_type_id);
+            @endphp
+            <tr>
+                <td>Nombre y/o razón social: {{ $document->dispatcher->name }}</td>
+                <td>{{ $document_type_dispatcher->description }}: {{ $document->dispatcher->number }}</td>
+            </tr>
+        @else
+        <tr>
+            @if($document->transport_data)
+                <td>Número de placa del vehículo: {{ $document->transport_data['plate_number'] }}</td>
             @endif
+            @if($document->driver->number)
+                <td>Conductor: {{ $document->driver->number }}</td>
+            @endif
+        </tr>
+        <tr>
+            @if($document->secondary_license_plates)
+                @if($document->secondary_license_plates->semitrailer)
+                    <td>Número de placa semirremolque: {{ $document->secondary_license_plates->semitrailer }}</td>
+                @endif
+            @endif
+            @if($document->driver->license)
+                <td>Licencia del conductor: {{ $document->driver->license }}</td>
+            @endif
+        </tr>
         @endif
-        @if($document->driver->license)
-            <td>Licencia del conductor: {{ $document->driver->license }}</td>
-        @endif
-    </tr>
+        </tbody>
 </table>
 <table class="full-width border-box mt-10 mb-10">
     <thead class="">

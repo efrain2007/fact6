@@ -29,6 +29,8 @@
     use Modules\Sale\Models\ContractPayment;
     use Modules\Sale\Models\QuotationPayment;
     use Modules\Sale\Models\TechnicalServicePayment;
+    use Modules\Hotel\Models\HotelRentItemPayment;
+
 
     /**
      * Modules\Finance\Models\GlobalPayment
@@ -194,6 +196,19 @@
             return $this->belongsTo(BankLoanPayment::class, 'payment_id')
                 ->wherePaymentType(BankLoanPayment::class);
         }
+
+        /**
+         * 
+         * Pagos relacionados a la renta de hotel y productos
+         * 
+         * @return mixed
+         */
+        public function hotel_rent_item_payment()
+        {
+            return $this->belongsTo(HotelRentItemPayment::class, 'payment_id')
+                        ->wherePaymentType(HotelRentItemPayment::class);
+        }
+        
 
         /**
          * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
@@ -937,6 +952,10 @@
                         $p->whereNotHasDocuments();
                     })
                     ->whereCashPaymentMethodType();
+                })
+                ->orWhereHas('hotel_rent_item_payment', function ($q) {
+                    $q->whereHas('associated_record_payment')
+                        ->whereCashPaymentMethodType();
                 })
                 // ingresos
 
