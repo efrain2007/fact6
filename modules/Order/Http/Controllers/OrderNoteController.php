@@ -376,7 +376,7 @@
             $establishment = Establishment::where('id', auth()->user()->establishment_id)->first();
             $series = Series::where('establishment_id', $establishment->id)->get();
             $document_types_invoice = DocumentType::whereIn('id', ['01', '03', '80'])->get();
-            $payment_method_types = PaymentMethodType::all();
+            $payment_method_types = PaymentMethodType::getPaymentMethodTypes();
             $payment_destinations = $this->getPaymentDestinations();
 
             return compact('series', 'document_types_invoice', 'payment_method_types', 'payment_destinations');
