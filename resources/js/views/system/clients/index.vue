@@ -359,9 +359,16 @@
                                     ></el-date-picker>
                                 </template>
                             </td>
+
                             <td class="text-center">
                                 <strong>
+                                    <template v-if="row.sale_notes_quantity_if_include > 0">
+                                        {{ row.count_doc_month ? (row.count_doc_month + row.sale_notes_quantity_if_include) : 0 }} /
+                                    </template>
+                                    <template v-else>
                                     {{ row.count_doc_month ? row.count_doc_month : 0 }} /
+                                    </template>
+
                                     <template v-if="row.max_documents == 0">
                                         <i class="fas fa-infinity"></i>
                                     </template>
