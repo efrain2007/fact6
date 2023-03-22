@@ -284,7 +284,8 @@
                         title: 'Pedido MiTienda.Pe',
                         visible: false,
                     },
-                }
+                },
+                state_type_accepted: ['01', '03', '05', '07', '13']
             }
         },
         computed:{
@@ -326,7 +327,10 @@
                 if(document.state_type_id == '11') return document.number_full + ' (Anulado)';
                  return document.number_full;
             },
-            canAnulate(row){
+            canAnulate(row)
+            {
+                if(row.state_type_id === '11') return false
+
                 if(
                     row &&
                     row.documents
@@ -335,18 +339,41 @@
                         row.documents.length == 0 &&
                         row.state_type_id != '11'
                     ) return true;
-                    if (
-                        row.documents.length > 0
-                    ) {
-                        let sal = false;
-                        row.documents.forEach(function(doc){
-                            sal = doc.state_type_id === '11';
+
+                    if (row.documents.length > 0) 
+                    {
+                        let can_anulate = false
+ 
+                        const exist_accepted_document = row.documents.find((document)=>{
+                            return this.state_type_accepted.includes(document.state_type_id)
                         })
-                        return sal;
+
+                        if(!exist_accepted_document) can_anulate = true
+
+                        return can_anulate
                     }
                 }
 
-                return false;
+                return false
+
+                // if(
+                //     row &&
+                //     row.documents
+                // ) {
+                //     if (
+                //         row.documents.length == 0 &&
+                //         row.state_type_id != '11'
+                //     ) return true;
+                //     if (
+                //         row.documents.length > 0
+                //     ) {
+                //         let sal = false;
+                //         row.documents.forEach(function(doc){
+                //             sal = doc.state_type_id === '11';
+                //         })
+                //         return sal;
+                //     }
+                // }
             },
             clickEdit(id)
             {
