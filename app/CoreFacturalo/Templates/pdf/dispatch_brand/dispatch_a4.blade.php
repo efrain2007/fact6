@@ -5,7 +5,7 @@
 
     $document_number = $document->series.'-'.str_pad($document->number, 8, '0', STR_PAD_LEFT);
     // $document_type_driver = App\Models\Tenant\Catalogs\IdentityDocumentType::findOrFail($document->driver->identity_document_type_id);
-    $document_type_dispatcher = App\Models\Tenant\Catalogs\IdentityDocumentType::findOrFail($document->dispatcher->identity_document_type_id);
+    // $document_type_dispatcher = App\Models\Tenant\Catalogs\IdentityDocumentType::findOrFail($document->dispatcher->identity_document_type_id);
 
 @endphp
 <html>
@@ -91,51 +91,39 @@
         <td>Motivo Traslado: {{ $document->transfer_reason_type->description }}</td>
         <td>Modalidad de Transporte: {{ $document->transport_mode_type->description }}</td>
     </tr>
-    <tr>
-        <td>Descripcion de Motivo: {{ $document->transfer_reason_description }}</td>
-    </tr>
+
+    @if($document->transfer_reason_description)
+        <tr>
+            <td colspan="2">Descripción de motivo de traslado: {{ $document->transfer_reason_description }}</td>
+        </tr>
+    @endif
+
+    @if($document->related)
+        <tr>
+            <td>Número de documento (DAM): {{ $document->related->number }}</td>
+            <td>Tipo documento relacionado: {{ $document->getRelatedDocumentTypeDescription() }}</td>
+        </tr>
+    @endif
+
     <tr>
         <td>Peso Bruto Total({{ $document->unit_type_id }}): {{ $document->total_weight }}</td>
         @if($document->packages_number)
-        <td>Número de Bultos: {{ $document->packages_number }}</td>
+            <td>Número de Bultos: {{ $document->packages_number }}</td>
         @endif
     </tr>
     <tr>
-        <td>P.Partida: {{ $document->origin->location_id }} - {{ $document->origin->address }}</td>
-        <td>P.Llegada: {{ $document->delivery->location_id }} - {{ $document->delivery->address }}</td>
+        <td colspan="2">P.Partida: {{ $document->origin->location_id }} - {{ $document->origin->address }}</td>
     </tr>
+    <tr>
+        <td colspan="2">P.Llegada: {{ $document->delivery->location_id }} - {{ $document->delivery->address }}</td>
+    </tr>
+    @if($document->order_form_external)
+        <tr>
+            <td>Orden de pedido: {{ $document->order_form_external }}</td>
+            <td></td>
+        </tr>
+    @endif
     </tbody>
-</table>
-<table class="full-width border-box mt-10 mb-10">
-    <thead>
-    <tr>
-        <th class="border-bottom text-left" colspan="2">TRANSPORTE</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr>
-        <td>Nombre y/o razón social: {{ $document->dispatcher->name }}</td>
-        <td>{{ $document_type_dispatcher->description }}: {{ $document->dispatcher->number }}</td>
-    </tr>
-    <tbody>
-    <tr>
-        @if($document->license_plate)
-        <td>Número de placa del vehículo: {{ $document->license_plate }}</td>
-        @endif
-        @if($document->driver->number)
-        <td>Conductor: {{ $document->driver->number }}</td>
-        @endif
-    </tr>
-    <tr>
-        @if($document->secondary_license_plates)
-            @if($document->secondary_license_plates->semitrailer)
-                <td>Número de placa semirremolque: {{ $document->secondary_license_plates->semitrailer }}</td>
-            @endif
-        @endif
-        @if($document->driver->license)
-            <td>Licencia del conductor: {{ $document->driver->license }}</td>
-        @endif
-    </tr>
 </table>
 <table class="full-width border-box mt-10 mb-10">
     <thead class="">
@@ -220,27 +208,27 @@
 </table>
 
 @if($document->observations)
-<table class="full-width border-box mt-10 mb-10">
-    <tr>
-        <td class="text-bold border-bottom font-bold">OBSERVACIONES</td>
-    </tr>
-    <tr>
-        <td>{{ $document->observations }}</td>
-    </tr>
-</table>
+    <table class="full-width border-box mt-10 mb-10">
+        <tr>
+            <td class="text-bold border-bottom font-bold">OBSERVACIONES</td>
+        </tr>
+        <tr>
+            <td>{{ $document->observations }}</td>
+        </tr>
+    </table>
 @endif
 
 @if ($document->reference_document)
-<table class="full-width border-box">
-    @if($document->reference_document)
-    <tr>
-        <td class="text-bold border-bottom font-bold">{{$document->reference_document->document_type->description}}</td>
-    </tr>
-    <tr>
-        <td>{{ ($document->reference_document) ? $document->reference_document->number_full : "" }}</td>
-    </tr>
-    @endif
-</table>
+    <table class="full-width border-box">
+        @if($document->reference_document)
+            <tr>
+                <td class="text-bold border-bottom font-bold">{{$document->reference_document->document_type->description}}</td>
+            </tr>
+            <tr>
+                <td>{{ ($document->reference_document) ? $document->reference_document->number_full : "" }}</td>
+            </tr>
+        @endif
+    </table>
 @endif
 @if ($document->data_affected_document)
     @php
@@ -268,55 +256,60 @@
     @endif
 @endif
 @if ($document->reference_order_form_id)
-<table class="full-width border-box">
-    @if($document->order_form)
-    <tr>
-        <td class="text-bold border-bottom font-bold">ORDEN DE PEDIDO</td>
-    </tr>
-    <tr>
-        <td>{{ ($document->order_form) ? $document->order_form->number_full : "" }}</td>
-    </tr>
-    @endif
-</table>
+    <table class="full-width border-box">
+        @if($document->order_form)
+            <tr>
+                <td class="text-bold border-bottom font-bold">ORDEN DE PEDIDO</td>
+            </tr>
+            <tr>
+                <td>{{ ($document->order_form) ? $document->order_form->number_full : "" }}</td>
+            </tr>
+        @endif
+    </table>
 
 @elseif ($document->order_form_external)
-
-@if ($document->reference_document)
-<br>
-@endif
-<table class="full-width border-box">
-    <tr>
-        <td class="text-bold border-bottom font-bold">ORDEN DE PEDIDO</td>
-    </tr>
-    <tr>
-        <td>{{ $document->order_form_external }}</td>
-    </tr>
-</table>
+    <table class="full-width border-box">
+        <tr>
+            <td class="text-bold border-bottom font-bold">ORDEN DE PEDIDO</td>
+        </tr>
+        <tr>
+            <td>{{ $document->order_form_external }}</td>
+        </tr>
+    </table>
 
 @endif
 
 @if ($document->reference_sale_note_id)
-<table class="full-width border-box">
-    @if($document->sale_note)
+    <table class="full-width border-box">
+        @if($document->sale_note)
+            <tr>
+                <td class="text-bold border-bottom font-bold">NOTA DE VENTA</td>
+            </tr>
+            <tr>
+                <td>{{ ($document->sale_note) ? $document->sale_note->number_full : "" }}</td>
+            </tr>
+        @endif
+    </table>
+@endif
+@if($document->qr)
+<table class="full-width">
     <tr>
-        <td class="text-bold border-bottom font-bold">NOTA DE VENTA</td>
+        <td class="text-left">
+            <img src="data:image/png;base64, {{ $document->qr }}" style="margin-right: -10px;"/>
+        </td>
     </tr>
-    <tr>
-        <td>{{ ($document->sale_note) ? $document->sale_note->number_full : "" }}</td>
-    </tr>
-    @endif
 </table>
 @endif
 @if ($document->terms_condition)
-        <br>
-        <table class="full-width">
-            <tr>
-                <td>
-                    <h6 style="font-size: 12px; font-weight: bold;">Términos y condiciones del servicio</h6>
-                    {!! $document->terms_condition !!}
-                </td>
-            </tr>
-        </table>
-    @endif
+    <br>
+    <table class="full-width">
+        <tr>
+            <td>
+                <h6 style="font-size: 12px; font-weight: bold;">Términos y condiciones del servicio</h6>
+                {!! $document->terms_condition !!}
+            </td>
+        </tr>
+    </table>
+@endif
 </body>
 </html>
