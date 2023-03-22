@@ -204,10 +204,11 @@
                     $client_helper = new ClientHelper();
 
                     $row->count_doc_month = DB::connection('tenant')->table('documents')->whereBetween('date_of_issue', [$init, $end])->count();
+                    $row->sale_notes_quantity_if_include = 0;
 
                     if($row->plan->includeSaleNotesLimitDocuments())
                     {
-                        $row->count_doc_month += $client_helper->getQuantitySaleNotesByDates($init->format('Y-m-d'), $end->format('Y-m-d'));
+                        $row->sale_notes_quantity_if_include = $client_helper->getQuantitySaleNotesByDates($init->format('Y-m-d'), $end->format('Y-m-d'));
                     }
 
                     $row->count_sales_notes_month = DB::connection('tenant')->table('sale_notes')->whereBetween('date_of_issue', [$init, $end])->count();
