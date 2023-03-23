@@ -768,5 +768,43 @@
             return $query;
         }
 
+        
+        /**
+         * 
+         * Obtener pagos referenciales para el pdf
+         *
+         * @return array
+         */
+        public function getPrepaymentsForPdf()
+        {
+            return $this->getCollectPrepayments()->transform(function($row){
+                return (object)[
+                    'id' => $row->id,
+                    'payment' => $row->payment,
+                    'reference' => $row->reference,
+                    'document_id' => $row->document_id,
+                    'date_of_payment' => $row->date_of_payment,
+                    'payment_destination_id' => $row->payment_destination_id,
+                    'payment_method_type_id' => $row->payment_method_type_id,
+                    'payment_method_type_description' => PaymentMethodType::getDescriptionById($row->payment_method_type_id)
+                ];
+            });
+        }
+        
+
+        /**
+         * 
+         * Validar si tiene pagos y retornar coleccion
+         *
+         * @return Collection
+         */
+        public function getCollectPrepayments()
+        {
+            $data = collect();
+
+            if($this->prepayments) $data = collect($this->prepayments);
+
+            return $data;
+        }
 
     }
