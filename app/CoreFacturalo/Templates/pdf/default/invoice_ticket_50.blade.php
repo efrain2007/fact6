@@ -64,7 +64,7 @@
                 <br>
             @endisset
             {{ ($establishment->telephone !== '-')? 'CENTRAL TELEFÓNICA: '.$establishment->telephone : '' }} <br>
-            {{ ($establishment->email !== '-')? 'EMAIL: '.$establishment->email : '' }} <br>
+            {{ ($establishment->email && $establishment->email !== '-')? 'EMAIL: '.$establishment->email : '' }} <br>
             @isset($establishment->web_address)
                 {{ ($establishment->web_address !== '-')? 'WEB: '.$establishment->web_address : '' }} <br>
             @endisset

@@ -1123,7 +1123,7 @@ class DocumentController extends Controller
     public function messageLockedEmission()
     {
 
-        $exceed_limit = DocumentHelper::exceedLimitDocuments();
+        $exceed_limit = (new DocumentHelper)->exceedLimitDocuments();
 
         if ($exceed_limit['success']) {
             return [

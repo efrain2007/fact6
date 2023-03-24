@@ -210,8 +210,8 @@
                         {{ number_format($row->quantity, 0) }}
                     @endif
                 </td>
-                <td class="text-right align-top">{{ number_format($row->unit_value, 4) }}</td>
-                <td class="text-right align-top">{{ number_format($row->total_value, 2) }}</td>
+                <td class="text-right align-top">{{ number_format($row->unit_price, 4) }}</td>
+                <td class="text-right align-top">{{ number_format($row->total, 2) }}</td>
             </tr>
             <tr>
                 <td colspan="6"

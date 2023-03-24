@@ -80,7 +80,7 @@
         <td class="text-center ">{{ ($establishment->telephone !== '-')? 'Central telefónica: '.$establishment->telephone : '' }}</td>
     </tr>
     <tr>
-        <td class="text-center">{{ ($establishment->email !== '-')? 'Email: '.$establishment->email : '' }}</td>
+        <td class="text-center">{{ ($establishment->email && $establishment->email !== '-')? 'Email: '.$establishment->email : '' }}</td>
     </tr>
     @isset($establishment->web_address)
         <tr>
