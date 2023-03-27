@@ -379,4 +379,9 @@
                         ->get();
         }
         
+
+        public static function getDescriptionById($id)
+        {
+            return self::findOrFail($id)->getDescription();
+        }
     }

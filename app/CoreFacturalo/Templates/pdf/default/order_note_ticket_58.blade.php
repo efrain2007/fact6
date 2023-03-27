@@ -5,7 +5,7 @@
     //$path_style = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.DIRECTORY_SEPARATOR.'pdf'.DIRECTORY_SEPARATOR.'style.css');
     $accounts = \App\Models\Tenant\BankAccount::all();
     $tittle = $document->prefix.'-'.str_pad($document->id, 8, '0', STR_PAD_LEFT);
-
+    $prepayments = $document->getPrepaymentsForPdf();
 
 @endphp
 <html>
@@ -133,7 +133,7 @@
         </td>
     </tr>
     @endif
-    @if ($document->payment_method_type)
+    {{-- @if ($document->payment_method_type)
     <tr>
         <td class="align-top"><p class="desc">T. Pago:</p></td>
         <td >
@@ -142,7 +142,7 @@
             </p>
         </td>
     </tr>
-    @endif
+    @endif --}}
     <tr>
         <td class="align-top"><p class="desc">Vendedor:</p></td>
         <td>
@@ -269,6 +269,21 @@
             </tr>
         @endforeach
     </tr>
+    
+    @if(count($prepayments) > 0)
+        <tr>
+            <td class="desc pt-2">
+                <strong>Pagos referenciales:</strong>
+            </td>
+        </tr>
+        @foreach($prepayments as $row)
+            <tr>
+                <td class="desc">
+                    &#8226; {{ $row->payment_method_type_description }} - {{ $row->reference ? $row->reference.' - ':'' }} {{ $document->currency_type->symbol }} {{ $row->payment }}
+                </td>
+            </tr>
+        @endforeach
+    @endif
 
     <tr>
         <td class="desc pt-3">

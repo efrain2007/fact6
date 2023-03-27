@@ -210,7 +210,18 @@
 
                             </div>
                             <div class="col-lg-6">
-                                <label class="control-label">Pagos</label>
+                                <label class="control-label">
+                                    Pagos referenciales
+                                    <el-tooltip class="item"
+                                        effect="dark"
+                                        placement="top">
+                                        <div slot="content">
+                                            Los pagos son referenciales para el pedido, no afectan flujos de caja, entre otros.<br>
+                                            Sirven para autocompletar la información al convertirlo a CPE o Nota de venta.
+                                        </div>
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
                                 <table>
                                     <thead>
                                         <tr width="100%">
@@ -694,7 +705,7 @@ export default {
                 discounts: [],
                 attributes: [],
                 guides: [],
-                payment_method_type_id: '10',
+                payment_method_type_id: null,
                 additional_information: null,
                 shipping_address: null,
                 actions: {
@@ -714,12 +725,13 @@ export default {
         },
         clickAddPayment() {
             let payment = (this.form.prepayments.length == 0) ? this.form.total : 0
+            const payment_method_type_id = '10'
 
             this.form.prepayments.push({
                 id: null,
                 document_id: null,
                 date_of_payment: moment().format("YYYY-MM-DD"),
-                payment_method_type_id: this.form.payment_method_type_id,
+                payment_method_type_id: payment_method_type_id,
                 payment_destination_id: null,
                 reference: null,
                 payment: payment
