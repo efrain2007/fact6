@@ -118,7 +118,6 @@ class DocumentController extends Controller
 
     public function records(Request $request)
     {
-
         $records = $this->getRecords($request);
 
         return new DocumentCollection($records->paginate(config('tenant.items_per_page')));
@@ -1151,8 +1150,6 @@ class DocumentController extends Controller
 
     public function getRecords($request)
     {
-
-
         $d_end = $request->d_end;
         $d_start = $request->d_start;
         $date_of_issue = $request->date_of_issue;
@@ -1167,7 +1164,9 @@ class DocumentController extends Controller
         $purchase_order = $request->purchase_order;
         $guides = $request->guides;
         $plate_numbers = $request->plate_numbers;
+        $observations = $request->observations;
 
+//        return $observations;
         $records = Document::query();
         if ($d_start && $d_end) {
             $records->whereBetween('date_of_issue', [$d_start, $d_end]);
@@ -1220,6 +1219,11 @@ class DocumentController extends Controller
         if ($plate_numbers) {
             $records->where('plate_number', 'like', '%' . $plate_numbers . '%');
         }
+
+        if ($observations) {
+            $records = $records->where('additional_information', 'like', '%' . $observations . '%');
+        }
+
         return $records;
     }
 
