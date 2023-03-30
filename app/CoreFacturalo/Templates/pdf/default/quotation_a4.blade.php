@@ -10,6 +10,7 @@
         $logo = "{$establishment->logo}";
     }
 
+    $configuration_decimal_quantity = App\CoreFacturalo\Helpers\Template\TemplateHelper::getConfigurationDecimalQuantity();
 @endphp
 <html>
 <head>
@@ -68,7 +69,7 @@
         <td width="15%">Cliente:</td>
         <td width="45%">{{ $customer->name }}</td>
         <td width="25%">Fecha de emisión:</td>
-        <td width="15%">{{ $document->date_of_issue->format('Y-m-d') }}</td>
+        <td width="25%">{{ $document->date_of_issue->format('Y-m-d') }} / {{ $document->time_of_issue }}</td>
     </tr>
     <tr>
         <td>{{ $customer->identity_document_type->description }}:</td>
@@ -188,12 +189,10 @@
 <table class="full-width mt-10 mb-10">
     <thead class="">
     <tr class="bg-grey">
+        <th class="border-top-bottom text-center py-2" width="8%">COD.</th>
         <th class="border-top-bottom text-center py-2" width="8%">CANT.</th>
         <th class="border-top-bottom text-center py-2" width="8%">UNIDAD</th>
         <th class="border-top-bottom text-left py-2">DESCRIPCIÓN</th>
-        <th class="border-top-bottom text-left py-2">MARCA</th>
-        <th class="border-top-bottom text-left py-2">MODELO</th>
-        <th class="border-top-bottom text-center py-2" width="8%">LOTE</th>
         <th class="border-top-bottom text-right py-2" width="12%">P.UNIT</th>
         <th class="border-top-bottom text-right py-2" width="8%">DTO.</th>
         <th class="border-top-bottom text-right py-2" width="12%">TOTAL</th>
@@ -201,11 +200,8 @@
     </thead>
     <tbody>
     @foreach($document->items as $row)
-        @php
-            $brand =  \App\CoreFacturalo\Helpers\Template\TemplateHelper::getBrandFormItem($row);;
-
-        @endphp
         <tr>
+            <td class="text-center align-top">{{ $row->item->internal_id }}</td>
             <td class="text-center align-top">
                 @if(((int)$row->quantity != $row->quantity))
                     {{ $row->quantity }}
@@ -214,9 +210,23 @@
                 @endif
             </td>
             <td class="text-center align-top">{{ $row->item->unit_type_id }}</td>
-            <td class="text-left">
-                  @if($row->item->name_product_pdf ?? false) {!!$row->item->name_product_pdf ?? ''!!} @else {!!$row->item->description!!} @endif
+            <td class="text-left align-top">
+                @if($row->name_product_pdf)
+                    {!!$row->name_product_pdf!!}
+                @else
+                    {!!$row->item->description!!}
+                @endif
+
+                @if($row->total_isc > 0)
+                    <br/><span style="font-size: 9px">ISC : {{ $row->total_isc }} ({{ $row->percentage_isc }}%)</span>
+                @endif
+
                 @if (!empty($row->item->presentation)) {!!$row->item->presentation->description!!} @endif
+
+                @if($row->total_plastic_bag_taxes > 0)
+                    <br/><span style="font-size: 9px">ICBPER : {{ $row->total_plastic_bag_taxes }}</span>
+                @endif
+
                 @if($row->attributes)
                     @foreach($row->attributes as $attr)
                         <br/><span style="font-size: 9px">{!! $attr->description !!} : {{ $attr->value }}</span>
@@ -228,26 +238,38 @@
                     @endforeach
                 @endif
 
-                  @if($row->item !== null && property_exists($row->item,'extra_attr_value') && $row->item->extra_attr_value != '')
-                    <br/><span style="font-size: 9px">{{$row->item->extra_attr_name}}: {{ $row->item->extra_attr_value }}</span>
+                @if($row->charges)
+                    @foreach($row->charges as $charge)
+                        <br/><span style="font-size: 9px">{{ $document->currency_type->symbol}} {{ $charge->amount}} ({{ $charge->factor * 100 }}%) {{$charge->description }}</span>
+                    @endforeach
                 @endif
 
                 @if($row->item->is_set == 1)
-                 <br>
+                    <br>
                     @inject('itemSet', 'App\Services\ItemSetService')
                     @foreach ($itemSet->getItemsSet($row->item_id) as $item)
                         {{$item}}<br>
                     @endforeach
                 @endif
 
+                @if($row->item->used_points_for_exchange ?? false)
+                    <br>
+                    <span
+                        style="font-size: 9px">*** Canjeado por {{$row->item->used_points_for_exchange}}  puntos ***</span>
+                @endif
+
+                @if($document->has_prepayment)
+                    <br>
+                    *** Pago Anticipado ***
+                @endif
             </td>
-            <td class="text-left">{{ $brand }}</td>
-            <td class="text-left">{{ $row->item->model ?? '' }}</td>
-            <td class="text-center align-top">
-                @inject('itemLotGroup', 'App\Services\ItemLotsGroupService')
-                {{ $itemLotGroup->getLote($row->item->lots_group) }}
-            </td>
-            <td class="text-right align-top">{{ number_format($row->unit_price, 2) }}</td>
+
+            @if ($configuration_decimal_quantity->change_decimal_quantity_unit_price_pdf)
+                <td class="text-right align-top">{{ $row->generalApplyNumberFormat($row->unit_price, $configuration_decimal_quantity->decimal_quantity_unit_price_pdf) }}</td>
+            @else
+                <td class="text-right align-top">{{ number_format($row->unit_price, 2) }}</td>
+            @endif
+
             <td class="text-right align-top">
                 @if($row->discounts)
                     @php
@@ -258,13 +280,13 @@
                     @endphp
                     {{ number_format($total_discount_line, 2) }}
                 @else
-                0
+                    0
                 @endif
             </td>
             <td class="text-right align-top">{{ number_format($row->total, 2) }}</td>
         </tr>
         <tr>
-            <td colspan="9" class="border-bottom"></td>
+            <td colspan="7" class="border-bottom"></td>
         </tr>
     @endforeach
         @if($document->total_exportation > 0)

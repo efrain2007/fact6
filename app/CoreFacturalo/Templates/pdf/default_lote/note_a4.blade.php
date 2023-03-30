@@ -21,6 +21,12 @@
 
     //$affected_document_number = $document_base->affected_document->series.'-'.str_pad($document_base->affected_document->number, 8, '0', STR_PAD_LEFT);
     //$path_style = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.DIRECTORY_SEPARATOR.'pdf'.DIRECTORY_SEPARATOR.'style.css');
+
+    $logo = "storage/uploads/logos/{$company->logo}";
+    if($establishment->logo) {
+        $logo = "{$establishment->logo}";
+    }
+
 @endphp
 <html>
 <head>
@@ -34,7 +40,7 @@
         @if($company->logo)
             <td width="20%">
                 <div class="company_logo_box">
-                    <img src="data:{{mime_content_type(public_path("storage/uploads/logos/{$company->logo}"))}};base64, {{base64_encode(file_get_contents(public_path("storage/uploads/logos/{$company->logo}")))}}" alt="{{$company->name}}" alt="{{ $company->name }}" class="company_logo" style="max-width: 150px;">
+                    <img src="data:{{mime_content_type(public_path("{$logo}"))}};base64, {{base64_encode(file_get_contents(public_path("{$logo}")))}}" alt="{{$company->name}}" alt="{{ $company->name }}" class="company_logo" style="max-width: 150px;">
                 </div>
             </td>
         @else
@@ -235,6 +241,16 @@
         </tr>
     </tbody>
     <tfoot style="border-top: 1px solid #333;">
+
+        
+    @if ($document->payment_condition_id === '02' && $document->isCreditNoteAndType13())
+        @foreach($document->fee as $key => $quote)
+            <tr>
+                <td colspan="5" >&#8226; {{ (empty($quote->getStringPaymentMethodType()) ? 'Cuota #'.( $key + 1) : $quote->getStringPaymentMethodType()) }} / Fecha: {{ $quote->date->format('d-m-Y') }} / Monto: {{ $quote->currency_type->symbol }}{{ $quote->amount }}</td>
+            </tr>
+        @endforeach
+    @endif
+
     <tr>
         <td colspan="5" class="font-lg"  style="padding-top: 2rem;text-transform: uppercase;">Son: <span class="font-bold">{{ $document->number_to_letter }} {{ $document->currency_type->description }}</span></td>
     </tr>

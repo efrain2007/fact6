@@ -68,7 +68,7 @@
 
                 <h6>{{ ($establishment->telephone !== '-')? 'Central telefónica: '.$establishment->telephone : '' }}</h6>
 
-                <h6>{{ ($establishment->email && $establishment->email !== '-')? 'Email: '.$establishment->email : '' }}</h6>
+                <h6>{{ ($establishment->email !== '-')? 'Email: '.$establishment->email : '' }}</h6>
 
                 @isset($establishment->web_address)
                     <h6>{{ ($establishment->web_address !== '-')? 'Web: '.$establishment->web_address : '' }}</h6>
@@ -298,10 +298,10 @@
 <table class="full-width mt-10 mb-10">
     <thead class="">
     <tr class="bg-grey">
+        <th class="border-top-bottom text-center py-2" width="8%">COD.</th>
         <th class="border-top-bottom text-center py-2" width="8%">CANT.</th>
         <th class="border-top-bottom text-center py-2" width="8%">UNIDAD</th>
         <th class="border-top-bottom text-left py-2">DESCRIPCIÓN</th>
-        <th class="border-top-bottom text-left py-2">MODELO</th>
         <th class="border-top-bottom text-right py-2" width="12%">P.UNIT</th>
         <th class="border-top-bottom text-right py-2" width="8%">DTO.</th>
         <th class="border-top-bottom text-right py-2" width="12%">TOTAL</th>
@@ -310,6 +310,7 @@
     <tbody>
     @foreach($document->items as $row)
         <tr>
+            <td class="text-center align-top">{{ $row->item->internal_id }}</td>
             <td class="text-center align-top">
                 @if(((int)$row->quantity != $row->quantity))
                     {{ $row->quantity }}
@@ -319,7 +320,6 @@
             </td>
             <td class="text-center align-top">{{ $row->item->unit_type_id }}</td>
             <td class="text-left align-top">
-
                 @if($row->name_product_pdf)
                     {!!$row->name_product_pdf!!}
                 @else
@@ -335,16 +335,6 @@
                 @if($row->total_plastic_bag_taxes > 0)
                     <br/><span style="font-size: 9px">ICBPER : {{ $row->total_plastic_bag_taxes }}</span>
                 @endif
-
-                @foreach($row->additional_information as $information)
-                    @if ($information)
-                        <br/><span style="font-size: 9px">@if(\App\CoreFacturalo\Helpers\Template\TemplateHelper::canShowNewLineOnObservation())
-                                {!! \App\CoreFacturalo\Helpers\Template\TemplateHelper::SetHtmlTag($information) !!}
-                            @else
-                                {{$information}}
-                            @endif</span>
-                    @endif
-                @endforeach
 
                 @if($row->attributes)
                     @foreach($row->attributes as $attr)
@@ -369,14 +359,19 @@
                     @foreach ($itemSet->getItemsSet($row->item_id) as $item)
                         {{$item}}<br>
                     @endforeach
-                    {{-- {{join( "-", $itemSet->getItemsSet($row->item_id) )}} --}}
                 @endif
+
+                @if($row->item->used_points_for_exchange ?? false)
+                    <br>
+                    <span
+                        style="font-size: 9px">*** Canjeado por {{$row->item->used_points_for_exchange}}  puntos ***</span>
+                @endif
+
                 @if($document->has_prepayment)
                     <br>
                     *** Pago Anticipado ***
                 @endif
             </td>
-            <td class="text-left align-top">{{ $row->item->model ?? '' }}</td>
 
             @if ($configuration_decimal_quantity->change_decimal_quantity_unit_price_pdf)
                 <td class="text-right align-top">{{ $row->generalApplyNumberFormat($row->unit_price, $configuration_decimal_quantity->decimal_quantity_unit_price_pdf) }}</td>
@@ -420,7 +415,7 @@
                 <td class="text-right align-top">-{{ number_format($p->total, 2) }}</td>
             </tr>
             <tr>
-                <td colspan="7" class="border-bottom"></td>
+                <td colspan="6" class="border-bottom"></td>
             </tr>
         @endforeach
     @endif
