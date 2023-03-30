@@ -25,8 +25,6 @@ if (token) {
 
 Vue.prototype.$http = axios;
 
-
-
 Vue.prototype.$setStorage =   function(name,obj){
     localStorage.setItem(name, JSON.stringify(obj));
 };
@@ -47,7 +45,7 @@ $(function () {
 });
 
 
-const mercadopago = window.Mercadopago; 
+const mercadopago = window.Mercadopago;
 
 if(mercadopago)
 {

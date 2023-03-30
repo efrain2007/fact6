@@ -117,6 +117,26 @@ class InventoryKardex extends ModelTenant
         return $sale_note_asoc;
     }
 
+    
+    /**
+     * Asignar nueva descripcion de la transaccion (document)
+     *
+     * @param  string $type_transaction_document
+     * @param  float $qty
+     * @return void
+     */
+    public function setNewTypeTransactionDocument(&$type_transaction_document, $quantity)
+    {
+        if($this->inventory_kardexable)
+        {
+            if($this->inventory_kardexable->isCreditNote())
+            {
+                $type_transaction_document = ($quantity < 0) ? 'Anulación Nota Crédito' : 'Anulación Venta (N.Crédito)';
+            }
+        }
+    }
+
+
     /**
      * @param $balance
      * @return array
@@ -186,11 +206,16 @@ class InventoryKardex extends ModelTenant
 
                 $doc_balance = (isset($inventory_kardexable->sale_note_id) || isset($inventory_kardexable->order_note_id) || $cpe_discounted_stock || isset($inventory_kardexable->sale_notes_relateds)) ? $balance += 0 : $balance += $qty;
 
+                $type_transaction_document = ($qty < 0) ? "Venta" : "Anulación Venta";
+                
+                $this->setNewTypeTransactionDocument($type_transaction_document, $qty);
+
                 $data['input'] = $cpe_input;
                 $data['output'] = $cpe_output;
                 $data['balance'] = $doc_balance;
                 $data['number'] = optional($inventory_kardexable)->series . '-' . optional($inventory_kardexable)->number;
-                $data['type_transaction'] = ($qty < 0) ? "Venta" : "Anulación Venta";
+                $data['type_transaction'] = $type_transaction_document;
+                // $data['type_transaction'] = ($qty < 0) ? "Venta" : "Anulación Venta";
                 $data['date_of_issue'] = isset($inventory_kardexable->date_of_issue) ? $inventory_kardexable->date_of_issue->format('Y-m-d') : '';
                 // $data['sale_note_asoc'] = isset($inventory_kardexable->sale_note_id) ? optional($inventory_kardexable)->sale_note->number_full : "-";
                 $data['sale_note_asoc'] = $this->getSaleNoteAsoc($inventory_kardexable);

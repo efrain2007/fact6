@@ -176,8 +176,9 @@ class InventoryValuedKardex
         return $collection->transform(function($row, $key){
                     return self::getTempData($row);
                 })
-                ->sortBy('date_of_issue')
-                ->sortBy('time_of_issue')
+                ->sortBy('sort_date_of_issue')
+                // ->sortBy('date_of_issue')
+                // ->sortBy('time_of_issue')
                 ->values()
                 ->all();
     }
@@ -246,6 +247,30 @@ class InventoryValuedKardex
         return $data;
 
     }
+    
+
+    /**
+     * 
+     * Obtener fecha para ordenar documentos
+     *
+     * @param  $document
+     * @return Carbon
+     */
+    public static function getDateForSort($document)
+    {
+        $date_of_issue = $document->date_of_issue ?? null;
+        $time_of_issue = $document->time_of_issue ?? null;
+
+        if($date_of_issue && $time_of_issue)
+        {
+            $date_format = $document->date_of_issue->format('Y-m-d').' '.$document->time_of_issue;
+
+            return Carbon::parse($date_format);
+        }
+
+        return null;
+    }
+
 
     private static function getTempData($record_item)
     {
@@ -299,6 +324,7 @@ class InventoryValuedKardex
                 // 'type' => 'output',
                 'model_type' => 'document',
                 'date_of_issue' => $document->date_of_issue->format('d-m-Y'),
+                'sort_date_of_issue' => self::getDateForSort($document),
                 'time_of_issue' => $document->time_of_issue,
                 'document_type_id' => $document->document_type_id,
                 'series' => $document->series,
@@ -334,6 +360,7 @@ class InventoryValuedKardex
                 'type' => 'input',
                 'model_type' => 'purchase',
                 'date_of_issue' => $document->date_of_issue->format('d-m-Y'),
+                'sort_date_of_issue' => self::getDateForSort($document),
                 'time_of_issue' => $document->time_of_issue,
                 'document_type_id' => $document->document_type_id,
                 'series' => $document->series,
@@ -415,6 +442,7 @@ class InventoryValuedKardex
                 'type' => $type,
                 'model_type' => 'dispatch',
                 'date_of_issue' => $document->date_of_issue->format('d-m-Y'),
+                'sort_date_of_issue' => self::getDateForSort($document),
                 'time_of_issue' => $document->time_of_issue,
                 'document_type_id' => $document->document_type_id,
                 'series' => $document->series,

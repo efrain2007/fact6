@@ -91,6 +91,7 @@ class DispatchInput
             'origin_address_id' => Functions::valueKeyInArray($inputs, 'origin_address_id', 0),
             'delivery_address_id' => Functions::valueKeyInArray($inputs, 'delivery_address_id', 0),
             'driver_id' => self::getDriverId($inputs),
+            'transport_id' => self::getTransportId($inputs),
             'dispatcher_id' => self::getDispatcherId($inputs),
             'sender_id' => self::getSenderId($inputs),
             'receiver_id' => self::getReceiverId($inputs),
@@ -367,21 +368,21 @@ class DispatchInput
     private static function getDispatcherId($inputs)
     {
         if ($inputs['document_type_id'] === '09' && $inputs['transport_mode_type_id'] === '01') {
-//            if (key_exists('dispatcher_id', $inputs)) {
+            if (key_exists('dispatcher_id', $inputs)) {
                 return $inputs['dispatcher_id'];
-//            }
-//            $dispatcher = $inputs['dispatcher'];
-//            $record = Dispatcher::query()
-//                ->firstOrCreate([
-//                    'identity_document_type_id' => $dispatcher['identity_document_type_id'],
-//                    'number' => $dispatcher['number']
-//                ], [
-//                    'name' => $dispatcher['name'],
-//                    'number_mtc' => $dispatcher['number_mtc'],
-//                    'address' => '-'
-//                ]);
-//
-//            return $record->id;
+            }
+            $dispatcher = $inputs['dispatcher'];
+            $record = Dispatcher::query()
+                ->firstOrCreate([
+                    'identity_document_type_id' => $dispatcher['identity_document_type_id'],
+                    'number' => $dispatcher['number']
+                ], [
+                    'name' => $dispatcher['name'],
+                    'number_mtc' => $dispatcher['number_mtc'],
+                    'address' => '-'
+                ]);
+
+            return $record->id;
         }
         return null;
     }
@@ -389,48 +390,48 @@ class DispatchInput
     private static function getDriverId($inputs)
     {
         if (($inputs['document_type_id'] === '09' && $inputs['transport_mode_type_id'] === '02') || $inputs['document_type_id'] === '31') {
-//            if (key_exists('driver_id', $inputs)) {
+            if (key_exists('driver_id', $inputs)) {
                 return $inputs['driver_id'];
-//            }
-//            $driver = $inputs['driver'];
-//            $record = Driver::query()
-//                ->firstOrCreate([
-//                    'identity_document_type_id' => $driver['identity_document_type_id'],
-//                    'number' => $driver['number']
-//                ], [
-//                    'name' => $driver['name'],
-//                    'license' => $driver['license'],
-//                    'telephone' => $driver['telephone']
-//                ]);
-//
-//            return $record->id;
+            }
+            $driver = $inputs['driver'];
+            $record = Driver::query()
+                ->firstOrCreate([
+                    'identity_document_type_id' => $driver['identity_document_type_id'],
+                    'number' => $driver['number']
+                ], [
+                    'name' => $driver['name'],
+                    'license' => $driver['license'],
+                    'telephone' => $driver['telephone']
+                ]);
+
+            return $record->id;
         }
         return null;
     }
 
     private static function getTransportId($inputs)
     {
-        if (($inputs['document_type_id'] === '09' && $inputs['transport_mode_type_id'] === '02')  || $inputs['document_type_id'] === '31') {
-//            if (key_exists('transport_id', $inputs)) {
+        if (($inputs['document_type_id'] === '09' && $inputs['transport_mode_type_id'] === '02') || $inputs['document_type_id'] === '31') {
+            if (key_exists('transport_id', $inputs)) {
                 return $inputs['transport_id'];
-//            }
-//            $transport = $inputs['transport'];
-//            $record = Transport::query()
-//                ->firstOrCreate([
-//                    'plate_number' => $transport['plate_number']
-//                ], [
-//                    'model' => $transport['model'],
-//                    'brand' => $transport['brand']
-//                ]);
-//
-//            return $record->id;
+            }
+            $transport = $inputs['transport'];
+            $record = Transport::query()
+                ->firstOrCreate([
+                    'plate_number' => $transport['plate_number']
+                ], [
+                    'model' => $transport['model'],
+                    'brand' => $transport['brand']
+                ]);
+
+            return $record->id;
         }
         return null;
     }
 
     private static function getSenderId($inputs)
     {
-        if ( $inputs['document_type_id'] === '31') {
+        if ($inputs['document_type_id'] === '31') {
             if (key_exists('sender_id', $inputs)) {
                 return $inputs['sender_id'];
             }
@@ -450,7 +451,7 @@ class DispatchInput
 
     private static function getReceiverId($inputs)
     {
-        if ( $inputs['document_type_id'] === '31') {
+        if ($inputs['document_type_id'] === '31') {
             if (key_exists('receiver_id', $inputs)) {
                 return $inputs['receiver_id'];
             }
@@ -470,7 +471,7 @@ class DispatchInput
 
     private static function getReceiverAddressId($inputs)
     {
-        if ( $inputs['document_type_id'] === '31') {
+        if ($inputs['document_type_id'] === '31') {
             return $inputs['receiver_address_id'];
 //            if (key_exists('receiver_address_id', $inputs)) {
 //            }
@@ -489,7 +490,7 @@ class DispatchInput
 
     private static function getSenderAddressId($inputs)
     {
-        if ( $inputs['document_type_id'] === '31') {
+        if ($inputs['document_type_id'] === '31') {
             return $inputs['sender_address_id'];
 //            if (key_exists('sender_address_id', $inputs)) {
 //

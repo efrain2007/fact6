@@ -11,6 +11,8 @@
         $logo = "{$establishment->logo}";
     }
 
+    $prepayments = $document->getPrepaymentsForPdf();
+
 @endphp
 <html>
 <head>
@@ -137,7 +139,7 @@
         </td>
     </tr>
     @endif
-    @if ($document->payment_method_type)
+    {{-- @if ($document->payment_method_type)
     <tr>
         <td class="align-top"><p class="desc">T. Pago:</p></td>
         <td >
@@ -146,7 +148,7 @@
             </p>
         </td>
     </tr>
-    @endif
+    @endif --}}
     <tr>
         <td class="align-top"><p class="desc">Vendedor:</p></td>
         <td>
@@ -273,6 +275,21 @@
             </tr>
         @endforeach
     </tr>
+
+    @if(count($prepayments) > 0)
+        <tr>
+            <td class="desc pt-2">
+                <strong>Pagos referenciales:</strong>
+            </td>
+        </tr>
+        @foreach($prepayments as $row)
+            <tr>
+                <td class="desc">
+                    &#8226; {{ $row->payment_method_type_description }} - {{ $row->reference ? $row->reference.' - ':'' }} {{ $document->currency_type->symbol }} {{ $row->payment }}
+                </td>
+            </tr>
+        @endforeach
+    @endif
 
     <tr>
         <td class="desc pt-3">

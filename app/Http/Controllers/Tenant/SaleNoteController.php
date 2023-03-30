@@ -493,6 +493,9 @@ class SaleNoteController extends Controller
         if($request->license_plate) {
             $records->where('license_plate', $request->license_plate);
         }
+        if($request->observations) {
+            $records->where('observation', 'like', '%' . $request->observations . '%');
+        }
         return $records;
     }
 
@@ -705,8 +708,8 @@ class SaleNoteController extends Controller
                 ],
             ];
 
-        } 
-        catch(Exception $e) 
+        }
+        catch(Exception $e)
         {
             $this->generalWriteErrorLog($e);
 
@@ -956,10 +959,10 @@ class SaleNoteController extends Controller
     private function reloadPDF($sale_note, $format, $filename) {
         $this->createPdf($sale_note, $format, $filename);
     }
-    
+
 
     /**
-     * 
+     *
      * Obtener el ancho del ticket dependiendo del formato
      *
      * @param  string $format_pdf
@@ -972,7 +975,7 @@ class SaleNoteController extends Controller
         if(config('tenant.enabled_template_ticket_80'))
         {
             $width = 76;
-        } 
+        }
         else
         {
             switch ($format_pdf)
@@ -992,9 +995,9 @@ class SaleNoteController extends Controller
         return $width;
     }
 
-    
+
     /**
-     * 
+     *
      * Modificar valores del pdf para el formato ticket_50 (ancho, altura, margenes)
      *
      * @param  float $pdf_margin_right
@@ -1008,7 +1011,7 @@ class SaleNoteController extends Controller
         $pdf_margin_left = 2;
         $base_height = 90;
     }
-    
+
 
     public function createPdf($sale_note = null, $format_pdf = null, $filename = null, $output = 'pdf')
     {
@@ -1228,9 +1231,9 @@ class SaleNoteController extends Controller
         if($helper_facturalo->isAllowedAddDispatchTicket($format_pdf, 'sale-note', $this->document))
         {
             $helper_facturalo->addDocumentDispatchTicket($pdf, $this->company, $this->document, [
-                $template, 
-                $base_template, 
-                $width, 
+                $template,
+                $base_template,
+                $width,
                 ($quantity_rows * 8) + $extra_by_item_description
             ]);
         }
@@ -1239,9 +1242,9 @@ class SaleNoteController extends Controller
         $this->uploadFile($this->document->filename, $pdf->output('', 'S'), 'sale_note');
     }
 
-            
+
     /**
-     * 
+     *
      * Html para impresion directa
      *
      * @param  Mpdf $pdf
@@ -1261,14 +1264,14 @@ class SaleNoteController extends Controller
 
 
     /**
-     * 
+     *
      * Impresión directa en pos
      *
      * @param  int $id
      * @param  string $format
      * @return string
      */
-    public function toTicket($id, $format = 'ticket') 
+    public function toTicket($id, $format = 'ticket')
     {
         $document = SaleNote::find($id);
 
@@ -1698,9 +1701,9 @@ class SaleNoteController extends Controller
 
     }
 
-    
+
     /**
-     * 
+     *
      * Totales de nota venta, se visualiza en el listado
      *
      * @param  Request $request
@@ -2008,7 +2011,7 @@ class SaleNoteController extends Controller
     {
         return SearchItemController::TransformToModalSaleNote(Item::whereIn('id', $request->ids)->get());
     }
-    
+
     /**
      * Despachos de la nv
      *
@@ -2112,9 +2115,9 @@ class SaleNoteController extends Controller
         return ['success' => true];
     }
 
-    
+
     /**
-     * 
+     *
      * Data para generar cpe desde nv
      *
      * @param  int $id
