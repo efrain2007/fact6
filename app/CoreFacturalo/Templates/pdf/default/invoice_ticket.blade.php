@@ -242,7 +242,6 @@
 
     @endif
 
-
     @if ($document->retention)
         <br>
         <tr>
@@ -251,16 +250,16 @@
             </td>
         </tr>
         <tr>
-            <td><p class="desc">Base imponible: </p></td>
-            <td><p class="desc">{{ $document->currency_type->symbol}} {{ $document->retention->base }} </p></td>
+            <td><p class="desc">Base imponible de la retención: </p></td>
+            <td><p class="desc">S/ {{ $document->getRetentionTaxBase() }} </p></td>
         </tr>
         <tr>
-            <td><p class="desc">Porcentaje:</p></td>
+            <td><p class="desc">Porcentaje de la retención:</p></td>
             <td><p class="desc">{{ $document->retention->percentage * 100 }}%</p></td>
         </tr>
         <tr>
-            <td><p class="desc">Monto:</p></td>
-            <td><p class="desc">{{ $document->currency_type->symbol}} {{ $document->retention->amount }}</p></td>
+            <td><p class="desc">Monto de la retención:</p></td>
+            <td><p class="desc">S/ {{ $document->retention->amount_pen }}</p></td>
         </tr>
     @endif
 
@@ -784,7 +783,7 @@
                     <td class="desc">{{ $document->user->name }}</td>
                 @endif
             </tr>
-            @if($document->retention)
+            {{-- @if($document->retention)
                 <br>
                 <table class="full-width">
                     <tr>
@@ -803,7 +802,7 @@
                         <td>Monto de la retención S/ {{ $document->retention->amount_pen }}</td>
                     </tr>
                 </table>
-            @endif
+            @endif --}}
             @if ($document->terms_condition)
                 <tr>
                     <td class="desc">
