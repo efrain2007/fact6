@@ -242,7 +242,6 @@
 
     @endif
 
-
     @if ($document->retention)
         <br>
         <tr>
@@ -251,16 +250,16 @@
             </td>
         </tr>
         <tr>
-            <td><p class="desc">Base imponible: </p></td>
-            <td><p class="desc">{{ $document->currency_type->symbol}} {{ $document->retention->base }} </p></td>
+            <td><p class="desc">Base imponible de la retención: </p></td>
+            <td><p class="desc">S/ {{ $document->getRetentionTaxBase() }} </p></td>
         </tr>
         <tr>
-            <td><p class="desc">Porcentaje:</p></td>
+            <td><p class="desc">Porcentaje de la retención:</p></td>
             <td><p class="desc">{{ $document->retention->percentage * 100 }}%</p></td>
         </tr>
         <tr>
-            <td><p class="desc">Monto:</p></td>
-            <td><p class="desc">{{ $document->currency_type->symbol}} {{ $document->retention->amount }}</p></td>
+            <td><p class="desc">Monto de la retención:</p></td>
+            <td><p class="desc">S/ {{ $document->retention->amount_pen }}</p></td>
         </tr>
     @endif
 
@@ -729,7 +728,47 @@
                 @endforeach
             @endif
 
-            <p class="desc pt-5"><strong>VENDEDOR:</strong> {{ $document->seller ? $document->seller->name : $document->user->name}}</p>
+            <tr>
+                <td class="desc">
+                    <strong>Vendedor:</strong>
+                </td>
+            </tr>
+            <tr>
+                @if ($document->seller)
+                    <td class="desc">{{ $document->seller->name }}</td>
+                @else
+                    <td class="desc">{{ $document->user->name }}</td>
+                @endif
+            </tr>
+            {{-- @if($document->retention)
+                <br>
+                <table class="full-width">
+                    <tr>
+                        <td>
+                            <strong>Información de la retención:</strong>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Base imponible de la retención:
+                            S/ {{ round($document->retention->amount_pen / $document->retention->percentage, 2) }}</td>
+                    </tr>
+                    <tr>
+                        <td>Porcentaje de la retención {{ $document->retention->percentage * 100 }}%</td>
+                    </tr>
+                    <tr>
+                        <td>Monto de la retención S/ {{ $document->retention->amount_pen }}</td>
+                    </tr>
+                </table>
+            @endif --}}
+            @if ($document->terms_condition)
+                <tr>
+                    <td class="desc">
+                        <br>
+                        <h6 style="font-size: 10px; font-weight: bold;">Términos y condiciones del servicio</h6>
+                        {!! $document->terms_condition !!}
+                    </td>
+                </tr>
+                @endif
 
         </td>
     </tr>

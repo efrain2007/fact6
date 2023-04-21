@@ -10,6 +10,7 @@ use App\Models\Tenant\{
     PurchaseItem,
 };
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 
 
 class InventoryValuedKardex
@@ -123,24 +124,47 @@ class InventoryValuedKardex
 
     public static function getDataFormatSunat($params)
     {
-
         $item = Item::whereFilterValuedKardexFormatSunat($params)->findOrFail($params->item_id);
 
         $purchase_items = $item->purchase_item;
         $document_items = $item->document_items;
         $dispatch_items = $item->dispatch_items;
 
-        $all_record_items = ($purchase_items->merge($dispatch_items))->merge($document_items);
-
-        // dd(($all_record_items));
-        // dd(self::getRecordsFromItems($all_record_items));
+        // $all_record_items = ($purchase_items->merge($dispatch_items))->merge($document_items);
+        
+        $all_record_items = self::getAllRecordItems($document_items, $purchase_items, $dispatch_items);
 
         return [
             'item' => $item,
             'records' => self::getRecordsFromItems($all_record_items)
         ];
-
     }
+
+    
+    /**
+     * 
+     * Obtener coleccion con todos los registros
+     *
+     * @param  Collection $document_items
+     * @param  Collection $purchase_items
+     * @param  Collection $dispatch_items
+     * @return Collection
+     */
+    public static function getAllRecordItems($document_items, $purchase_items, $dispatch_items)
+    {
+        $all_items = collect()->merge($document_items);
+
+        $purchase_items->each(function($purchase) use($all_items){
+            $all_items->push($purchase);
+        });
+        
+        $dispatch_items->each(function($dispatch) use($all_items){
+            $all_items->push($dispatch);
+        });
+        
+        return $all_items;
+    }
+
 
     public static function getDataAdditional($request, $params, $item)
     {

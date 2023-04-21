@@ -602,9 +602,13 @@
             @if ($document->retention)
                 <p><strong>Información de la retención</strong></p>
                 <p>
-                    Base imponible: {{ $document->currency_type->symbol}} {{ $document->retention->base }} /
-                    Porcentaje: {{ $document->retention->percentage * 100 }}% /
-                    Monto: {{ $document->currency_type->symbol}} {{ $document->retention->amount }}
+                    Base imponible de la retención: S/ {{ $document->getRetentionTaxBase() }}
+                </p>
+                <p>
+                    Porcentaje de la retención: {{ $document->retention->percentage * 100 }}% 
+                </p>
+                <p>
+                    Monto de la retención: S/ {{ $document->retention->amount_pen }}
                 </p>
             @endif
 
@@ -686,7 +690,7 @@
         @endif
     </tr>
 </table>
-@if($document->retention)
+{{-- @if($document->retention)
     <br>
     <table class="full-width">
         <tr>
@@ -694,12 +698,13 @@
                 <strong>Información de la retención:</strong>
             </td>
             <td>Base imponible de la retención:
-                S/ {{ round($document->retention->amount_pen / $document->retention->percentage, 2) }}</td>
+                S/ {{ round($document->retention->amount_pen / $document->retention->percentage, 2) }}
+            </td>
             <td>Porcentaje de la retención {{ $document->retention->percentage * 100 }}%</td>
             <td>Monto de la retención S/ {{ $document->retention->amount_pen }}</td>
         </tr>
     </table>
-@endif
+@endif --}}
 @if ($document->terms_condition)
     <br>
     <table class="full-width">

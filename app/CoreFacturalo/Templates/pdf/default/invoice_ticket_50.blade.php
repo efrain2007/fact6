@@ -191,25 +191,26 @@
 
     @if ($document->retention)
         <br>
+        <br>
         <tr>
             <td colspan="2">
                 <p class="desc-ticket text-uppercase"><span>Información de la retención</span></p>
             </td>
         </tr>
         <tr>
-            <td><p class="desc-ticket text-uppercase">Base imponible: </p></td>
+            <td><p class="desc-ticket text-uppercase">Base imponible de la retención: </p></td>
             <td>
-                <p class="desc-ticket text-uppercase">{{ $document->currency_type->symbol}} {{ $document->retention->base }} </p>
+                <p class="desc-ticket text-uppercase">S/ {{ $document->getRetentionTaxBase() }} </p>
             </td>
         </tr>
         <tr>
-            <td><p class="desc-ticket text-uppercase">Porcentaje:</p></td>
+            <td><p class="desc-ticket text-uppercase">Porcentaje de la retención:</p></td>
             <td><p class="desc-ticket text-uppercase">{{ $document->retention->percentage * 100 }}%</p></td>
         </tr>
         <tr>
-            <td><p class="desc-ticket text-uppercase">Monto:</p></td>
+            <td><p class="desc-ticket text-uppercase">Monto de la retención:</p></td>
             <td>
-                <p class="desc-ticket text-uppercase">{{ $document->currency_type->symbol}} {{ $document->retention->amount }}</p>
+                <p class="desc-ticket text-uppercase">S/ {{ $document->retention->amount_pen }}</p>
             </td>
         </tr>
     @endif
@@ -580,7 +581,7 @@
                         </tr>
                 </table>
             @endif
-            @if($document->retention)
+            {{-- @if($document->retention)
                 <br>
                 <table class="full-width">
                     <tr>
@@ -599,7 +600,7 @@
                         <td>Monto de la retención S/ {{ $document->retention->amount_pen }}</td>
                     </tr>
                 </table>
-            @endif
+            @endif --}}
             @if ($document->terms_condition)
                 <tr>
                     <td class="desc-ticket text-uppercase">
