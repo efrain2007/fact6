@@ -2425,6 +2425,15 @@ export default {
             this.calculateTotal();
             // this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
 
+            this.filterSeriesForTable()
+
+        },
+        filterSeriesForTable()
+        {
+            if(this.table)
+            {
+                this.filterSeries()
+            }
         },
         preparePaymentsFee(data)
         {
