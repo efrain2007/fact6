@@ -101,4 +101,18 @@ class QuotationController extends Controller
         ];
     }
 
+    
+    /**
+     * 
+     * Sirve para evitar error al consultar endpoint desde la app, funcion agregada en prox
+     *
+     * @return array
+     */
+    public function tables()
+    {
+        return [
+            'series' => []
+        ];
+    }
+
 }

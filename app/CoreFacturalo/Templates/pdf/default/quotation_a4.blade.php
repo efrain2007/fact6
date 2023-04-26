@@ -245,7 +245,10 @@
             <td class="text-left">{{ $row->item->model ?? '' }}</td>
             <td class="text-center align-top">
                 @inject('itemLotGroup', 'App\Services\ItemLotsGroupService')
+
+                @if (isset($row->item->lots_group))
                 {{ $itemLotGroup->getLote($row->item->lots_group) }}
+                @endif
             </td>
             <td class="text-right align-top">{{ number_format($row->unit_price, 2) }}</td>
             <td class="text-right align-top">
