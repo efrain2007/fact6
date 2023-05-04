@@ -58,6 +58,7 @@ class MobileController extends Controller
             'success' => true,
             'name' => $user->name,
             'email' => $user->email,
+            'establishment_id' => auth()->user()->establishment->id,
             'seriedefault' => $user->series_id,
             'token' => $user->api_token,
             'restaurant_role_id' => $user->restaurant_role_id,
