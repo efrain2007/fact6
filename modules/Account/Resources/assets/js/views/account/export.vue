@@ -1,7 +1,7 @@
 <template>
-    <div class="card mb-0 pt-2 pt-md-0">
-        <div class="card-header bg-info">
-            <h2><a href="/dashboard"><i class="fas fa-tachometer-alt"></i></a></h2>
+    <div>
+        <div class="page-header pr-0">
+            <h2><a href="#"><i class="fas fa-tachometer-alt"></i></a></h2>
             <ol class="breadcrumbs">
                 <li class="active"><span>{{ title }}</span></li>
             </ol>
@@ -93,6 +93,7 @@
                         <el-select v-model="form.type">
                             <el-option key="concar" value="concar" label="CONCAR"></el-option>
                             <el-option key="siscont" value="siscont" label="SISCONT"></el-option>
+                            <el-option key="siscont" value="siscont_excel" label="SISCONT EXCEL"></el-option>
                             <el-option key="foxcont" value="foxcont" label="FOXCONT"></el-option>
                             <el-option key="contasis" value="contasis" label="CONTASIS"></el-option>
                             <el-option key="adsoft" value="adsoft" label="ADSOFT"></el-option>
