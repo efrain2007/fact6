@@ -92,7 +92,7 @@
 
 <script>
 
-import OutputLotsGroupForm from '../../../../../../resources/js/views/tenant/documents/partials/lots_group'
+import OutputLotsGroupForm from '../../../../../../resources/js/views/tenant/documents/partials/lots_group.vue'
 import OutputLotsForm from '../../../../../../resources/js/views/tenant/documents/partials/lots.vue'
 //import OutputLotsForm from './partials/lots.vue';
 
