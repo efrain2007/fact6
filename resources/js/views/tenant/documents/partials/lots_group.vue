@@ -1,7 +1,7 @@
 <template>
     <el-dialog
         :title="titleDialog"
-        width="40%"
+        width="50%"
         :visible="showDialog"
         @open="create"
         :close-on-click-modal="false"
@@ -11,7 +11,7 @@
     >
         <div class="form-body">
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-6" style="word-break: break-word;">
                     <span>Si al seleccionar lotes la cantidad es mayor, el último lote quedara con la diferencia. </span>
                 </div>
                 <div class="col-md-6 text-right">

@@ -56,7 +56,7 @@
                         <a href="#" class="text-center font-weight-bold text-info" @click.prevent="clickLotcodeOutput">[&#10004;
                             Seleccionar series]</a>
                     </div>
-                    <div style="padding-top: 3%;" class="col-md-2 col-sm-2"
+                    <div style="padding-top: 3%;" class="col-md-4 mt-4"
                          v-if="form.item_id && form.lots_enabled">
                         <a href="#" class="text-center font-weight-bold text-info" @click.prevent="clickLotsGroup">[&#10004;
                             Seleccionar lote]</a>
