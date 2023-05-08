@@ -13,6 +13,8 @@ use Modules\Account\Exports\ReportAccountingConcarExport;
 use Modules\Account\Exports\ReportAccountingFoxcontExport;
 use Modules\Account\Exports\ReportAccountingContasisExport;
 use Modules\Account\Exports\ReportAccountingSumeriusExport;
+use App\Exports\GeneralFormatExport;
+
 
 class AccountController extends Controller
 {
@@ -97,14 +99,81 @@ class AccountController extends Controller
                 return (new ReportAccountingSumeriusExport)
                     ->data($data)
                     ->download($filename.'.xlsx');
+        
+            case 'siscont_excel':
+
+                $data = [
+                    'records' => $this->getStructureSiscontExcel($records),
+                ];
+                
+                return (new GeneralFormatExport)
+                        ->data($data)
+                        ->view_name('account::accounting.templates.excel_siscont') 
+                        ->download($filename.'.xlsx');
         }
     }
+    
+
+    /**
+     *
+     * @param  Collection $documents
+     * @return Collection
+     */
+    private function getStructureSiscontExcel($documents)
+    {
+        $company_account = CompanyAccount::first();
+
+        return $documents->transform(function($row) use($company_account) {
+            
+            $income_account = null;
+            $igv_account = null;
+            $receivable = null;
+
+            if($row->hasNationalCurrency())
+            {
+                $income_account = $company_account->subtotal_pen;
+                $igv_account =  $company_account->igv_pen;
+                $receivable =  $company_account->total_pen;
+            }
+            else
+            {
+                $income_account = $company_account->subtotal_usd;
+                $igv_account =  $company_account->igv_usd;
+                $receivable =  $company_account->total_usd;
+            }
+
+            return [
+                'date_of_issue' => $row->date_of_issue->format('d/m/Y'),
+                'date_of_due' => $row->invoice->date_of_due->format('d/m/Y'),
+                'document_type_id' => $row->document_type_id,
+                'number_full' => $row->number_full,
+                'customer_number' => $row->customer->number,
+                'customer_name' => $row->customer->name,
+                'customer_identity_document_type_id' => $row->customer->identity_document_type_id,
+                'total_exportation' => $row->getValueGreaterZero($row->total_exportation),
+                'total_taxed' => $row->getValueGreaterZero($row->total_taxed),
+                'total_unaffected' => $row->getValueGreaterZero($row->total_unaffected),
+                'total_exonerated' => $row->getValueGreaterZero($row->total_exonerated),
+                'total_isc' => $row->getValueGreaterZero($row->total_isc),
+                'total_igv' => $row->getValueGreaterZero($row->total_igv),
+                'total_plastic_bag_taxes' => $row->getValueGreaterZero($row->total_plastic_bag_taxes),
+                'total' => $row->getValueGreaterZero($row->total),
+                'currency_type_id' => $row->hasNationalCurrency() ? 'S' : 'D',
+                'exchange_rate_sale' => $row->exchange_rate_sale,
+                'income_account' => $income_account,
+                'igv_account' => $igv_account,
+                'receivable' => $receivable,
+            ];
+        });
+
+    }
+
 
     private function getStructureSumerius($documents)
     {
         return $documents->transform(function($row) {
             return [
-                'col_A' => number_format($row->id, 2, ".", ""),
+                'col_A' => 'number_format'($row->id, 2, ".", ""),
                 'date_of_issue' => $row->date_of_issue->format('d/m/Y'),
                 'date_of_due' => $row->invoice->date_of_due->format('d/m/Y'),
                 'document_type_id' => $row->document_type_id,
@@ -115,15 +184,15 @@ class AccountController extends Controller
                 'customer_identity_document_type_id' => $row->customer->identity_document_type_id,
                 'customer_number' => $row->customer->number,
                 'customer_name' => $row->customer->name,
-                'total_isc' => number_format($row->total_isc, 2, ".", ""),
-                'total_exportation' => number_format($row->total_exportation, 2, ".", ""),
-                'total_unaffected' => number_format($row->total_unaffected, 2, ".", ""),
-                'total_taxed' => number_format($row->total_taxed, 2, ".", ""),
-                'total_igv' => number_format($row->total_igv, 2, ".", ""),
-                'total_plastic_bag_taxes' => number_format($row->total_plastic_bag_taxes, 2, ".", ""),
-                'total' => number_format($row->total, 2, ".", ""),
-                'total_exonerated' => number_format($row->total_exonerated, 2, ".", ""),
-                'total_retention' => number_format(0, 2, ".", ""),
+                'total_isc' => 'number_format'($row->total_isc, 2, ".", ""),
+                'total_exportation' => 'number_format'($row->total_exportation, 2, ".", ""),
+                'total_unaffected' => 'number_format'($row->total_unaffected, 2, ".", ""),
+                'total_taxed' => 'number_format'($row->total_taxed, 2, ".", ""),
+                'total_igv' => 'number_format'($row->total_igv, 2, ".", ""),
+                'total_plastic_bag_taxes' => 'number_format'($row->total_plastic_bag_taxes, 2, ".", ""),
+                'total' => 'number_format'($row->total, 2, ".", ""),
+                'total_exonerated' => 'number_format'($row->total_exonerated, 2, ".", ""),
+                'total_retention' => 'number_format'(0, 2, ".", ""),
                 'col_S' => '',
                 'col_T' => '',
                 'col_U' => '',
@@ -152,7 +221,7 @@ class AccountController extends Controller
                 'tipdoc' => $row->document_type_id,
                 'tipmon' => strtoupper($row->currency_type->description),
                 'detrac' => '',
-                'isc' => $row->state_type_id == '11' ? 0 : number_format($row->total_isc, 2, '.', ''),
+                'isc' => $row->state_type_id == '11' ? 0 : 'number_format'($row->total_isc, 2, '.', ''),
                 'icbper' => '',
                 'imp_ina' => 0,
                 'imp_exp' => '',
@@ -177,13 +246,13 @@ class AccountController extends Controller
             } else {
                 if ($row->total_exonerated == 0) {
                     $document['imp_exo'] = 0;
-                    $document['imp_vta'] = number_format($row->total_value, 2, '.', '');
-                    $document['imp_tot'] = number_format($row->total, 2, '.', '');
-                    $document['imp_igv'] = number_format($row->total_igv, 2, '.', '');
+                    $document['imp_vta'] = 'number_format'($row->total_value, 2, '.', '');
+                    $document['imp_tot'] = 'number_format'($row->total, 2, '.', '');
+                    $document['imp_igv'] = 'number_format'($row->total_igv, 2, '.', '');
                 } else {
-                    $document['imp_exo'] = number_format($row->total_exonerated, 2, '.', '');
-                    $document['imp_vta'] = number_format($row->total_exonerated, 2, '.', '');
-                    $document['imp_tot'] = number_format($row->total_exonerated, 2, '.', '');
+                    $document['imp_exo'] = 'number_format'($row->total_exonerated, 2, '.', '');
+                    $document['imp_vta'] = 'number_format'($row->total_exonerated, 2, '.', '');
+                    $document['imp_tot'] = 'number_format'($row->total_exonerated, 2, '.', '');
                     $document['imp_igv'] = 0;
                 }
             }
@@ -229,15 +298,15 @@ class AccountController extends Controller
                 'customer_identity_document_type_id' => $row->customer->identity_document_type_id,
                 'customer_number' => $row->customer->number,
                 'customer_name' => $row->customer->name,
-                'total_isc' => number_format($row->total_isc, 2, ".", ""),
-                'total_exportation' => number_format($row->total_exportation, 2, ".", ""),
-                'total_unaffected' => number_format($row->total_unaffected, 2, ".", ""),
-                'total_taxed' => number_format($row->total_taxed, 2, ".", ""),
-                'total_igv' => number_format($row->total_igv, 2, ".", ""),
-                'total_plastic_bag_taxes' => number_format($row->total_plastic_bag_taxes, 2, ".", ""),
-                'total_exonerated' => number_format($row->total_exonerated, 2, ".", ""),
-                'total_retention' => number_format(0, 2, ".", ""),
-                'total' => number_format($row->total, 2, ".", ""),
+                'total_isc' => 'number_format'($row->total_isc, 2, ".", ""),
+                'total_exportation' => 'number_format'($row->total_exportation, 2, ".", ""),
+                'total_unaffected' => 'number_format'($row->total_unaffected, 2, ".", ""),
+                'total_taxed' => 'number_format'($row->total_taxed, 2, ".", ""),
+                'total_igv' => 'number_format'($row->total_igv, 2, ".", ""),
+                'total_plastic_bag_taxes' => 'number_format'($row->total_plastic_bag_taxes, 2, ".", ""),
+                'total_exonerated' => 'number_format'($row->total_exonerated, 2, ".", ""),
+                'total_retention' => 'number_format'(0, 2, ".", ""),
+                'total' => 'number_format'($row->total, 2, ".", ""),
             ];
         });
 
@@ -322,8 +391,8 @@ class AccountController extends Controller
                         'col_M' => '',
                         'col_N' => 'H',
                         'col_O' => ($row->state_type_id == 11) ? 0 : $item->total,
-                        'col_P' => ($row->state_type_id == 11) ? 0 : ( ($row->currency_type_id === 'PEN') ? number_format($item->total / $row->exchange_rate_sale, 2, ".", "") : $item->total),
-                        'col_Q' => ($row->state_type_id == 11) ? 0 : ( ($row->currency_type_id === 'PEN') ? $item->total : number_format($item->total * $row->exchange_rate_sale, 2, ".", "")),
+                        'col_P' => ($row->state_type_id == 11) ? 0 : ( ($row->currency_type_id === 'PEN') ? 'number_format'($item->total / $row->exchange_rate_sale, 2, ".", "") : $item->total),
+                        'col_Q' => ($row->state_type_id == 11) ? 0 : ( ($row->currency_type_id === 'PEN') ? $item->total : 'number_format'($item->total * $row->exchange_rate_sale, 2, ".", "")),
                         'col_R' => $document_type_id,
                         'col_S' => $row->number_full,
                         'col_T' => $row->date_of_issue->format('d/m/Y'),
@@ -368,8 +437,8 @@ class AccountController extends Controller
                         'col_M' => '',
                         'col_N' => 'D',
                         'col_O' => ($row->state_type_id == 11) ? 0 : $item->total_igv,
-                        'col_P' => ($row->state_type_id == 11) ? 0 : ( ($row->currency_type_id === 'PEN') ? number_format($item->total_igv / $row->exchange_rate_sale, 2, ".", "") : $item->total_igv),
-                        'col_Q' => ($row->state_type_id == 11) ? 0 : ( ($row->currency_type_id === 'PEN') ? $item->total_igv : number_format($item->total_igv * $row->exchange_rate_sale, 2, ".", "")),
+                        'col_P' => ($row->state_type_id == 11) ? 0 : ( ($row->currency_type_id === 'PEN') ? 'number_format'($item->total_igv / $row->exchange_rate_sale, 2, ".", "") : $item->total_igv),
+                        'col_Q' => ($row->state_type_id == 11) ? 0 : ( ($row->currency_type_id === 'PEN') ? $item->total_igv : 'number_format'($item->total_igv * $row->exchange_rate_sale, 2, ".", "")),
                         'col_R' => $document_type_id,
                         'col_S' => $row->number_full,
                         'col_T' => $row->date_of_issue->format('d/m/Y'),
@@ -413,8 +482,8 @@ class AccountController extends Controller
                         'col_M' => '',
                         'col_N' => 'D',
                         'col_O' => ($row->state_type_id == 11) ? 0 : $item->total_value,
-                        'col_P' => ($row->state_type_id == 11) ? 0 : ( ($row->currency_type_id === 'PEN') ? number_format($item->total_value / $row->exchange_rate_sale, 2, ".", "") : $item->total_value),
-                        'col_Q' => ($row->state_type_id == 11) ? 0 : ( ($row->currency_type_id === 'PEN') ? $item->total_value : number_format($item->total_value * $row->exchange_rate_sale, 2, ".", "")),
+                        'col_P' => ($row->state_type_id == 11) ? 0 : ( ($row->currency_type_id === 'PEN') ? 'number_format'($item->total_value / $row->exchange_rate_sale, 2, ".", "") : $item->total_value),
+                        'col_Q' => ($row->state_type_id == 11) ? 0 : ( ($row->currency_type_id === 'PEN') ? $item->total_value : 'number_format'($item->total_value * $row->exchange_rate_sale, 2, ".", "")),
                         'col_R' => $document_type_id,
                         'col_S' => $row->number_full,
                         'col_T' => $row->date_of_issue->format('d/m/Y'),
@@ -462,8 +531,8 @@ class AccountController extends Controller
                         'col_M' => '',
                         'col_N' => 'D',
                         'col_O' => ($row->state_type_id == 11) ? 0 : $item->total,
-                        'col_P' => ($row->state_type_id == 11) ? 0 : ( ($row->currency_type_id === 'PEN') ? number_format($item->total / $row->exchange_rate_sale, 2, ".", "") : $item->total),
-                        'col_Q' => ($row->state_type_id == 11) ? 0 : ( ($row->currency_type_id === 'PEN') ? $item->total : number_format($item->total * $row->exchange_rate_sale, 2, ".", "")),
+                        'col_P' => ($row->state_type_id == 11) ? 0 : ( ($row->currency_type_id === 'PEN') ? 'number_format'($item->total / $row->exchange_rate_sale, 2, ".", "") : $item->total),
+                        'col_Q' => ($row->state_type_id == 11) ? 0 : ( ($row->currency_type_id === 'PEN') ? $item->total : 'number_format'($item->total * $row->exchange_rate_sale, 2, ".", "")),
                         'col_R' => $document_type_id,
                         'col_S' => $row->number_full,
                         'col_T' => $row->date_of_issue->format('d/m/Y'),
@@ -508,8 +577,8 @@ class AccountController extends Controller
                         'col_M' => '',
                         'col_N' => 'H',
                         'col_O' => ($row->state_type_id == 11) ? 0 : $item->total_igv,
-                        'col_P' => ($row->state_type_id == 11) ? 0 : ( ($row->currency_type_id === 'PEN') ? number_format($item->total_igv / $row->exchange_rate_sale, 2, ".", "") : $item->total_igv),
-                        'col_Q' => ($row->state_type_id == 11) ? 0 : ( ($row->currency_type_id === 'PEN') ? $item->total_igv : number_format($item->total_igv * $row->exchange_rate_sale, 2, ".", "")),
+                        'col_P' => ($row->state_type_id == 11) ? 0 : ( ($row->currency_type_id === 'PEN') ? 'number_format'($item->total_igv / $row->exchange_rate_sale, 2, ".", "") : $item->total_igv),
+                        'col_Q' => ($row->state_type_id == 11) ? 0 : ( ($row->currency_type_id === 'PEN') ? $item->total_igv : 'number_format'($item->total_igv * $row->exchange_rate_sale, 2, ".", "")),
                         'col_R' => $document_type_id,
                         'col_S' => $row->number_full,
                         'col_T' => $row->date_of_issue->format('d/m/Y'),
@@ -553,8 +622,8 @@ class AccountController extends Controller
                         'col_M' => '',
                         'col_N' => 'H',
                         'col_O' => ($row->state_type_id == 11) ? 0 : $item->total_value,
-                        'col_P' => ($row->state_type_id == 11) ? 0 : ( ($row->currency_type_id === 'PEN') ? number_format($item->total_value / $row->exchange_rate_sale, 2, ".", "") : $item->total_value),
-                        'col_Q' => ($row->state_type_id == 11) ? 0 : ( ($row->currency_type_id === 'PEN') ? $item->total_value : number_format($item->total_value * $row->exchange_rate_sale, 2, ".", "")),
+                        'col_P' => ($row->state_type_id == 11) ? 0 : ( ($row->currency_type_id === 'PEN') ? 'number_format'($item->total_value / $row->exchange_rate_sale, 2, ".", "") : $item->total_value),
+                        'col_Q' => ($row->state_type_id == 11) ? 0 : ( ($row->currency_type_id === 'PEN') ? $item->total_value : 'number_format'($item->total_value * $row->exchange_rate_sale, 2, ".", "")),
                         'col_R' => $document_type_id,
                         'col_S' => $row->number_full,
                         'col_T' => $row->date_of_issue->format('d/m/Y'),
@@ -613,7 +682,7 @@ class AccountController extends Controller
                     'col_025_036' => ($row->state_type_id == '11') ? str_pad(0, 12, '0', STR_PAD_LEFT) : str_pad($item->total, 12, '0', STR_PAD_LEFT),
                     'col_037_037' => 'D',
                     'col_038_038' => $currency_type_id,
-                    'col_039_048' => str_pad(number_format($row->exchange_rate_sale, 7), 10, '0', STR_PAD_LEFT),
+                    'col_039_048' => str_pad('number_format'($row->exchange_rate_sale, 7), 10, '0', STR_PAD_LEFT),
                     'col_049_050' => $document_type_id,
                     'col_051_070' => $row->series.'-'.str_pad($row->number, 15,'0', STR_PAD_LEFT),
                     'col_071_078' => str_pad(($row->date_of_due)?$row->date_of_due->format('d/m/y'):$row->date_of_issue->format('d/m/y'), 8,' ', STR_PAD_LEFT),
@@ -652,7 +721,7 @@ class AccountController extends Controller
                     'col_025_036' => ($row->state_type_id == '11') ? str_pad(0, 12, '0', STR_PAD_LEFT) : str_pad($item->total_igv, 12, '0', STR_PAD_LEFT),
                     'col_037_037' => 'H',
                     'col_038_038' => $currency_type_id,
-                    'col_039_048' => str_pad(number_format($row->exchange_rate_sale, 7), 10, '0', STR_PAD_LEFT),
+                    'col_039_048' => str_pad('number_format'($row->exchange_rate_sale, 7), 10, '0', STR_PAD_LEFT),
                     'col_049_050' => $document_type_id,
                     'col_051_070' => $row->series.'-'.str_pad($row->number, 15,'0', STR_PAD_LEFT),
                     'col_071_078' => str_pad(($row->date_of_due)?$row->date_of_due->format('d/m/y'):$row->date_of_issue->format('d/m/y'), 8,' ', STR_PAD_LEFT),
@@ -693,7 +762,7 @@ class AccountController extends Controller
                         'col_025_036' => str_pad($item->total_value, 12, '0', STR_PAD_LEFT),
                         'col_037_037' => 'H',
                         'col_038_038' => $currency_type_id,
-                        'col_039_048' => str_pad(number_format($row->exchange_rate_sale, 7), 10, '0', STR_PAD_LEFT),
+                        'col_039_048' => str_pad('number_format'($row->exchange_rate_sale, 7), 10, '0', STR_PAD_LEFT),
                         'col_049_050' => $document_type_id,
                         'col_051_070' => $row->series.'-'.str_pad($row->number, 15,'0', STR_PAD_LEFT),
                         'col_071_078' => str_pad(($row->date_of_due)?$row->date_of_due->format('d/m/y'):$row->date_of_issue->format('d/m/y'), 8,' ', STR_PAD_LEFT),
@@ -763,15 +832,15 @@ class AccountController extends Controller
                 'customer_number' => $row->customer->number,
                 'customer_name' => $row->customer->name,
 
-                'total_exportation' => number_format($row->total_exportation, 2, ".", ""),
-                'total_taxed' => number_format($row->total_taxed, 2, ".", ""),
-                'total_exonerated' => number_format($row->total_exonerated, 2, ".", ""),
-                'total_unaffected' => number_format($row->total_unaffected, 2, ".", ""),
-                'total_isc' => number_format($row->total_isc, 2, ".", ""),
-                'total_igv' => number_format($row->total_igv, 2, ".", ""),
-                'total_other_taxes' => number_format($row->total_total_other_taxes, 2, ".", ""),
-                'total' => number_format($row->total, 2, ".", ""),
-                'exchange_rate_sale' => number_format($row->exchange_rate_sale, 2, ".", ""),
+                'total_exportation' => 'number_format'($row->total_exportation, 2, ".", ""),
+                'total_taxed' => 'number_format'($row->total_taxed, 2, ".", ""),
+                'total_exonerated' => 'number_format'($row->total_exonerated, 2, ".", ""),
+                'total_unaffected' => 'number_format'($row->total_unaffected, 2, ".", ""),
+                'total_isc' => 'number_format'($row->total_isc, 2, ".", ""),
+                'total_igv' => 'number_format'($row->total_igv, 2, ".", ""),
+                'total_other_taxes' => 'number_format'($row->total_total_other_taxes, 2, ".", ""),
+                'total' => 'number_format'($row->total, 2, ".", ""),
+                'exchange_rate_sale' => 'number_format'($row->exchange_rate_sale, 2, ".", ""),
                 'db_date_issue' => ($document_base) ? $document_base->affected_document->date_of_issue->format('d/m/Y') : '',
                 'db_document_type_id' => ($document_base) ? $document_base->affected_document->document_type_id : '',
                 'db_series' => ($document_base) ? $document_base->affected_document->series : '',
