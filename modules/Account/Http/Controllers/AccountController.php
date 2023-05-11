@@ -13,6 +13,8 @@ use Modules\Account\Exports\ReportAccountingConcarExport;
 use Modules\Account\Exports\ReportAccountingFoxcontExport;
 use Modules\Account\Exports\ReportAccountingContasisExport;
 use Modules\Account\Exports\ReportAccountingSumeriusExport;
+use App\Exports\GeneralFormatExport;
+
 
 class AccountController extends Controller
 {
@@ -97,8 +99,75 @@ class AccountController extends Controller
                 return (new ReportAccountingSumeriusExport)
                     ->data($data)
                     ->download($filename.'.xlsx');
+        
+            case 'siscont_excel':
+
+                $data = [
+                    'records' => $this->getStructureSiscontExcel($records),
+                ];
+                
+                return (new GeneralFormatExport)
+                        ->data($data)
+                        ->view_name('account::accounting.templates.excel_siscont') 
+                        ->download($filename.'.xlsx');
         }
     }
+    
+
+    /**
+     *
+     * @param  Collection $documents
+     * @return Collection
+     */
+    private function getStructureSiscontExcel($documents)
+    {
+        $company_account = CompanyAccount::first();
+
+        return $documents->transform(function($row) use($company_account) {
+            
+            $income_account = null;
+            $igv_account = null;
+            $receivable = null;
+
+            if($row->hasNationalCurrency())
+            {
+                $income_account = $company_account->subtotal_pen;
+                $igv_account =  $company_account->igv_pen;
+                $receivable =  $company_account->total_pen;
+            }
+            else
+            {
+                $income_account = $company_account->subtotal_usd;
+                $igv_account =  $company_account->igv_usd;
+                $receivable =  $company_account->total_usd;
+            }
+
+            return [
+                'date_of_issue' => $row->date_of_issue->format('d/m/Y'),
+                'date_of_due' => $row->invoice->date_of_due->format('d/m/Y'),
+                'document_type_id' => $row->document_type_id,
+                'number_full' => $row->number_full,
+                'customer_number' => $row->customer->number,
+                'customer_name' => $row->customer->name,
+                'customer_identity_document_type_id' => $row->customer->identity_document_type_id,
+                'total_exportation' => $row->getValueGreaterZero($row->total_exportation),
+                'total_taxed' => $row->getValueGreaterZero($row->total_taxed),
+                'total_unaffected' => $row->getValueGreaterZero($row->total_unaffected),
+                'total_exonerated' => $row->getValueGreaterZero($row->total_exonerated),
+                'total_isc' => $row->getValueGreaterZero($row->total_isc),
+                'total_igv' => $row->getValueGreaterZero($row->total_igv),
+                'total_plastic_bag_taxes' => $row->getValueGreaterZero($row->total_plastic_bag_taxes),
+                'total' => $row->getValueGreaterZero($row->total),
+                'currency_type_id' => $row->hasNationalCurrency() ? 'S' : 'D',
+                'exchange_rate_sale' => $row->exchange_rate_sale,
+                'income_account' => $income_account,
+                'igv_account' => $igv_account,
+                'receivable' => $receivable,
+            ];
+        });
+
+    }
+
 
     private function getStructureSumerius($documents)
     {

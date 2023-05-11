@@ -293,13 +293,14 @@ class ReportKardexController extends Controller
         $item_id = $request['item_id'];
         $date_start = $request['date_start'];
         $date_end = $request['date_end'];
+        $warehouse_id = $request['warehouse_id'];
 
-        $records = $this->data2($item_id, $date_start, $date_end);
+        $records = $this->data2($item_id, $date_start, $date_end, $warehouse_id);
 
         return $records;
     }
 
-    private function data2($item_id, $date_start, $date_end)
+    private function data2($item_id, $date_start, $date_end, $warehouse_id = null)
     {
 
         // $warehouse = Warehouse::where('establishment_id', auth()->user()->establishment_id)->first();
@@ -318,7 +319,6 @@ class ReportKardexController extends Controller
             $data = $data->where('item_id', $item_id);
         }
 
-
         return $data;
 
     }
@@ -327,7 +327,7 @@ class ReportKardexController extends Controller
     {
         $records = $this->getRecords2($request->all());
 
-        return new ReportKardexLotsGroupCollection($records->paginate(config('tenant.items_per_page')));
+        return new ReportKardexLotsGroupCollection($records->paginate(config('tenant.items_per_page')), $request->warehouse_id);
 
 
     }
@@ -339,15 +339,16 @@ class ReportKardexController extends Controller
         $item_id = $request['item_id'];
         $date_start = $request['date_start'];
         $date_end = $request['date_end'];
+        $warehouse_id = $request['warehouse_id'];
 
-        $records = $this->data3($item_id, $date_start, $date_end);
+        $records = $this->data3($item_id, $date_start, $date_end, $warehouse_id);
 
         return $records;
 
     }
 
 
-    private function data3($item_id, $date_start, $date_end)
+    private function data3($item_id, $date_start, $date_end, $warehouse_id = null)
     {
 
         // $warehouse = Warehouse::where('establishment_id', auth()->user()->establishment_id)->first();
@@ -366,31 +367,18 @@ class ReportKardexController extends Controller
             $data = $data->where('item_id', $item_id);
         }
 
+        if($warehouse_id && $warehouse_id != 'all') {
+            $data = $data->where('warehouse_id', $warehouse_id);
+        }
 
         return $data;
-
     }
 
     public function records_series_kardex(Request $request)
     {
-
         $records = $this->getRecords3($request->all());
 
         return new ReportKardexItemLotCollection($records->paginate(config('tenant.items_per_page')));
-
-        /*$records = [];
-
-        if($item)
-        {
-            $records  =  ItemLot::where('item_id', $item)->get();
-
-        }
-        else{
-            $records  = ItemLot::all();
-        }
-
-       // $records  =  ItemLot::all();
-        return new ReportKardexItemLotCollection($records);*/
 
     }
 

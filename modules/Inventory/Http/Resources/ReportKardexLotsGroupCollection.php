@@ -3,6 +3,7 @@
 namespace Modules\Inventory\Http\Resources;
 
 use Illuminate\Http\Resources\Json\ResourceCollection;
+use Modules\Inventory\Models\ItemWarehouse;
 use Carbon\Carbon;
 
 
@@ -16,7 +17,21 @@ class ReportKardexLotsGroupCollection extends ResourceCollection
      */
     public function toArray($request)
     {
-        return $this->collection->transform(function($row, $key)  {
+        return $this->collection->transform(function($row, $key) use ($request) {
+
+            $quantity = $row->quantity;
+            if($request->warehouse_id && $request->warehouse_id != 'all') {
+                $transfers = ItemWarehouse::where('item_id', $row->item_id)
+                    ->where('warehouse_id', $request->warehouse_id)
+                    ->first();
+                $quantity = $transfers->stock;
+            }
+
+            if($request->warehouse_id && $request->warehouse_id == 'all') {
+                $transfers = ItemWarehouse::where('item_id', $row->item_id)
+                    ->sum('stock');
+                $quantity = $transfers;
+            }
 
             $diff = '';
 
@@ -30,7 +45,7 @@ class ReportKardexLotsGroupCollection extends ResourceCollection
             return [
                 'id' => $row->id,
                 'code' => $row->code,
-                'quantity' => $row->quantity,
+                'quantity' => $quantity,
                 'date_of_due' => $row->date_of_due,
                 'name_item' => $row->item->description,
                 'und_item' => $row->item->unit_type_id,

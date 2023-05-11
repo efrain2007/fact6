@@ -263,13 +263,16 @@
                     *** Pago Anticipado ***
                 @endif
             </td>
+            <td class="text-left">{{ $brand }}</td>
+            <td class="text-left">{{ $row->item->model ?? '' }}</td>
+            <td class="text-center align-top">
+                @inject('itemLotGroup', 'App\Services\ItemLotsGroupService')
 
-            @if ($configuration_decimal_quantity->change_decimal_quantity_unit_price_pdf)
-                <td class="text-right align-top">{{ $row->generalApplyNumberFormat($row->unit_price, $configuration_decimal_quantity->decimal_quantity_unit_price_pdf) }}</td>
-            @else
-                <td class="text-right align-top">{{ number_format($row->unit_price, 2) }}</td>
-            @endif
-
+                @if (isset($row->item->lots_group))
+                {{ $itemLotGroup->getLote($row->item->lots_group) }}
+                @endif
+            </td>
+            <td class="text-right align-top">{{ number_format($row->unit_price, 2) }}</td>
             <td class="text-right align-top">
                 @if($row->discounts)
                     @php

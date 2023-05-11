@@ -1884,4 +1884,17 @@ class Document extends ModelTenant
         return round($base, 2);
     }
 
+    
+    /**
+     *
+     * @param  float $value
+     * @return float
+     */
+    public function getValueGreaterZero($value)
+    {
+        if($value > 0) return $this->generalApplyNumberFormat($value);
+
+        return null;
+    }
+
 }

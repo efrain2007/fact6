@@ -132,7 +132,8 @@ export default {
         }
     },
     async mounted() {
-        // await this.getRecords()
+        console.log('mounted')
+        await this.getRecords()
     },
     // async created() {
     //     this.$eventHub.$on('reloadLotsDataTable', () => {
@@ -157,24 +158,20 @@ export default {
         async getRecords() {
             this.search.item_id = this.itemId
             this.records = [];
-            if(this.lotsAll) {
-                this.records = this.lotsAll;
-            } else {
-                this.loading = true
-                await this.$http.post(`/${this.resource}/item_lots?${this.getQueryParameters()}`, this.search)
-                    .then((response) => {
-                        this.records = response.data.data
-                        this.pagination = response.data.meta;
-                        this.pagination.per_page = parseInt(
-                            response.data.meta.per_page
-                        );
-                    })
-                    .catch(error => {
-                    })
-                    .then(() => {
-                        this.loading = false
-                    })
-            }
+            this.loading = true
+            await this.$http.post(`/${this.resource}/item_lots?${this.getQueryParameters()}`, this.search)
+                .then((response) => {
+                    this.records = response.data.data
+                    this.pagination = response.data.meta;
+                    this.pagination.per_page = parseInt(
+                        response.data.meta.per_page
+                    );
+                })
+                .catch(error => {
+                })
+                .then(() => {
+                    this.loading = false
+                })
             await this.checkedLot();
         },
         getQueryParameters() {

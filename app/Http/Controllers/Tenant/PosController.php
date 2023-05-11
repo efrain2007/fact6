@@ -89,11 +89,16 @@ class PosController extends Controller
         $items = $items_query->whereIsActive()->get()->transform(function ($row) use ($configuration, $search_item_by_barcode_presentation, $request) {
 
             $full_description = ($row->internal_id) ? $row->internal_id . ' - ' . $row->description : $row->description;
-            if($row->warehouse_prices) {
+
+            if($row->warehouse_prices->count() > 0) 
+            {
                 $sale_unit_price = $row->warehouse_prices->first()->price;
-            } else {
+            } 
+            else
+            {
                 $sale_unit_price = $row->sale_unit_price;
             }
+
             return [
                 'id' => $row->id,
                 'item_id' => $row->id,
