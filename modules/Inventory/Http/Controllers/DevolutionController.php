@@ -24,6 +24,7 @@ use Modules\Inventory\Http\Resources\DevolutionCollection;
 use Modules\Inventory\Http\Requests\DevolutionRequest;
 use App\Models\Tenant\Configuration;
 use Illuminate\Support\Facades\Storage;
+use Modules\Item\Models\ItemLot;
 
 
 class DevolutionController extends Controller
@@ -117,6 +118,9 @@ class DevolutionController extends Controller
                     ],
                     'quantity' => $row['quantity'],
                 ]);
+                $item_lot = ItemLot::where('idem_id', $row['item_id'])->first();
+                $item_lot->state = 'Inactivo';
+                $item_lot->save();
             }
 
             $this->setFilename();

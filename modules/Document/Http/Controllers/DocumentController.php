@@ -363,6 +363,7 @@ class DocumentController extends Controller
             $query
                 ->where('item_id', $request->input('item_id'))
                 ->where('has_sale', false)
+                ->where('state', 'Activo')
                 ->where('warehouse_id', $warehouse_id)
                 ->latest();
         }
