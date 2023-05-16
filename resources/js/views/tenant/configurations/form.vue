@@ -1208,6 +1208,29 @@
                                             v-text="errors.register_series_invoice_xml[0]"></small>
                                 </div>
                             </div>
+
+                            <div class="col-md-6 mt-4">
+                                <label class="control-label">Asociar establecimiento a cuenta bancaria
+                                    <el-tooltip
+                                        class="item"
+                                        content="Disponible en Configuración/Listado de cuentas bancarias"
+                                        effect="dark"
+                                        placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                <div :class="{'has-danger': errors.select_establishment_bank_account}"
+                                        class="form-group">
+                                    <el-switch v-model="form.select_establishment_bank_account"
+                                                active-text="Si"
+                                                inactive-text="No"
+                                                @change="submit"></el-switch>
+                                    <small v-if="errors.select_establishment_bank_account"
+                                            class="form-control-feedback"
+                                            v-text="errors.select_establishment_bank_account[0]"></small>
+                                </div>
+                            </div>
+
                         </div>
                     </el-tab-pane>
                     <el-tab-pane class="mb-3" name="fourth">
@@ -2647,6 +2670,7 @@ export default {
                 show_convert_cpe_pos: false,
                 order_node_advanced: false,
                 remove_validation_email_establishments: false,
+                select_establishment_bank_account: false,
             };
         },
         UpdateFormPurchase(e) {

@@ -57,6 +57,7 @@
             'status',
             'initial_balance',
             'show_in_documents',
+            'establishment_id',
         ];
 
         /**
@@ -71,6 +72,14 @@
                 'description'
             )->orderBy('description');
             return $query;
+        }
+
+        /**
+         * @return BelongsTo
+         */
+        public function establishment()
+        {
+            return $this->belongsTo(Establishment::class);
         }
 
         /**

@@ -14,7 +14,8 @@ class BankAccountRequest extends FormRequest
 	public function rules()
 	{
 		$id = $this->input('id');
-
+		$select_establishment_bank_account = $this->input('select_establishment_bank_account') ?? false;
+		
 		return [
 			'bank_id' => [
 				'required',
@@ -36,7 +37,10 @@ class BankAccountRequest extends FormRequest
 			'show_in_documents' => [
 				'required',
 				'boolean'
-			]
+			],
+			'establishment_id' => [
+				$select_establishment_bank_account ? 'required' : '',
+			],
 		];
 	}
 
