@@ -118,7 +118,7 @@ class DevolutionController extends Controller
                     ],
                     'quantity' => $row['quantity'],
                 ]);
-                $item_lot = ItemLot::where('idem_id', $row['item_id'])->first();
+                $item_lot = ItemLot::where('item_id', $row['item_id'])->first();
                 $item_lot->state = 'Inactivo';
                 $item_lot->save();
             }
