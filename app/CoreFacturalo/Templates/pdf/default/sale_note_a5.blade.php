@@ -1,11 +1,14 @@
 @php
+    use Modules\Template\Helpers\TemplatePdf;
+
     $establishment = $document->establishment;
     $customer = $document->customer;
     //$path_style = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.DIRECTORY_SEPARATOR.'pdf'.DIRECTORY_SEPARATOR.'style.css');
     $left =  ($document->series) ? $document->series : $document->prefix;
     $tittle = $left.'-'.str_pad($document->number, 8, '0', STR_PAD_LEFT);
     $payments = $document->payments;
-    $accounts = \App\Models\Tenant\BankAccount::all();
+    // $accounts = \App\Models\Tenant\BankAccount::all();
+    $accounts = (new TemplatePdf)->getBankAccountsForPdf($document->establishment_id);
 
 @endphp
 <html>

@@ -23,6 +23,7 @@ class BankAccountResource extends JsonResource
 			'currency_type_id'  => $this->currency_type_id,
 			'initial_balance'   => $this->initial_balance,
 			'show_in_documents' => $this->show_in_documents,
+			'establishment_id'  => $this->establishment_id,
 		];
 	}
 }

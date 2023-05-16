@@ -293,6 +293,7 @@
             'show_convert_cpe_pos',
             'order_node_advanced',
             'remove_validation_email_establishments',
+            'select_establishment_bank_account',
         ];
 
         protected $casts = [
@@ -417,6 +418,7 @@
             'show_convert_cpe_pos'=>'bool',
             'order_node_advanced' => 'boolean',
             'remove_validation_email_establishments'=>'bool',
+            'select_establishment_bank_account'=>'bool',
         ];
         
         protected $hidden = [
@@ -659,6 +661,7 @@
                 'show_convert_cpe_pos' => $this->show_convert_cpe_pos,
                 'order_node_advanced' => (bool)$this->order_node_advanced,
                 'remove_validation_email_establishments' => $this->remove_validation_email_establishments,
+                'select_establishment_bank_account' => $this->select_establishment_bank_account,
             ];
         }
 

@@ -8,7 +8,12 @@ use App\Http\Resources\Tenant\BankAccountResource;
 use App\Models\Tenant\Bank;
 use App\Models\Tenant\BankAccount;
 use App\Models\Tenant\Catalogs\CurrencyType;
+use App\Models\Tenant\{
+    Establishment,
+    Configuration
+};
 use Exception;
+
 
 class BankAccountController extends Controller
 {
@@ -33,8 +38,10 @@ class BankAccountController extends Controller
     {
         $banks = Bank::all();
         $currency_types = CurrencyType::whereActive()->get();
+        $establishments = Establishment::filterDataForTables()->get();
+        $select_establishment_bank_account = Configuration::getRecordIndividualColumn('select_establishment_bank_account');
 
-        return compact('banks', 'currency_types');
+        return compact('banks', 'currency_types', 'establishments', 'select_establishment_bank_account');
     }
 
 
