@@ -51,10 +51,21 @@
                             <small class="form-control-feedback" v-if="errors.initial_balance" v-text="errors.initial_balance[0]"></small>
                         </div>
                     </div>
-                    <div class="col-12 form-group mt-3">
+                    <div class="col-md-8 form-group mt-3">
                         <el-switch v-model="form.show_in_documents"></el-switch>
                         <label>Mostrar cuenta en los reportes de comprobantes</label>
                     </div>
+
+                    <div class="col-md-4" v-if="select_establishment_bank_account">
+                        <div class="form-group" :class="{'has-danger': errors.establishment_id}">
+                            <label class="control-label">Establecimiento</label>
+                            <el-select v-model="form.establishment_id">
+                                <el-option v-for="option in establishments" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                            </el-select>
+                            <small class="form-control-feedback" v-if="errors.establishment_id" v-text="errors.establishment_id[0]"></small>
+                        </div>
+                    </div>
+
                 </div>
             </div>
             <div class="form-actions text-right mt-4">
@@ -81,21 +92,19 @@
                 form: {},
                 banks: [],
                 currency_types: [],
+                establishments: [],
+                select_establishment_bank_account: false,
             }
         },
-        created() {
+        async created() {
             this.initForm()
-            this.$http.get(`/${this.resource}/tables`)
-                .then(response => {
-                    this.banks = response.data.banks
-                    this.currency_types = response.data.currency_types
-                })
-//            await this.$http.get(`/${this.resource}/record`)
-//                .then(response => {
-//                    if (response.data !== '') {
-//                        this.form = response.data.data
-//                    }
-//                })
+            await this.$http.get(`/${this.resource}/tables`)
+                            .then(response => {
+                                this.banks = response.data.banks
+                                this.currency_types = response.data.currency_types
+                                this.establishments = response.data.establishments
+                                this.select_establishment_bank_account = response.data.select_establishment_bank_account
+                            })
         },
         methods: {
             initForm() {
@@ -109,16 +118,26 @@
                     cci: null,
                     initial_balance: 0,
                     show_in_documents: false,
+                    establishment_id: null,
+                    select_establishment_bank_account: false,
                 }
             },
-            create() {
+            async create() 
+            {
                 this.titleDialog = (this.recordId)? 'Editar Cuenta Bancaria':'Nueva Cuenta Bancaria'
+
                 if (this.recordId) {
-                    this.$http.get(`/${this.resource}/record/${this.recordId}`)
+                    await this.$http.get(`/${this.resource}/record/${this.recordId}`)
                         .then(response => {
                             this.form = response.data.data
                         })
                 }
+
+                this.setData()
+            },
+            setData()
+            {
+                this.form.select_establishment_bank_account = this.select_establishment_bank_account
             },
             submit() {
                 this.loading_submit = true

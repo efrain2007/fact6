@@ -1,11 +1,14 @@
 @php
+    use Modules\Template\Helpers\TemplatePdf;
+
     $establishment = $document->establishment;
     $customer = $document->customer;
     $invoice = $document->invoice;
     //$path_style = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.DIRECTORY_SEPARATOR.'pdf'.DIRECTORY_SEPARATOR.'style.css');
     $tittle = $document->series.'-'.str_pad($document->number, 8, '0', STR_PAD_LEFT);
     $payments = $document->payments;
-    $accounts = \App\Models\Tenant\BankAccount::all();
+    // $accounts = \App\Models\Tenant\BankAccount::all();
+    $accounts = (new TemplatePdf)->getBankAccountsForPdf($document->establishment_id);
 
     $logo = "storage/uploads/logos/{$company->logo}";
     if($establishment->logo) {

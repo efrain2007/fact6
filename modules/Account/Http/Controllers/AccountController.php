@@ -142,6 +142,27 @@ class AccountController extends Controller
                 $receivable =  $company_account->total_usd;
             }
 
+            $total_exportation = 0;
+            $total_taxed = 0;
+            $total_unaffected = 0;
+            $total_exonerated = 0;
+            $total_isc = 0;
+            $total_igv = 0;
+            $total_plastic_bag_taxes = 0;
+            $total = 0;
+
+            if($row->hasAcceptedState())
+            {
+                $total_exportation = $row->generalApplyNumberFormat($row->total_exportation);
+                $total_taxed = $row->generalApplyNumberFormat($row->total_taxed);
+                $total_unaffected = $row->generalApplyNumberFormat($row->total_unaffected);
+                $total_exonerated = $row->generalApplyNumberFormat($row->total_exonerated);
+                $total_isc = $row->generalApplyNumberFormat($row->total_isc);
+                $total_igv = $row->generalApplyNumberFormat($row->total_igv);
+                $total_plastic_bag_taxes = $row->generalApplyNumberFormat($row->total_plastic_bag_taxes);
+                $total = $row->generalApplyNumberFormat($row->total);
+            }
+
             return [
                 'date_of_issue' => $row->date_of_issue->format('d/m/Y'),
                 'date_of_due' => $row->invoice->date_of_due->format('d/m/Y'),
@@ -150,14 +171,14 @@ class AccountController extends Controller
                 'customer_number' => $row->customer->number,
                 'customer_name' => $row->customer->name,
                 'customer_identity_document_type_id' => $row->customer->identity_document_type_id,
-                'total_exportation' => $row->getValueGreaterZero($row->total_exportation),
-                'total_taxed' => $row->getValueGreaterZero($row->total_taxed),
-                'total_unaffected' => $row->getValueGreaterZero($row->total_unaffected),
-                'total_exonerated' => $row->getValueGreaterZero($row->total_exonerated),
-                'total_isc' => $row->getValueGreaterZero($row->total_isc),
-                'total_igv' => $row->getValueGreaterZero($row->total_igv),
-                'total_plastic_bag_taxes' => $row->getValueGreaterZero($row->total_plastic_bag_taxes),
-                'total' => $row->getValueGreaterZero($row->total),
+                'total_exportation' => $total_exportation,
+                'total_taxed' => $total_taxed,
+                'total_unaffected' => $total_unaffected,
+                'total_exonerated' => $total_exonerated,
+                'total_isc' => $total_isc,
+                'total_igv' => $total_igv,
+                'total_plastic_bag_taxes' => $total_plastic_bag_taxes,
+                'total' => $total,
                 'currency_type_id' => $row->hasNationalCurrency() ? 'S' : 'D',
                 'exchange_rate_sale' => $row->exchange_rate_sale,
                 'income_account' => $income_account,

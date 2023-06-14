@@ -25,7 +25,7 @@ class ReportKardexItemLotCollection extends ResourceCollection
                 $status = 'DISPONIBLE';
             }
 
-            if($row->has_sale && $row->state == 'Inactivo'){
+            if($row->state == 'Inactivo'){
                 $status = 'NO DISPONIBLE';
             }
 
@@ -35,7 +35,6 @@ class ReportKardexItemLotCollection extends ResourceCollection
                 'name_item' => $row->item->description,
                 'und_item' => $row->item->unit_type_id,
                 'code_item' => $row->item->internal_id,
-                // 'status' => ($row->has_sale == 1 ? 'VENDIDO' : 'DISPONIBLE'),
                 'status' => $status,
                 'date' => $row->date
             ];

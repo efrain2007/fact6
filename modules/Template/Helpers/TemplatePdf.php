@@ -7,6 +7,11 @@ use Exception;
 use mikehaertl\wkhtmlto\Pdf;
 use Modules\Company\Models\Company;
 use Modules\Template\Models\Template;
+use App\Models\Tenant\{
+    Configuration,
+    BankAccount
+};
+
 
 class TemplatePdf
 {
@@ -146,4 +151,29 @@ class TemplatePdf
             'success' => true
         ];
     }
+
+    
+    /**
+     * 
+     * Cuentas bancarias para pdf
+     *
+     * @param  int $establishment_id
+     * @return array
+     */
+    public function getBankAccountsForPdf($establishment_id)
+    {
+        $select_establishment_bank_account = Configuration::getRecordIndividualColumn('select_establishment_bank_account');
+
+        $bank_accounts = BankAccount::query();
+
+        if($select_establishment_bank_account)
+        {
+            $bank_accounts->where('establishment_id', $establishment_id); 
+        }
+
+        // dd($select_establishment_bank_account, $establishment_id);
+
+        return $bank_accounts->where('show_in_documents', true)->get();
+    }
+    
 }
