@@ -1115,9 +1115,9 @@ export default {
             }
             this.form.item_unit_type_id = row.id
             this.item_unit_type = row
-
             this.form.unit_price_value = valor
             this.form.item.unit_type_id = row.unit_type_id
+            this.form.quantity = row.quantity_unit
             this.calculateQuantity()
         },
         addRowLotGroup(id) {
