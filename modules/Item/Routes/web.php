@@ -10,6 +10,7 @@ if($hostname) {
             Route::get('categories', 'CategoryController@index')->name('tenant.categories.index')->middleware('redirect.level');
             Route::get('categories/records', 'CategoryController@records');
             Route::get('categories/columns', 'CategoryController@columns');
+            Route::get('categories/search-data', 'CategoryController@searchData');
             Route::get('categories/record/{category}', 'CategoryController@record');
             Route::post('categories', 'CategoryController@store');
             Route::delete('categories/{category}', 'CategoryController@destroy');

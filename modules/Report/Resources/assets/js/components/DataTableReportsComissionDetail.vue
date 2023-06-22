@@ -69,7 +69,7 @@
                         </div>
                     </template>
 
-                    <div class="col-md-3">
+                    <div :class="betweenDatePicker ? 'col-md-3' : 'col-md-6'">
                         <div class="form-group">
                             <label class="control-label">Establecimiento</label>
                             <el-select v-model="form.establishment_id"
@@ -180,7 +180,7 @@
 
                    
 
-                    <div class="col-lg-4 col-md-6" v-if="resource == 'reports/commissions-detail'">
+                    <div class="col-md-6" v-if="resource == 'reports/commissions-detail'">
                             <div class="form-group">
                                 <label class="control-label">Productos
                                 </label>
@@ -196,8 +196,22 @@
                     </div>
 
 
-                    <div class="col-lg-7 col-md-7 col-md-7 col-sm-12"
-                         style="margin-top:29px">
+                    <div class="col-md-6" v-if="resource == 'reports/commissions-detail'">
+                        <div class="form-group">
+                            <label class="control-label">Categoría
+                            </label>
+
+                            <el-select v-model="form.category_id" filterable remote popper-class="el-select-customers"  clearable
+                                placeholder="Nombre"
+                                :remote-method="searchRemoteCategories"
+                                :loading="loading_search_categories" >
+                                <el-option v-for="option in categories" :key="option.id" :value="option.id" :label="option.name"></el-option>
+                            </el-select>
+
+                        </div>
+                    </div>
+
+                    <div class="col-lg-7 col-md-7 col-md-7 col-sm-12 mt-3">
                         <el-button :loading="loading_submit"
                                    class="submit"
                                    icon="el-icon-search"
@@ -326,13 +340,20 @@ export default {
             sellers: [],
             items: [],
             all_items: [],
-            loading_search_items: false
+            loading_search_items: false,
+            categories: [],
+            all_categories: [],
+            loading_search_categories: false
         }
     },
     computed: {
         cantChoiseUserWithUserType(){
             if(this.form.user_type && this.form.user_type.length > 1) return false;
             return true;
+        },
+        betweenDatePicker()
+        {
+            return ['between_dates', 'between_months'].includes(this.form.period)
         }
     },
     created() {
@@ -348,6 +369,7 @@ export default {
             .then(response => {
                 this.establishments = response.data.establishments;
                 this.all_persons = response.data.persons
+                this.all_categories = response.data.categories
                 this.document_types = response.data.document_types;
                 this.sellers = response.data.sellers
                 this.state_types = response.data.state_types
@@ -356,6 +378,8 @@ export default {
                 if(response.data.users !== undefined) {
                     this.users = response.data.users;
                 }
+
+                this.filterCategories()
             });
 
 
@@ -442,7 +466,8 @@ export default {
                 guides: null,
                 user_type: null,
                 user_id: [],
-                item_id: null
+                item_id: null,
+                category_id: null,
             }
 
         },
@@ -550,6 +575,28 @@ export default {
         },
         filterItems() {
             this.items = this.all_items
+        },
+        searchRemoteCategories(input) 
+        {
+            if (input.length > 0) 
+            {
+                this.loading_search_categories = true
+
+                this.$http.get(`/categories/search-data?input=${input}`)
+                        .then(response => {
+                            this.categories = response.data
+                            this.loading_search_categories = false
+                            if(this.categories.length == 0)this.filterCategories()
+                        })
+            } 
+            else 
+            {
+                this.filterCategories()
+            }
+        },
+        filterCategories() 
+        {
+            this.categories = this.all_categories
         },
     }
 }

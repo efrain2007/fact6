@@ -1,3 +1,6 @@
+@php
+    use App\CoreFacturalo\Helpers\Template\ReportHelper;
+@endphp
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -114,15 +117,19 @@
                                     $type_document = 'NOTA DE VENTA';
                                 }
 
+                                /*
                                 $purchase_unit_price = 0;
                                 if(isset($row->item->purchase_unit_price)){
                                     $purchase_unit_price = $row->item->purchase_unit_price;
                                 }
                                 $unit_gain = ((float)$row->unit_price - (float)$purchase_unit_price);
                                 $overall_profit = (((float)$row->unit_price * $row->quantity ) - ((float)$purchase_unit_price * $row->quantity));
+                                */
 
-                                $acum_unit_gain += (float)$unit_gain;
-                                $acum_overall_profit += (float)$overall_profit;
+                                $commission_values = ReportHelper::getValuesReportCommissionDetail($row);
+
+                                $acum_unit_gain += $commission_values->unit_gain;
+                                $acum_overall_profit += $commission_values->overall_profit;
 
                                 @endphp
                                 
@@ -136,12 +143,12 @@
                                     <td class="celda">{{$relation->customer->name}}</td> 
                                     <td class="celda">{{$row->relation_item->description}}</td> 
 
-                                    <td class="celda">{{$row->quantity}}</td> 
-                                    <td class="celda">{{$purchase_unit_price}}</td> 
-                                    <td class="celda">{{$row->unit_price}}</td> 
+                                    <td class="celda">{{$commission_values->quantity}}</td> 
+                                    <td class="celda">{{$commission_values->purchase_unit_price}}</td> 
+                                    <td class="celda">{{$commission_values->sale_unit_price}}</td> 
 
-                                    <td class="celda">{{ $unit_gain }}</td> 
-                                    <td class="celda">{{ $overall_profit }}</td> 
+                                    <td class="celda">{{ $commission_values->unit_gain }}</td> 
+                                    <td class="celda">{{ $commission_values->overall_profit }}</td> 
 
                                 </tr>
                             @endforeach

@@ -269,4 +269,64 @@
             return $value;
         }
 
+                
+        /**
+         * 
+         * Valores para reporte utilidades
+         *
+         * @param  $row
+         * @return object
+         */
+        public static function getValuesReportCommissionDetail($row)
+        {
+            $quantity = (float) $row->quantity;
+
+            // precio compra por unidad
+            $purchase_unit_price = self::getPurchaseUnitPriceFromItem($row);
+
+            // precio venta por unidad
+            $sale_unit_price = (float) $row->unit_price;
+
+            // calcular valores si hay presentacion
+            if(isset($row->item->presentation))
+            {
+                $presentation = $row->item->presentation;
+
+                if(!empty($presentation))
+                {
+                    $quantity = $quantity * $presentation->quantity_unit;
+
+                    // calcular precio venta por unidad de la presentacion
+                    $sale_unit_price = round($row->unit_price / $presentation->quantity_unit, 2);
+                }
+            }
+
+            $unit_gain = $sale_unit_price - $purchase_unit_price;
+            $overall_profit = $unit_gain * $quantity;
+
+            return (object)[
+                'quantity' => $quantity,
+                'purchase_unit_price' => $purchase_unit_price,
+                'sale_unit_price' => $sale_unit_price,
+                'unit_gain' => $unit_gain,
+                'overall_profit' => $overall_profit,
+            ];
+        }
+
+        
+        /**
+         *
+         * @param  $row
+         * @return float
+         */
+        public static function getPurchaseUnitPriceFromItem($row)
+        {
+            $purchase_unit_price = 0;
+
+            if(isset($row->item->purchase_unit_price)) $purchase_unit_price = $row->item->purchase_unit_price;
+
+            return $purchase_unit_price;
+        }
+        
+
     }

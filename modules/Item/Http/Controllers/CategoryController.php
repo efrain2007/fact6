@@ -109,7 +109,29 @@ class CategoryController extends Controller
 
     }
 
+    
+    /**
+     *
+     * @param  Request $request
+     * @return array
+     */
+    public function searchData(Request $request)
+    {
+        $input = $request->input ?? null;
+        $records = Category::query();
+        
+        if($input)
+        {
+            $records->where('name', 'like', "%{$input}%")
+                    ->filterForTables()
+                    ->take(100);
+        }
+        else
+        {
+            $records->take(10);
+        }
 
-
+        return $records->get();
+    }
 
 }

@@ -4,6 +4,8 @@ namespace Modules\Report\Http\Resources;
 
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Modules\Report\Helpers\UserCommissionHelper;
+use App\CoreFacturalo\Helpers\Template\ReportHelper;
+
 
 class ReportCommissionDetailCollection extends ResourceCollection
 {
@@ -27,11 +29,15 @@ class ReportCommissionDetailCollection extends ResourceCollection
                 $type_document = 'NOTA DE VENTA';
             }
 
+            /*
             $purchase_unit_price = 0;
             if(isset($row->item->purchase_unit_price)){
                 $purchase_unit_price = $row->item->purchase_unit_price;
             }
+            */
 
+            $commission_values = ReportHelper::getValuesReportCommissionDetail($row);
+            
             return [
                 'id' => $row->id,
                 'date_of_issue' => $relation->date_of_issue->format('Y-m-d'),
@@ -40,12 +46,11 @@ class ReportCommissionDetailCollection extends ResourceCollection
                 'customer_number' => $relation->customer->number,
                 'customer_name' => $relation->customer->name,
                 'name' => $row->relation_item->description,
-                'quantity' => $row->quantity,
-                'purchase_unit_price' => $purchase_unit_price,
-                'unit_price' => $row->unit_price,
-                'unit_gain' => ((float)$row->unit_price - (float)$purchase_unit_price),
-                'overall_profit' => (((float)$row->unit_price * $row->quantity ) - ((float)$purchase_unit_price * $row->quantity)),
-
+                'quantity' => $commission_values->quantity,
+                'purchase_unit_price' => $commission_values->purchase_unit_price,
+                'unit_price' => $commission_values->sale_unit_price,
+                'unit_gain' => $commission_values->unit_gain,
+                'overall_profit' => $commission_values->overall_profit,
             ];
         });
     }

@@ -14,6 +14,8 @@ use App\Models\Tenant\DocumentItem;
 use App\Models\Tenant\Company;
 use Carbon\Carbon;
 use Modules\Report\Http\Resources\ReportCommissionDetailCollection;
+use Modules\Item\Http\Controllers\CategoryController;
+
 
 class ReportCommissionDetailController extends Controller
 {
@@ -30,7 +32,9 @@ class ReportCommissionDetailController extends Controller
             ];
         });
 
-        return compact('document_types','establishments');
+        $categories = app(CategoryController::class)->searchData(new Request());
+
+        return compact('document_types','establishments', 'categories');
     }
 
 
@@ -59,6 +63,7 @@ class ReportCommissionDetailController extends Controller
         $month_start = $request['month_start'];
         $month_end = $request['month_end'];
         $item_id = $request['item_id'];
+        $category_id = $request['category_id'] ?? null;
 
 
         $d_start = null;
@@ -89,14 +94,14 @@ class ReportCommissionDetailController extends Controller
                 break;
         }
 
-        $records = $this->data($establishment_id, $d_start, $d_end, $model, $item_id);
+        $records = $this->data($establishment_id, $d_start, $d_end, $model, $item_id, $category_id);
 
         return $records;
 
     }
 
-
-    private function data($establishment_id, $date_start, $date_end, $model, $item_id)
+    
+    private function data($establishment_id, $date_start, $date_end, $model, $item_id, $category_id)
     {
 
         if($model == 'App\Models\Tenant\DocumentItem') {
@@ -125,6 +130,8 @@ class ReportCommissionDetailController extends Controller
             if ($item_id) {
                 $data = $data->where('item_id', $item_id);
             }
+
+            $this->filterByCategory($data, $category_id);
     
             return $data;
             
@@ -154,11 +161,30 @@ class ReportCommissionDetailController extends Controller
             if ($item_id) {
                 $data = $data->where('item_id', $item_id);
             }
+
+            $this->filterByCategory($data, $category_id);
     
             return $data;
 
         }
 
+    }
+
+    
+    /**
+     *
+     * @param  Builder $query
+     * @param  int $category_id
+     * @return void
+     */
+    private function filterByCategory(&$query, $category_id)
+    {
+        if($category_id)
+        {
+            $query->whereHas('relation_item', function($item) use($category_id){
+                $item->where('category_id', $category_id);
+            });
+        }
     }
 
 
