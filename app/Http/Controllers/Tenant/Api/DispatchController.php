@@ -30,6 +30,7 @@ class DispatchController extends Controller
             $data = (new ServiceDispatchController())->getData($document->id);
             $facturalo->setXmlUnsigned((new ServiceDispatchController())->createXmlUnsigned($data));
             $facturalo->signXmlUnsigned();
+            $facturalo->createPdf();
             return $facturalo;
         });
 
