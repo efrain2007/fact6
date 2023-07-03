@@ -121,14 +121,14 @@ class DispatchTransform
 
     private static function transport($inputs)
     {
-        if (key_exists('vehiculo', $inputs)) {
-            $transport = $inputs['vehiculo'];
+        // if (key_exists('vehiculo', $inputs)) {
+            // $transport = $inputs['vehiculo'];
             return [
-                'plate_number' => $transport['numero_de_placa'],
-                'model' => Functions::valueKeyInArray($transport, 'modelo'),
-                'brand' => Functions::valueKeyInArray($transport, 'marca'),
+                'plate_number' => Functions::valueKeyInArray($inputs, 'numero_de_placa'),
+                'model' => Functions::valueKeyInArray($inputs, 'modelo'),
+                'brand' => Functions::valueKeyInArray($inputs, 'marca'),
             ];
-        }
+        // }
         return null;
     }
 
