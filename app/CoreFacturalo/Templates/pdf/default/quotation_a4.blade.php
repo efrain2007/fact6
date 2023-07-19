@@ -267,7 +267,6 @@
                     *** Pago Anticipado ***
                 @endif
             </td>
-            <!--<td class="text-left">{{ $brand }}</td>-->
             <td class="text-left">{{ $row->item->model ?? '' }}</td>
             <td class="text-center align-top">
                 @inject('itemLotGroup', 'App\Services\ItemLotsGroupService')
