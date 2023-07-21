@@ -31,7 +31,7 @@
             <td>{{ row.doc_asoc }}</td>
             <td>{{ row.date_of_issue }}</td>
             <td>{{ row.date_of_register }}</td>
-            <td>{{ row.inventory }}</td>
+            <!-- <td>{{ row.inventory }}</td> -->
             <td>{{ row.input }}</td>
             <td>{{ row.output }}</td>
             <td v-if="item_id">{{ row.balance }}</td>
