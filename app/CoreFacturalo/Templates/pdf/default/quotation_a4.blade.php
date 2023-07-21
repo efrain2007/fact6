@@ -4,8 +4,8 @@
     $establishment = $document->establishment;
     $customer = $document->customer;
     //$path_style = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.DIRECTORY_SEPARATOR.'pdf'.DIRECTORY_SEPARATOR.'style.css');
-    // $accounts = \App\Models\Tenant\BankAccount::all();
-    $accounts = (new TemplatePdf)->getBankAccountsForPdf($document->establishment_id);
+    $accounts = \App\Models\Tenant\BankAccount::all();
+    //$accounts = (new TemplatePdf)->getBankAccountsForPdf($document->establishment_id);
 
     $tittle = $document->prefix.'-'.str_pad($document->id, 8, '0', STR_PAD_LEFT);
 
@@ -267,7 +267,6 @@
                     *** Pago Anticipado ***
                 @endif
             </td>
-            <td class="text-left">{{ $brand }}</td>
             <td class="text-left">{{ $row->item->model ?? '' }}</td>
             <td class="text-center align-top">
                 @inject('itemLotGroup', 'App\Services\ItemLotsGroupService')
