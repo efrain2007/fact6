@@ -27,7 +27,7 @@
         ItemUpdatePriceImport
     };
 
-    
+
     class ItemController extends Controller
     {
 
@@ -188,7 +188,7 @@
         }
 
         public function itemtLastSale(Request $request) {
-            
+
             $type_document = $request->type_document;
             $customer_id = $request->customer_id;
             $item_id = $request->item_id;
@@ -213,7 +213,7 @@
                 $document_cpe_item = DocumentItem::whereHas('document', function ($query) use ($customer_id) {
                     $query->where('customer_id', $customer_id);
                 })->orderBy('id', 'desc')->where('item_id', $item_id)->first();
-                
+
 
                 $sale_note_item = SaleNoteItem::whereHas('sale_note', function ($query) use ($customer_id) {
                     $query->where('customer_id', $customer_id);
@@ -245,9 +245,9 @@
         }
 
         /**
-         * 
+         *
          * Importar excel para actualizar los precios de forma masiva
-         * 
+         *
          * @param Request $request
          *
          * @return array
@@ -275,6 +275,20 @@
                 'success' => false,
                 'message' => __('app.actions.upload.error'),
             ];
+        }
+
+        public function ItemExportStock()
+        {
+            $records = Item::where('internal_id', '!=', null)->get()->transform(function ($row){
+                $data = $row->getCollectionData();
+                // dd($data);
+                return [
+                    'sku' => $data['internal_id'],
+                    'stock' => $data['stock'],
+                    'price' => $data['sale_unit_price_with_igv']
+                ];
+            });
+            return $records;
         }
 
 
