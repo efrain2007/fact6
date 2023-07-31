@@ -36,7 +36,6 @@ class Company extends ModelTenant
         'integrated_query_client_id',
         'integrated_query_client_secret',
         'app_logo',
-
         'send_document_to_pse',
         'url_send_cdr_pse',
         'url_signature_pse',
@@ -44,15 +43,13 @@ class Company extends ModelTenant
         'password_pse',
         'url_login_pse',
         'user_pse',
-
         'ws_api_token',
         'ws_api_phone_number_id',
-
         'soap_sunat_username',
         'soap_sunat_password',
         'api_sunat_id',
-        'api_sunat_secret'
-
+        'api_sunat_secret',
+        'title_web'
     ];
 
     protected $casts = [

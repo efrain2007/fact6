@@ -38,7 +38,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Facturación Electrónica</title>
+    <title>{{ $vc_company->title_web }}</title>
     <meta name="googlebot" content="noindex">
     <meta name="robots" content="noindex">
 
@@ -108,13 +108,12 @@
     </style>
 
     @if ($vc_company->favicon)
-    <link rel="shortcut icon" type="image/png" href="{{ asset($vc_company->favicon) }}"/>
+        <link rel="shortcut icon" type="image/png" href="{{ asset($vc_company->favicon) }}"/>
     @endif
     <script defer src="{{ mix('js/app.js') }}"></script>
 
 </head>
 <body class="pr-0">
-
     <section class="body">
         <!-- start: header -->
         {{-- @include('tenant.layouts.partials.header') --}}

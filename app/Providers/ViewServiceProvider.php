@@ -14,28 +14,8 @@ class ViewServiceProvider extends ServiceProvider
     public function boot()
     {
         view()->composer(
-            'tenant.layouts.partials.header',
-            'App\Http\ViewComposers\Tenant\CompanyViewComposer'
-        );
-
-        view()->composer(
-            'tenant.reports.list',
-            'App\Http\ViewComposers\Tenant\CompanyViewComposer'
-        );
-
-        view()->composer(
-            'tenant.settings.list_settings',
-            'App\Http\ViewComposers\Tenant\CompanyViewComposer'
-        );
-
-        view()->composer(
             'tenant.reports.list',
             'Modules\BusinessTurn\Http\ViewComposers\BusinessTurnViewComposer'
-        );
-
-        view()->composer(
-            'tenant.layouts.partials.sidebar',
-            'App\Http\ViewComposers\Tenant\CompanyViewComposer'
         );
 
         view()->composer(
@@ -56,11 +36,6 @@ class ViewServiceProvider extends ServiceProvider
         view()->composer(
             'tenant.layouts.partials.header',
             'App\Http\ViewComposers\Tenant\ModuleViewComposer'
-        );
-
-        view()->composer(
-            'tenant.layouts.partials.sidebar',
-            'App\Http\ViewComposers\Tenant\CompanyViewComposer'
         );
 
         view()->composer(
@@ -167,7 +142,16 @@ class ViewServiceProvider extends ServiceProvider
         );
 
         view()->composer(
-            'tenant.layouts.app',
+            [
+                'tenant.layouts.app',
+                'tenant.layouts.auth',
+                'tenant.layouts.web',
+                'tenant.layouts.partials.header',
+                'tenant.reports.list',
+                'tenant.settings.list_settings',
+                'tenant.layouts.partials.sidebar',
+                'tenant.layouts.partials.sidebar'
+            ],
             'App\Http\ViewComposers\Tenant\CompanyViewComposer'
         );
 
