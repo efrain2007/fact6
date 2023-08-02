@@ -97,7 +97,7 @@
                 <cbc:Name><![CDATA[{{ $company->trade_name }}]]></cbc:Name>
             </cac:PartyName>
             <cac:PartyLegalEntity>
-                <cbc:RegistrationName><![CDATA[{{ $company->name }}]]></cbc:RegistrationName>
+                <cbc:RegistrationName><![CDATA[{{!! $company->name !!}}]]></cbc:RegistrationName>
                 <cac:RegistrationAddress>
                     <cbc:ID>{{ $establishment->district_id }}</cbc:ID>
                     <cbc:AddressTypeCode>{{ $establishment->code }}</cbc:AddressTypeCode>
