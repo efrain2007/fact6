@@ -127,6 +127,7 @@ $totals_income_summary = $cash->getTotalsIncomeSummary();
         @else
             
             @if($cash_documents->count())
+            <h3>Comprobantes con pagos</h3>
                 <div class="">
                     <div class=" ">
                         <table class="">
@@ -229,96 +230,116 @@ $totals_income_summary = $cash->getTotalsIncomeSummary();
                                     @endif
                                 @endforeach
 
-
-
-                                @foreach($cash_documents_credit as $value)
-                                
-                                    @php
-                                        
-                                        $type_transaction =  null;
-                                        $document_type_description = null;
-                                        $number = null;
-                                        $date_time_of_issue = null;
-                                    
-                                        $total = null;  
-                                        $currency_type_id = null;
-
-                                    @endphp
-
-                                    @if($value->sale_note)
-    
-                                    
-                                        <tr>
-                                            
-                                            @php
-                                                $document = $value->sale_note;
-                                                $type_transaction =  'Venta';
-                                                $document_type_description =  'NOTA DE VENTA';
-                                                $number = $document->number_full;
-                                                $date_time_of_issue = "{$document->date_of_issue->format('Y-m-d')} {$document->time_of_issue}";
-                                                $payment_method_description = 'Crédito';
-                                                $total = 0;
-                                                
-                                                $currency_type_id = $document->currency_type_id;
-
-                                            @endphp
-
-
-                                            <td class="celda">{{ $loop->iteration }}</td>
-                                            <td class="celda">{{ $date_time_of_issue}}</td>
-                                            <td class="celda">{{ $document_type_description }}</td>
-                                            <td class="celda">{{ $number }}</td>
-                                            <td class="celda">{{$payment_method_description }}</td>  
-                                            <td class="celda">{{$currency_type_id }}</td>  
-                                            <td class="celda">{{ number_format($document->total,2) }}</td>
-                                            <td class="celda">0</td>
-                                            <td class="celda">0</td>
-
-                                        </tr>
-                                        
-
-                                    @elseif($value->document)
-                                    
-                                    
-                                        <tr>
-                                            @php
-                                                $document = $value->document;
-                                                $type_transaction =  'Venta';
-                                                $document_type_description =  $document->document_type->description;
-                                                $number = $document->number_full;
-                                                $date_time_of_issue = "{$document->date_of_issue->format('Y-m-d')} {$document->time_of_issue}";
-                                                $payment_method_description = 'Crédito';
-                                            
-                                                
-                                            
-                                                
-                                                $currency_type_id = $document->currency_type_id;
-
-                                            @endphp
-
-
-                                            <td class="celda">{{ $loop->iteration }}</td>
-                                            <td class="celda">{{ $date_time_of_issue}}</td>
-                                            <td class="celda">{{ $document_type_description }}</td>
-                                            <td class="celda">{{ $number }}</td>
-                                            <td class="celda">{{$payment_method_description }}</td>  
-                                            <td class="celda">{{$currency_type_id }}</td>  
-                                            <td class="celda">{{ number_format($document->total,2) }}</td>
-                                            <td class="celda">0</td>
-                                            <td class="celda">0</td>
-
-                                        </tr>
-                                        
-                                    @endif
-                                @endforeach
                             </tbody>
                         </table>
                     </div>
                 </div>
-            @else
+
+                @else
                 <div class="callout callout-info">
-                    <p>No se encontraron registros.</p>
+                    <p>No se encontraron registros de comprobantes con pagos.</p>
                 </div>
+
+                @endif
+
+
+            @if($cash_documents_credit->count())
+            <hr style="opacity: 0.4">
+            <h3>Comprobantes a crédito</h3>
+                <table class="">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Fecha y hora emisión</th>
+                            <th>Tipo documento</th>
+                            <th>Documento</th>
+                            <th>Método de pago</th> 
+                            <th>Moneda</th>
+                            <th>Importe</th>
+                            <th>Vuelto</th>
+                            <th>Monto</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                    @foreach($cash_documents_credit as $value)
+                        
+                        @php
+                            
+                            $type_transaction =  null;
+                            $document_type_description = null;
+                            $number = null;
+                            $date_time_of_issue = null;
+                        
+                            $total = null;  
+                            $currency_type_id = null;
+
+                        @endphp
+
+                        @if($value->sale_note)
+                        
+                            <tr>
+                                
+                                @php
+                                    $document = $value->sale_note;
+                                    $type_transaction =  'Venta';
+                                    $document_type_description =  'NOTA DE VENTA';
+                                    $number = $document->number_full;
+                                    $date_time_of_issue = "{$document->date_of_issue->format('Y-m-d')} {$document->time_of_issue}";
+                                    $payment_method_description = 'Crédito';
+                                    $total = 0;
+                                    
+                                    $currency_type_id = $document->currency_type_id;
+
+                                @endphp
+
+                                <td class="celda">{{ $loop->iteration }}</td>
+                                <td class="celda">{{ $date_time_of_issue}}</td>
+                                <td class="celda">{{ $document_type_description }}</td>
+                                <td class="celda">{{ $number }}</td>
+                                <td class="celda">{{$payment_method_description }}</td>  
+                                <td class="celda">{{$currency_type_id }}</td>  
+                                <td class="celda">{{ number_format($document->total,2) }}</td>
+                                <td class="celda">0</td>
+                                <td class="celda">0</td>
+
+                            </tr>
+                            
+                        @elseif($value->document)
+                            <tr>
+                                @php
+                                    $document = $value->document;
+                                    $type_transaction =  'Venta';
+                                    $document_type_description =  $document->document_type->description;
+                                    $number = $document->number_full;
+                                    $date_time_of_issue = "{$document->date_of_issue->format('Y-m-d')} {$document->time_of_issue}";
+                                    $payment_method_description = 'Crédito';
+                                    
+                                    $currency_type_id = $document->currency_type_id;
+
+                                @endphp
+
+                                <td class="celda">{{ $loop->iteration }}</td>
+                                <td class="celda">{{ $date_time_of_issue}}</td>
+                                <td class="celda">{{ $document_type_description }}</td>
+                                <td class="celda">{{ $number }}</td>
+                                <td class="celda">{{$payment_method_description }}</td>  
+                                <td class="celda">{{$currency_type_id }}</td>  
+                                <td class="celda">{{ number_format($document->total,2) }}</td>
+                                <td class="celda">0</td>
+                                <td class="celda">sin pagos</td>
+
+                            </tr>
+                            
+                        @endif
+                    @endforeach
+                    </tbody>
+                </table>
+                @else
+                <div class="callout callout-info">
+                    <p>No se encontraron registros de comprobantes a credito.</p>
+                </div>
+
             @endif
 
         @endif
