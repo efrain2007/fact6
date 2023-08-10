@@ -32,6 +32,14 @@ class ReportCommissionDetailCollection extends ResourceCollection
                 $purchase_unit_price = $row->item->purchase_unit_price;
             }
 
+            $unit_gain = ((float)$row->unit_price - (float)$purchase_unit_price);
+            $overall_profit = (((float)$row->unit_price * $row->quantity ) - ((float)$purchase_unit_price * $row->quantity));
+            if(!empty($row->item->presentation)) {
+                $presentation = $row->item->presentation;
+                $unit_gain = ((float)$row->unit_price - (float)($purchase_unit_price * $presentation->quantity_unit));
+                $overall_profit = (((float)$row->unit_price * $row->quantity ) - ((float)($purchase_unit_price * $presentation->quantity_unit) * $row->quantity));
+            }
+
             return [
                 'id' => $row->id,
                 'date_of_issue' => $relation->date_of_issue->format('Y-m-d'),
@@ -43,8 +51,8 @@ class ReportCommissionDetailCollection extends ResourceCollection
                 'quantity' => $row->quantity,
                 'purchase_unit_price' => $purchase_unit_price,
                 'unit_price' => $row->unit_price,
-                'unit_gain' => ((float)$row->unit_price - (float)$purchase_unit_price),
-                'overall_profit' => (((float)$row->unit_price * $row->quantity ) - ((float)$purchase_unit_price * $row->quantity)),
+                'unit_gain' => $unit_gain,
+                'overall_profit' => $overall_profit,
 
             ];
         });
