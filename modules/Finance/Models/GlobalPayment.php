@@ -1055,4 +1055,22 @@
 
 
 
+        /**
+         * 
+         * Filtro para reporte de ingresos con destino caja - condicion de pago al contado
+         *
+         * @param  Builder $query
+         * @return Builder
+         */
+        public function scopeGetDataIncomeSummaryPayment($query)
+        {
+            return $query->applyFiltersPerformancePayments()
+                        ->whereHas('doc_payments', function ($payment) {
+                            $payment->destinationCashPaymentDocument();
+                        })
+                        ->orWhereHas('sln_payments', function ($payment) {
+                            $payment->destinationCashPaymentDocument();
+                        });
+        }
+
     }

@@ -315,4 +315,21 @@ class Cash extends ModelTenant
         ]);
     }
 
+    
+    /**
+     * 
+     * Filtro para reporte de ingresos con destino caja - condicion de pago al contado
+     *
+     * @param  Builder $query
+     * @return Builder
+     */
+    public function scopeFilterDataIncomeSummaryPayment($query)
+    {
+        return $query->with([
+            'global_destination' => function($query){
+                return $query->getDataIncomeSummaryPayment();
+            }
+        ]);
+    }
+
 }

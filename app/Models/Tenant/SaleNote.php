@@ -1810,4 +1810,14 @@
             return in_array($this->state_type_id, self::STATE_TYPES_ACCEPTED, true);
         }
 
+        
+        /**
+         *
+         * @return bool
+         */
+        public function hasNationalCurrency()
+        {
+            return $this->currency_type_id === self::NATIONAL_CURRENCY_ID;
+        }
+
     }

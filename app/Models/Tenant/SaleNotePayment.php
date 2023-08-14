@@ -177,6 +177,23 @@ class SaleNotePayment extends ModelTenant
     
     /**
      * 
+     * Filtros para obtener pagos al contado de un documento aceptado
+     *
+     * @param  Builder $query
+     * @return Builder
+     */
+    public function scopeDestinationCashPaymentDocument($query)
+    {
+        return $query->whereHas('associated_record_payment', function ($document) {
+                        $document->whereStateTypeAccepted()
+                            ->whereNotChanged();
+                    })
+                    ->whereCashPaymentMethodType();
+    }
+
+
+    /**
+     * 
      * Obtener informacion del pago, registro origen y items(opcional) relacionado
      *
      * @return array
@@ -190,5 +207,47 @@ class SaleNotePayment extends ModelTenant
 
         return array_merge($this->getRowResourceCashPayment(), $data);
     }
+
+    
+    /**
+     * 
+     * Obtener informacion del pago y registro origen relacionado para reporte de ingresos
+     *
+     * @return array
+     */
+    public function getRowIncomeSummaryPayment()
+    {
+        $total = 0;
+        $change = 0;
+        $payment = 0;
+        $payment_for_calculate = 0;
+
+        if(!$this->associated_record_payment->isVoidedOrRejected())
+        {
+            $total = $this->associated_record_payment->total;
+            $change = $this->change ?? 0;
+            $payment = $this->payment;
+            $payment_for_calculate = $this->payment;
+
+            if(!$this->associated_record_payment->hasNationalCurrency())
+            {
+                $payment_for_calculate = $this->associated_record_payment->generalConvertValueToPen($this->payment, $this->associated_record_payment->exchange_rate_sale);
+            }
+        }
+
+        return [
+            'type' => 'sale_note',
+            'date_time_of_issue' => "{$this->associated_record_payment->date_of_issue->format('Y-m-d')} {$this->associated_record_payment->time_of_issue}",
+            'number_full' => $this->associated_record_payment->number_full,
+            'currency_type_id' => $this->associated_record_payment->currency_type_id,
+            'document_type_description' => $this->associated_record_payment->getDocumentTypeDescription(),
+            'payment_method_type_description' => $this->payment_method_type->description,
+            'total' => $total,
+            'change' => $change,
+            'payment' => $payment,
+            'payment_for_calculate' => $payment_for_calculate,
+        ];
+    }
+
 
 }

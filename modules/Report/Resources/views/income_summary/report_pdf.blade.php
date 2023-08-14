@@ -6,7 +6,7 @@ $cash_documents = $cash->cash_documents;
 
 $cash_documents_credit = $cash->cash_documents_credit;
 
-$totals_income_summary = $cash->getTotalsIncomeSummary();
+// $totals_income_summary = $cash->getTotalsIncomeSummary();
 
 @endphp
 <!DOCTYPE html>
@@ -107,12 +107,21 @@ $totals_income_summary = $cash->getTotalsIncomeSummary();
                     @endif
                 </tr> 
                 
-                <tr>
+                {{-- <tr>
                     <td class="td-custom">
                         <p><strong>Total comprobantes: </strong>S/ {{ $totals_income_summary['document_total_payments'] }}</p>
                     </td>
                     <td class="td-custom">
                         <p><strong>Total notas de venta: </strong>S/ {{ $totals_income_summary['sale_note_total_payments'] }}</p>
+                    </td>
+                </tr>  --}}
+                
+                <tr>
+                    <td class="td-custom">
+                        <p><strong>Total pagos comprobantes: </strong>S/ {{ $cash_data['total_document_payments'] }}</p>
+                    </td>
+                    <td class="td-custom">
+                        <p><strong>Total pagos notas de venta: </strong>S/ {{ $cash_data['total_sale_note_payments'] }}</p>
                     </td>
                 </tr> 
             </table> 
@@ -126,11 +135,14 @@ $totals_income_summary = $cash->getTotalsIncomeSummary();
             @include('report::income_summary.partials.table_payments')
         @else
             
+
             @if($cash_documents->count())
             <h3>Comprobantes con pagos</h3>
                 <div class="">
                     <div class=" ">
-                        <table class="">
+                        @include('report::income_summary.partials.income_cash_payments')
+
+                        {{-- <table class="">
                             <thead>
                                 <tr>
                                     <th>#</th>
@@ -231,7 +243,7 @@ $totals_income_summary = $cash->getTotalsIncomeSummary();
                                 @endforeach
 
                             </tbody>
-                        </table>
+                        </table> --}}
                     </div>
                 </div>
 
@@ -240,7 +252,7 @@ $totals_income_summary = $cash->getTotalsIncomeSummary();
                     <p>No se encontraron registros de comprobantes con pagos.</p>
                 </div>
 
-                @endif
+            @endif
 
 
             @if($cash_documents_credit->count())
