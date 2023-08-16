@@ -136,7 +136,7 @@ $cash_documents_credit = $cash->cash_documents_credit;
         @else
             
 
-            @if($cash_documents->count())
+            @if($cash_data['total_document_payments'] != 0)
             <h3>Comprobantes con pagos</h3>
                 <div class="">
                     <div class=" ">
