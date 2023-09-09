@@ -432,17 +432,20 @@
             </div>
         </div>
         <TokenRucDni></TokenRucDni>
+        <SireConfiguration></SireConfiguration>
     </div>
 </template>
 
 <script>
 import {mapActions, mapState} from "vuex";
 import TokenRucDni from './token_ruc_dni.vue'
+import SireConfiguration from '../sire/partials/configuration.vue'
 
 
 export default {
     components: {
-        TokenRucDni
+        TokenRucDni,
+        SireConfiguration,
     },
     computed: {
         ...mapState([

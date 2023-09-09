@@ -735,7 +735,7 @@ if ($hostname) {
 
             Route::get('purchase-settlements/create/{order_id?}', 'Tenant\PurchaseSettlementController@create')->name('tenant.purchase-settlements.create');
 
-Route::post('purchase-settlements', 'Tenant\PurchaseSettlementController@store');
+            Route::post('purchase-settlements', 'Tenant\PurchaseSettlementController@store');
             Route::get('purchase-settlements/tables', 'Tenant\PurchaseSettlementController@tables');
             Route::get('purchase-settlements/table/{table}', 'Tenant\PurchaseSettlementController@table');
             Route::get('purchase-settlements/record/{document}', 'Tenant\PurchaseSettlementController@record');

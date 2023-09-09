@@ -951,7 +951,7 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                     @endif
 
                     @if(in_array('accounting', $vc_modules))
-                        <li class="nav-parent {{ ($firstLevel === 'account' || $firstLevel === 'accounting_ledger'  )?'nav-active nav-expanded':'' }}">
+                        <li class="nav-parent {{ ($firstLevel === 'account' || $firstLevel === 'accounting_ledger' || $firstLevel === 'sire' )?'nav-active nav-expanded':'' }}">
                             <a class="nav-link"
                                href="#">
                                 <svg xmlns="http://www.w3.org/2000/svg"
@@ -1005,6 +1005,12 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                                     <a class="nav-link"
                                        href="{{ route('tenant.accounting_ledger.create') }}">
                                         Libro Mayor
+                                    </a>
+                                </li>
+                                <li class="{{(($firstLevel === 'sire') )   ? 'nav-active' : ''}}">
+                                    <a class="nav-link"
+                                       href="{{ route('tenant.sire') }}">
+                                        SIRE
                                     </a>
                                 </li>
                             </ul>
