@@ -209,6 +209,8 @@ class User extends Authenticatable
 
         'multiple_default_document_types',
         'permission_force_send_by_summary',
+        'is_multi_user',
+        'multi_user_id',
 
     ];
 
@@ -238,6 +240,7 @@ class User extends Authenticatable
         'delete_purchase'=>'bool',
         'multiple_default_document_types'=>'bool',
         'permission_force_send_by_summary' => 'boolean',
+        'is_multi_user' => 'boolean',
     ];
 
     public function modules()
@@ -1216,6 +1219,32 @@ $withEstablishment = true){
         }
 
         return $show_modules;
+    }
+
+    
+    /**
+     *
+     * @param  string $type
+     * @return string
+     */
+    public static function getDescriptionType($type)
+    {
+        $description = null;
+        
+        switch ($type) 
+        {
+            case 'admin':
+                $description =  'Administrador';
+                break;
+            case 'seller':
+                $description =  'Vendedor';
+                    break;
+            case 'client':
+                $description =  'Cliente';
+                break;
+        }
+
+        return $description;
     }
 
 }

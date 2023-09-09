@@ -351,5 +351,8 @@ return [
         'rent_payment.payment_method_type_id' => 'm. pago',
         'rent_payment.payment_destination_id' => 'destino',
 
+        'destination_client_id' => 'empresa',
+        'composed_id' => 'usuario',
+
 	],
 ];

@@ -41,6 +41,7 @@ mix.webpackConfig({
             '@viewsModuleLevelAccess': path.resolve(__dirname, 'modules/LevelAccess/Resources/assets/js/views'),
             '@viewsModuleReport': path.resolve(__dirname, 'modules/Report/Resources/assets/js/views'),
             '@viewsModuleInventory': path.resolve(__dirname, 'modules/Inventory/Resources/assets/js'),
+            '@viewsModuleMultiUser': path.resolve(__dirname, 'modules/MultiUser/Resources/assets/js/views'),
         }
     }
 }).sourceMaps()
