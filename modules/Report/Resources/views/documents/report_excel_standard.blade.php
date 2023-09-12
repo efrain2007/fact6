@@ -454,6 +454,7 @@
                 @endforeach
                 <tr>
                     <td colspan="23"></td>
+                    <td></td>
                     <td colspan="2">Totales PEN</td>
                     <td>{{number_format($acum_total_charges, 2)}}</td>
                     <td>{{number_format($acum_total_exonerado, 2)}}</td>
@@ -467,6 +468,7 @@
                 </tr>
                 <tr>
                     <td colspan="23"></td>
+                    <td></td>
                     <td colspan="2">Totales USD</td>
                     <td></td>
                     <td></td>
