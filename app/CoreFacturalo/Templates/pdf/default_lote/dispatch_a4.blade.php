@@ -174,7 +174,8 @@
         <th class="border-top-bottom text-center">Item</th>
         <th class="border-top-bottom text-center">Código</th>
         <th class="border-top-bottom text-left">Descripción</th>
-        <th class="border-top-bottom text-left">Modelo</th>
+        <th class="border-top-bottom text-left">Lote</th>
+        <th class="border-top-bottom text-left">F. VENCIMIENTO</th>
         <th class="border-top-bottom text-center">Unidad</th>
         <th class="border-top-bottom text-right">Cantidad</th>
     </tr>
@@ -216,7 +217,12 @@
                     *** Pago Anticipado ***
                 @endif
             </td>
-            <td class="text-left">{{ $row->item->model ?? '' }}</td>
+            <td class="text-left">
+                @inject('itemLotGroup', 'App\Services\ItemLotsGroupService')
+                {{ $itemLotGroup->getLote($row->item->IdLoteSelected) }}
+            </td>
+            <td class="text-center align-top">@if($row->relation_item->date_of_due){{ $row->relation_item->date_of_due->format('Y-m-d')  }} @endif
+            </td>
             <td class="text-center">{{ $row->item->unit_type_id }}</td>
             <td class="text-right">
                 @if(((int)$row->quantity != $row->quantity))
