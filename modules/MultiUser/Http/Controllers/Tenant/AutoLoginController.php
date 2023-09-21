@@ -17,7 +17,7 @@ class AutoLoginController extends Controller
      * @param  string $fqdn
      * @return mixed
      */
-    public function autoLogin($fqdn)
+    public function autoLogin($fqdn, Request $request)
     {
         $helper = new AutoLoginHelper();
 
@@ -25,7 +25,7 @@ class AutoLoginController extends Controller
         
         $helper->validateFqdn($fqdn, $hostname->fqdn);
 
-        return redirect('/');
+        return redirect("/{$request->previous_route}");
     }
 
 }

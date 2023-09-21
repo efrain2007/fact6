@@ -114,16 +114,16 @@ class AutoLoginHelper
 
     
     /**
-     * redirectUrl
      *
      * @param  string $fqdn
+     * @param  string $previous_route
      * @return string
      */
-    public function redirectUrl($fqdn)
+    public function redirectUrl($fqdn, $previous_route)
     {
         $protocol = config('tenant.force_https') ? 'https' : 'http';
-
-        return "{$protocol}://".$fqdn."/auto-login/{$fqdn}";
+        
+        return "{$protocol}://".$fqdn."/auto-login/{$fqdn}?previous_route={$previous_route}";
     }
 
 

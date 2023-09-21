@@ -328,6 +328,125 @@
                             <div class="col-md-12">
                                 <div class="table-responsive">
                                     <table class="table">
+                                        <template v-if="showEditableItems">
+                                            <thead>
+                                                <tr>
+                                                    <th width="3%">#</th>
+                                                    <th class="font-weight-bold" width="16%">Descripción</th>
+                                                    <th width="8%" class="text-center font-weight-bold">Unidad</th>
+                                                    <th width="12%" class="text-right font-weight-bold">Cantidad</th>
+                                                    <th width="14%" class="text-right font-weight-bold">Valor Unitario</th>
+                                                    <th width="14%" class="text-right font-weight-bold">Precio Unitario</th>
+                                                    <th width="14%" class="text-right font-weight-bold">Subtotal</th>
+                                                    <th width="14%" class="text-right font-weight-bold">Total</th>
+                                                    <th width="5%"></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody v-if="form.items.length > 0">
+                                                <tr v-for="(row, index) in form.items" :key="index">
+                                                    <td>{{ index + 1 }}</td>
+                                                    <td>
+                                                        {{ setDescriptionOfItem (row.item) }}
+                                                        <template v-if="row.item.presentation">
+                                                            {{ row.item.presentation.hasOwnProperty('description') ? row.item.presentation.description : '' }}
+                                                        </template>
+                                                        <br/>
+                                                        <small>{{ row.affectation_igv_type.description }}</small>
+                                                    </td>
+                                                    <td class="text-center">{{ row.item.unit_type_id }}</td>
+
+                                                    <td class="text-right">
+                                                        <el-input-number 
+                                                            v-model="row.quantity"
+                                                            :min="0.01"
+                                                            class="input-custom"
+                                                            controls-position="right"
+                                                            style="min-width: 110px !important"
+                                                            :disabled="hasRowAdvancedOption(row)"
+                                                            @change="changeRowQuantity(row)">
+                                                        </el-input-number>
+                                                    </td>
+
+                                                    <td class="text-right">
+                                                        {{ currency_type.symbol }}
+                                                        
+                                                        <el-input-number 
+                                                            v-model="row.unit_value"
+                                                            :min="0"
+                                                            class="input-custom"
+                                                            controls-position="right"
+                                                            style="min-width: 115px !important"
+                                                            :disabled="hasRowAdvancedOption(row) || !canEditRowPrices"
+                                                            @change="changeRowUnitValue(row)">
+                                                        </el-input-number>
+                                                    </td>
+
+                                                    <td class="text-right">
+                                                        {{ currency_type.symbol }}
+                                                        
+                                                        <el-input-number 
+                                                            v-model="row.unit_price"
+                                                            :min="0.01"
+                                                            class="input-custom"
+                                                            controls-position="right"
+                                                            style="min-width: 115px !important"
+                                                            :disabled="hasRowAdvancedOption(row) || !canEditRowPrices"
+                                                            @change="changeRowUnitPrice(row)">
+                                                        </el-input-number>
+                                                    </td>
+
+                                                    <td class="text-right">
+                                                        {{ currency_type.symbol }} 
+
+                                                        <el-input-number 
+                                                            v-model="row.total_value"
+                                                            :min="0.01"
+                                                            class="input-custom"
+                                                            controls-position="right"
+                                                            style="min-width: 115px !important"
+                                                            :disabled="hasRowAdvancedOption(row) || !canEditRowPrices"
+                                                            @change="changeRowTotalValue(row)">
+                                                        </el-input-number>
+                                                    </td>
+                                                    
+                                                    <td class="text-right">
+                                                        {{ currency_type.symbol }}
+                                                    
+                                                        <el-input-number 
+                                                            v-model="row.total"
+                                                            :min="0"
+                                                            class="input-custom"
+                                                            controls-position="right"
+                                                            style="min-width: 115px !important"
+                                                            :disabled="hasRowAdvancedOption(row) || !canEditRowPrices"
+                                                            @change="changeRowTotal(row)">
+                                                        </el-input-number>
+                                                    </td>
+
+
+                                                    <td class="text-center">
+
+                                                        <button class="btn waves-effect waves-light btn-xs btn-info"
+                                                                type="button"
+                                                                @click="clickEdiItem(row, index)">
+                                                            <span style='font-size:10px;'>&#9998;</span>
+                                                        </button>
+
+                                                        <button type="button"
+                                                                class="btn waves-effect waves-light btn-xs btn-danger"
+                                                                @click.prevent="clickRemoveItem(index)">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="9"></td>
+                                                </tr>
+                                            </tbody>
+                                        </template>
+
+                                        <template v-else>
                                         <thead>
                                         <tr>
                                             <th width="5%">#</th>
@@ -339,7 +458,6 @@
                                             <th class="text-center font-weight-bold">Valor Unitario</th>
                                             <th class="text-center font-weight-bold">Precio Unitario</th>
                                             <th class="text-center font-weight-bold">Subtotal</th>
-                                            <!--<th class="text-right font-weight-bold">Cargo</th>-->
                                             <th class="text-center font-weight-bold">Total</th>
                                             <th width="8%"></th>
                                         </tr>
@@ -348,7 +466,6 @@
                                         <tr v-for="(row, index) in form.items" :key="index">
                                             <td>{{ index + 1 }}</td>
                                             <td>
-                                                <!-- {{ row.item.description }} -->
                                                 {{ setDescriptionOfItem (row.item) }}
                                                 
                                                 <template v-if="row.item.presentation">
@@ -357,7 +474,6 @@
                                                 <br/><small>{{ row.affectation_igv_type.description }}</small></td>
                                             <td class="text-center">{{ row.item.unit_type_id }}</td>
                                             <td class="text-center">{{ row.quantity }}</td>
-                                            <!-- <td class="text-right">{{ currency_type.symbol }} {{ row.unit_price }}</td> -->
                                             <td class="text-center">{{ currency_type.symbol }}
                                                 {{ getFormatUnitPriceRow(row.unit_value) }}
                                             </td>
@@ -369,7 +485,6 @@
                                                     row.total_value
                                                 }}
                                             </td>
-                                            <!--<td class="text-right">{{ currency_type.symbol }} {{ row.total_charge }}</td>-->
                                             <td class="text-center">{{ currency_type.symbol }} {{ row.total }}</td>
                                             <td class="text-center">
 
@@ -379,19 +494,11 @@
                                                     <span style='font-size:10px;'>&#9998;</span>
                                                 </button>
 
-                                                <!-- <template v-if="row.id">
-                                                    <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDeleteSNItem(row.id, index)">x</button>
-                                                </template> -->
-                                                <!-- <template v-if="row.record_id">
-                                                    <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDeleteSNItem(row.record_id, index)">x</button>
-                                                </template>
-                                                <template v-else> -->
                                                 <button type="button"
                                                         class="btn waves-effect waves-light btn-xs btn-danger"
                                                         @click.prevent="clickRemoveItem(index)">
                                                     <i class="fas fa-trash"></i>
                                                 </button>
-                                                <!-- </template> -->
 
                                             </td>
                                         </tr>
@@ -399,6 +506,8 @@
                                             <td colspan="9"></td>
                                         </tr>
                                         </tbody>
+                                        </template>
+
                                     </table>
                                 </div>
                             </div>
@@ -572,6 +681,7 @@
     import Logo from '../companies/logo.vue'
     import {mapActions, mapState} from "vuex/dist/vuex.mjs";
     import Keypress from "vue-keypress";
+    import { editableRowItems } from '@mixins/editable-row-items'
 
     export default {
         props: [
@@ -587,7 +697,7 @@
             Logo,
             Keypress
         },
-        mixins: [functions, exchangeRate],
+        mixins: [functions, exchangeRate, editableRowItems],
         computed:{
             ...mapState([
                 'config',

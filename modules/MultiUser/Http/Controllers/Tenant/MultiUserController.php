@@ -31,6 +31,7 @@ class MultiUserController extends Controller
         $client = $this->getClient($client_id);
 
         $fqdn = $client->hostname->fqdn;
+        $previous_route = Request::create(url()->previous())->path();
 
         $helper->saveLoginRequest($fqdn, [
             'fqdn' => $fqdn,
@@ -38,7 +39,7 @@ class MultiUserController extends Controller
             'is_destination' => $is_destination
         ]);
 
-        return redirect()->to($helper->redirectUrl($fqdn));
+        return redirect()->to($helper->redirectUrl($fqdn, $previous_route));
     }
 
    

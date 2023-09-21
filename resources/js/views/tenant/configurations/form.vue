@@ -1231,6 +1231,28 @@
                                 </div>
                             </div>
 
+                            <div class="col-md-6 mt-4">
+                                <label class="control-label">Modificar valores en previsualización del documento
+                                    <el-tooltip
+                                        class="item"
+                                        content="Cantidad, precios, totales - Disponible para Factura, Boleta, Cotización y Notas de venta"
+                                        effect="dark"
+                                        placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                <div :class="{'has-danger': errors.change_values_preview_document}"
+                                        class="form-group">
+                                    <el-switch v-model="form.change_values_preview_document"
+                                                active-text="Si"
+                                                inactive-text="No"
+                                                @change="submit"></el-switch>
+                                    <small v-if="errors.change_values_preview_document"
+                                            class="form-control-feedback"
+                                            v-text="errors.change_values_preview_document[0]"></small>
+                                </div>
+                            </div>
+
                         </div>
                     </el-tab-pane>
                     <el-tab-pane class="mb-3" name="fourth">
@@ -2671,6 +2693,7 @@ export default {
                 order_node_advanced: false,
                 remove_validation_email_establishments: false,
                 select_establishment_bank_account: false,
+                change_values_preview_document: false,
             };
         },
         UpdateFormPurchase(e) {

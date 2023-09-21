@@ -300,18 +300,104 @@
                                     </td>
                                     <td class="text-center">{{ row.item.unit_type_id }}</td>
 
-                                    <td class="text-right">{{ row.quantity }}</td>
+                                    <td class="text-right">
 
-                                    <td class="text-right">{{ currency_type.symbol }}
-                                        {{ getFormatUnitPriceRow(row.unit_value) }}
+                                        <template v-if="showEditableItems">
+                                            <el-input-number 
+                                                v-model="row.quantity"
+                                                :min="0.01"
+                                                class="input-custom"
+                                                controls-position="right"
+                                                style="min-width: 120px !important"
+                                                :disabled="hasRowAdvancedOption(row)"
+                                                @change="changeRowQuantity(row)">
+                                            </el-input-number>
+                                        </template>
+                                        <template v-else>
+                                            {{ row.quantity }}
+                                        </template>
+
                                     </td>
-                                    <td class="text-right">{{ currency_type.symbol }}
-                                        {{ getFormatUnitPriceRow(row.unit_price) }}
+
+                                    <td class="text-right">
+                                        {{ currency_type.symbol }}
+                                        
+                                        <template v-if="showEditableItems">
+                                            <el-input-number 
+                                                v-model="row.unit_value"
+                                                :min="0"
+                                                class="input-custom"
+                                                controls-position="right"
+                                                style="min-width: 120px !important"
+                                                :disabled="hasRowAdvancedOption(row) || !canEditRowPrices"
+                                                @change="changeRowUnitValue(row)">
+                                            </el-input-number>
+                                        </template>
+                                        <template v-else>
+                                            {{ getFormatUnitPriceRow(row.unit_value) }}
+                                        </template>
+                                    </td>
+
+                                    <td class="text-right">
+                                        {{ currency_type.symbol }}
+                                        
+                                        <template v-if="showEditableItems">
+                                            <el-input-number 
+                                                v-model="row.unit_price"
+                                                :min="0.01"
+                                                class="input-custom"
+                                                controls-position="right"
+                                                style="min-width: 120px !important"
+                                                :disabled="hasRowAdvancedOption(row) || !canEditRowPrices"
+                                                @change="changeRowUnitPrice(row)">
+                                            </el-input-number>
+                                        </template>
+                                        <template v-else>
+                                            {{ getFormatUnitPriceRow(row.unit_price) }}
+                                        </template>
                                     </td>
 
 
-                                    <td class="text-right">{{ currency_type.symbol }} {{ row.total_value }}</td>
-                                    <td class="text-right">{{ currency_type.symbol }} {{ row.total }}</td>
+                                    <td class="text-right">
+                                        {{ currency_type.symbol }} 
+
+                                        <template v-if="showEditableItems">
+                                            <el-input-number 
+                                                v-model="row.total_value"
+                                                :min="0.01"
+                                                class="input-custom"
+                                                controls-position="right"
+                                                style="min-width: 120px !important"
+                                                :disabled="hasRowAdvancedOption(row) || !canEditRowPrices"
+                                                @change="changeRowTotalValue(row)">
+
+                                            </el-input-number>
+                                        </template>
+                                        <template v-else>
+                                            {{ row.total_value }}
+                                        </template>
+                                    </td>
+                                    
+                                    <td class="text-right">
+                                        {{ currency_type.symbol }}
+                                        
+                                        <template v-if="showEditableItems">
+                                            <el-input-number 
+                                                v-model="row.total"
+                                                :min="0"
+                                                class="input-custom"
+                                                controls-position="right"
+                                                style="min-width: 120px !important"
+                                                :disabled="hasRowAdvancedOption(row) || !canEditRowPrices"
+                                                @change="changeRowTotal(row)">
+
+                                            </el-input-number>
+                                        </template>
+                                        <template v-else>
+                                            {{ row.total }}
+                                        </template>
+                                    </td>
+
 
                                     <td class="text-right">
                                         <template v-if="config.change_free_affectation_igv">
@@ -340,6 +426,7 @@
                                     </td>
 
                                 </tr>
+
                                 <!-- @todo: Mejorar evitando duplicar codigo -->
                                 <!-- Ocultar en cel -->
                                 <tr>
@@ -1648,6 +1735,8 @@ import DocumentReportCustomer from './partials/report_customer.vue'
 import SetTip from '@components/SetTip.vue'
 
 import LotsForm from './partials/lots.vue'
+import { editableRowItems } from '@mixins/editable-row-items'
+
 
 export default {
     props: [
@@ -1674,7 +1763,7 @@ export default {
         SetTip,
         LotsForm,
     },
-    mixins: [functions, exchangeRate, pointSystemFunctions, fnRestrictSaleItemsCpe],
+    mixins: [functions, exchangeRate, pointSystemFunctions, fnRestrictSaleItemsCpe, editableRowItems],
     data() {
         return {
             datEmision: {
