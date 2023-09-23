@@ -1014,11 +1014,11 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                                     </a>
                                     <ul class="nav nav-children"
                                         style="">
-                                        <li class="{{ ($secondLevel === 'purchase')?'nav-active':'' }}">
-                                            <a class="nav-link" href="{{route('tenant.sire.purchase')}}">Compras</a>
-                                        </li>
                                         <li class="{{ ($secondLevel === 'sale')?'nav-active':'' }}">
                                           <a class="nav-link" href="{{route('tenant.sire.sale')}}">Ventas</a>
+                                        </li>
+                                        <li class="{{ ($secondLevel === 'purchase')?'nav-active':'' }}">
+                                            <a class="nav-link" href="{{route('tenant.sire.purchase')}}">Compras</a>
                                         </li>
                                     </ul>
                                 </li>

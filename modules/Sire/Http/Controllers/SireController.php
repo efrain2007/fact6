@@ -81,4 +81,11 @@ class SireController extends Controller
         $response = $sire->queryTicket($request->page,$request->period,$request->ticket, $type);
         return $response;
     }
+
+    public function accept($type, $period)
+    {
+        $sire = new SireService();
+        $response = $sire->sendAccept($period);
+        return $response;
+    }
 }

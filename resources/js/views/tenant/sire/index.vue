@@ -84,6 +84,21 @@
           </el-table-column>
         </el-table>
       </div>
+      <div class="card-footer">
+        <div class="row d-flex align-items-end">
+          <div class="col-6">
+            <el-button
+              type="success"
+              class=""
+              v-show="type == 'sale'"
+              :disabled="documents.length <= 0"
+              @click="sendAccept"
+              :loading="loading_accept">
+              Aceptar Propuesta
+            </el-button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -116,6 +131,7 @@ export default {
       loading_query: false,
       loading_data: false,
       documents: [],
+      loading_accept: false,
     }
   },
   created() {
@@ -210,6 +226,22 @@ export default {
         }
       }
       return null;
+    },
+    sendAccept() {
+      this.loading_accept = true
+      let sire_period = localStorage.getItem(this.type+'_sire_period')
+      this.$http.get(`/${this.resource}/${this.type}/${sire_period}/accept`)
+        .then((response)=>{
+          if(response.data.success){
+            console.log(response.data)
+            this.$message.success('Propuesta enviada exitosamente')
+          }
+          this.loading_accept = false
+        })
+        .catch((error)=>{
+          this.loading_accept = false
+          console.error(error)
+        })
     }
   }
 }

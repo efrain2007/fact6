@@ -16,6 +16,7 @@ if($current_hostname) {
                 Route::get('/{type}/tables', 'SireController@tables');
                 Route::get('/{type}/{period}/ticket', 'SireController@getTicket');
                 Route::post('/{type}/query', 'SireController@queryTicket');
+                Route::get('/{type}/{period}/accept', 'SireController@accept');
             });
         });
     });

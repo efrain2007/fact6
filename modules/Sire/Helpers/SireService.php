@@ -34,6 +34,8 @@ class SireService
     // 5.17 Sale | suffix = &codLibro=140000
     // 5.32 Purchase | suffix = null
     public static $DOWNLOAD = 'https://api-sire.sunat.gob.pe/v1/contribuyente/migeigv/libros/rvierce/gestionprocesosmasivos/web/masivo/archivoreporte?nomArchivoReporte=FILENAME&codTipoArchivoReporte=01SUFFIX';
+    // 5.8 Sale
+    public static $ACCEPT = 'https://api-sire.sunat.gob.pe/v1/contribuyente/migeigv/libros/rvie/propuesta/web/propuesta/PERIOD/aceptapropuesta';
 
     private function getCompany()
     {
@@ -384,6 +386,41 @@ class SireService
                     'message' => 'Error al abrir el archivo ZIP'
                 ];
             }
+        }
+    }
+
+    public function sendAccept($period)
+    {
+        $get_token = $this->getToken();
+        $token = $get_token['token'];
+
+        $url = str_replace('PERIOD', $period, self::$ACCEPT);
+
+        $client = new Client();
+        $response = $client->request('POST', $url, [
+            'headers' => [
+                'Authorization' => 'Bearer ' . $token,
+            ],
+            'verify' => false,
+        ]);
+
+        $statusCode = $response->getStatusCode();
+        $data = json_decode($response->getBody(), true);
+
+        if ($statusCode !== 200) {
+            return [
+                'success' => false,
+                'code' => $statusCode,
+                'error' => $data
+            ];
+        }
+
+        if ($statusCode === 200) {
+            return [
+                'success' => true,
+                'code' => $statusCode,
+                'data' => $data
+            ];
         }
     }
 }
