@@ -10,19 +10,23 @@ use App\Models\Tenant\Company;
 
 class SireController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     * @return Renderable
+    /*
+     * route get sire/sale
+     * route get sire/purchase
+     * view index
      */
     public function index()
     {
         return view('sire::index');
     }
 
-    public function tables()
+    /*
+     * route get sire/{type}/tables
+     */
+    public function tables($type)
     {
         $sire = new SireService();
-        $periods = $sire->getPeriods();
+        $periods = $sire->getPeriods($type);
         return $periods;
     }
 
@@ -60,18 +64,21 @@ class SireController extends Controller
     }
 
     /*
-     * route get sire/ticket/{period}
+     * route get sire/{type}/{period}/ticket
      */
-    public function getTicket($period)
+    public function getTicket($type, $period)
     {
         $sire = new SireService();
-        return $sire->getTicket($period);
+        return $sire->getTicket($type, $period);
     }
 
-    public function queryTicket(Request $request)
+    /*
+     * route get sire/{type}/query
+     */
+    public function queryTicket(Request $request, $type)
     {
         $sire = new SireService();
-        $response = $sire->queryTicket($request->page,$request->period,$request->ticket);
+        $response = $sire->queryTicket($request->page,$request->period,$request->ticket, $type);
         return $response;
     }
 }

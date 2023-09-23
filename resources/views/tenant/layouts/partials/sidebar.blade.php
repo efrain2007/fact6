@@ -1007,11 +1007,20 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                                         Libro Mayor
                                     </a>
                                 </li>
-                                <li class="{{(($firstLevel === 'sire') )   ? 'nav-active' : ''}}">
+                                <li class="nav-parent {{ ($firstLevel === 'sire')?'nav-active nav-expanded':'' }}">
                                     <a class="nav-link"
-                                       href="{{ route('tenant.sire') }}">
-                                        SIRE
+                                       href="#">
+                                        <span>SIRE</span>
                                     </a>
+                                    <ul class="nav nav-children"
+                                        style="">
+                                        <li class="{{ ($secondLevel === 'purchase')?'nav-active':'' }}">
+                                            <a class="nav-link" href="{{route('tenant.sire.purchase')}}">Compras</a>
+                                        </li>
+                                        <li class="{{ ($secondLevel === 'sale')?'nav-active':'' }}">
+                                          <a class="nav-link" href="{{route('tenant.sire.sale')}}">Ventas</a>
+                                        </li>
+                                    </ul>
                                 </li>
                             </ul>
                         </li>

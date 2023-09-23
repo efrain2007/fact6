@@ -95,6 +95,7 @@ export default {
   data() {
     return {
       resource: 'sire',
+      type: 'sale',
       period_year: [],
       period_month: [],
       form: {},
@@ -118,12 +119,16 @@ export default {
     }
   },
   created() {
+    this.setType()
     this.getPeriods()
     this.getData()
   },
   methods: {
+    setType() {
+      this.type = window.location.href.split('/').pop()
+    },
     getPeriods() {
-      this.$http.get(`/${this.resource}/tables`)
+      this.$http.get(`/${this.resource}/${this.type}/tables`)
         .then((response)=>{
           this.setPeriodsData(response.data.data)
         })
@@ -146,26 +151,26 @@ export default {
     },
     sendPeriod() {
       console.log(this.form.period)
-      localStorage.setItem('sire_period', this.form.period)
+      localStorage.setItem(this.type+'_sire_period', this.form.period)
       this.period_current = this.form.period
-      this.$http.get(`/${this.resource}/ticket/${this.form.period}`)
+      this.$http.get(`/${this.resource}/${this.type}/${this.form.period}/ticket`)
         .then((response)=>{
           this.code_ticket = response.data.data.numTicket
           this.status_ticket = '00'
-          localStorage.setItem('sire_ticket', this.code_ticket)
-          localStorage.setItem('sire_status', '00')
+          localStorage.setItem(this.type+'_sire_ticket', this.code_ticket)
+          localStorage.setItem(this.type+'_sire_status', '00')
         })
         .catch((error)=>{
           console.error(error)
         })
     },
     getData() {
-      let sire_ticket = localStorage.getItem('sire_ticket')
+      let sire_ticket = localStorage.getItem(this.type+'_sire_ticket')
       this.code_ticket = sire_ticket !== null ? sire_ticket : null
-      let sire_status = localStorage.getItem('sire_status')
+      let sire_status = localStorage.getItem(this.type+'_sire_status')
       this.status_ticket = sire_status !== null ? sire_status : '00'
       if(sire_ticket != null) {
-        let sire_period = localStorage.getItem('sire_period')
+        let sire_period = localStorage.getItem(this.type+'_sire_period')
         this.period_current = sire_period !== null ? sire_period : null
       }
     },
@@ -177,12 +182,12 @@ export default {
         page: this.page,
         ticket: this.code_ticket
       }
-      this.$http.post(`/${this.resource}/query`, params)
+      this.$http.post(`/${this.resource}/${this.type}/query`, params)
         .then((response)=>{
           this.loading_query = false
           if(response.data.success){
             this.status_ticket = response.data.data.status_code
-            localStorage.setItem('sire_status', this.status_ticket)
+            localStorage.setItem(this.type+'_sire_status', this.status_ticket)
             this.documents = response.data.data.documents
           }
         })

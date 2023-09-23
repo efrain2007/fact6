@@ -10,10 +10,12 @@ if($current_hostname) {
             Route::prefix('sire')->group(function() {
                 Route::get('/configuration', 'SireController@getConfig')->name('tenant.sire.configuration');
                 Route::post('/configuration/update', 'SireController@updateConfig');
-                Route::get('/', 'SireController@index')->name('tenant.sire');
-                Route::get('/tables', 'SireController@tables')->name('tenant.sire.tables');
-                Route::get('/ticket/{period}', 'SireController@getTicket');
-                Route::post('/query', 'SireController@queryTicket');
+                Route::get('/sale', 'SireController@index')->name('tenant.sire.sale');
+                Route::get('/purchase', 'SireController@index')->name('tenant.sire.purchase');
+
+                Route::get('/{type}/tables', 'SireController@tables');
+                Route::get('/{type}/{period}/ticket', 'SireController@getTicket');
+                Route::post('/{type}/query', 'SireController@queryTicket');
             });
         });
     });

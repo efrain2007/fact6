@@ -7,6 +7,7 @@ use Illuminate\Support\Collection;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Tenant\Purchase;
 use App\Models\Tenant\Document;
 use App\Models\Tenant\Company;
 use Hyn\Tenancy\Environment;
@@ -21,15 +22,18 @@ class SireService
     public static $SCOPE = 'https://api-sire.sunat.gob.pe';
     // 5.1
     public static $TOKEN = 'https://api-seguridad.sunat.gob.pe/v1/clientessol/CLIENT_ID/oauth2/token/';
-    // 5.2
-    public static $PERIODS = 'https://api-sire.sunat.gob.pe/v1/contribuyente/migeigv/libros/rvierce/padron/web/omisos/140000/periodos';
-    // 5.18
-    public static $PROPOSAL = 'https://api-sire.sunat.gob.pe/v1/contribuyente/migeigv/libros/rvie/propuesta/web/propuesta/PERIOD/exportapropuesta?codTipoArchivo=0';
-    // 5.16
+    // 5.2 Sale | codLibro = 140000
+    // 5.33 Purchase | codLibro  = 080000
+    public static $PERIODS = 'https://api-sire.sunat.gob.pe/v1/contribuyente/migeigv/libros/rvierce/padron/web/omisos/COD_LIBRO/periodos';
+    // 5.18 Sale     | type = rvie | suffix = exportapropuesta?codTipoArchivo=0
+    // 5.34 Purchase | type = rce  | suffix = exportacioncomprobantepropuesta?codTipoArchivo=0&codOrigenEnvio=1
+    public static $PROPOSAL = 'https://api-sire.sunat.gob.pe/v1/contribuyente/migeigv/libros/TYPE/propuesta/web/propuesta/PERIOD/SUFFIX';
+    // 5.16 Sale
+    // 5.31 Purchase
     public static $QUERY = 'https://api-sire.sunat.gob.pe/v1/contribuyente/migeigv/libros/rvierce/gestionprocesosmasivos/web/masivo/consultaestadotickets?perIni=PERIOD&perFin=PERIOD&page=NUM_PAGE&perPage=20&numTicket=NUM_TICKET';
-    // 5.17
-    public static $DOWNLOAD = 'https://api-sire.sunat.gob.pe/v1/contribuyente/migeigv/libros/rvierce/gestionprocesosmasivos/web/masivo/archivoreporte?nomArchivoReporte=FILENAME&codTipoArchivoReporte=01&codLibro=140000';
-    public static $ACCEPT = 'https://api-sire.sunat.gob.pe/'; // 5.8
+    // 5.17 Sale | suffix = &codLibro=140000
+    // 5.32 Purchase | suffix = null
+    public static $DOWNLOAD = 'https://api-sire.sunat.gob.pe/v1/contribuyente/migeigv/libros/rvierce/gestionprocesosmasivos/web/masivo/archivoreporte?nomArchivoReporte=FILENAME&codTipoArchivoReporte=01SUFFIX';
 
     private function getCompany()
     {
@@ -100,12 +104,21 @@ class SireService
         Cache::put('sire_token', $token, now()->addSeconds($expire));
     }
 
-    public function getPeriods()
+    public function getPeriods($type)
     {
+        switch ($type) {
+            case 'sale':
+                $cod_libro = '140000';
+                break;
+            case 'purchase':
+                $cod_libro = '080000';
+                break;
+        }
         $get_token = $this->getToken();
         $token = $get_token['token'];
 
-        $url = self::$PERIODS;
+        $url_base = self::$PERIODS;
+        $url = str_replace('COD_LIBRO', $cod_libro, $url_base);
         $client = new Client();
         $response = $client->request('GET', $url, [
             'headers' => [
@@ -134,13 +147,21 @@ class SireService
         }
     }
 
-    public function getTicket($period)
+    public function getTicket($type, $period)
     {
         $get_token = $this->getToken();
         $token = $get_token['token'];
 
-        $url_base = self::$PROPOSAL;
-        $url = str_replace('PERIOD', $period, $url_base);
+        switch ($type) {
+            case 'sale':
+                $suffix = 'exportapropuesta?codTipoArchivo=0';
+                $url = str_replace(['TYPE','PERIOD','SUFFIX'], ['rvie', $period, $suffix], self::$PROPOSAL);
+                break;
+            case 'purchase':
+                $suffix = 'exportacioncomprobantepropuesta?codTipoArchivo=0&codOrigenEnvio=1';
+                $url = str_replace(['TYPE','PERIOD','SUFFIX'], ['rce', $period, $suffix], self::$PROPOSAL);
+                break;
+        }
 
         $client = new Client();
         $response = $client->request('GET', $url, [
@@ -170,7 +191,7 @@ class SireService
         }
     }
 
-    public function queryTicket($page, $period, $ticket)
+    public function queryTicket($page, $period, $ticket, $type)
     {
         $get_token = $this->getToken();
         $token = $get_token['token'];
@@ -205,7 +226,7 @@ class SireService
 
                 $documents = null;
                 if ($status_code == '06' && $filename != null) {
-                    $documents = $this->queryFile($filename);
+                    $documents = $this->queryFile($filename, $type);
                 }
                 return [
                     'success' => true,
@@ -230,12 +251,21 @@ class SireService
         return isset($object[$key]) ? $object[$key] : null;
     }
 
-    public function queryFile($filename)
+    public function queryFile($filename, $type)
     {
         $get_token = $this->getToken();
         $token = $get_token['token'];
 
-        $url = str_replace('FILENAME', $filename, self::$DOWNLOAD);
+        switch ($type) {
+            case 'sale':
+                $suffix = '&codLibro=140000';
+                $url = str_replace(['FILENAME','SUFFIX'], [$filename, $suffix], self::$DOWNLOAD);
+                break;
+            case 'purchase':
+                $suffix = '';
+                $url = str_replace(['FILENAME','SUFFIX'], [$filename, $suffix], self::$DOWNLOAD);
+                break;
+        }
 
         $client = new Client();
         $response = $client->request('GET', $url, [
@@ -257,7 +287,6 @@ class SireService
 
         if ($statusCode === 200) {
             $file = $response->getBody()->getContents();
-            $type = 'zip';
 
             $temp = sys_get_temp_dir() . '/' . $filename; // Almacena el archivo ZIP en una ubicación temporal
             file_put_contents($temp, $file);
@@ -279,31 +308,61 @@ class SireService
                     $lines = file($path_txt, FILE_IGNORE_NEW_LINES); // Storage no funcionó
                     array_shift($lines); // Eliminando cabeceras
                     $dataCollection = new Collection();
-                    foreach ($lines as $line) {
-                        $values = explode('|', $line);
-                        $serie = $values[3];
-                        $number = (int) $values[4];
-                        $dataCollection->push([
-                            'service' => 'SUNAT',
-                            'date' => $values[0], // 2023/05/01
-                            'document_type' => $values[2],
-                            'serie' => $serie,
-                            'number' => $number,
-                            'total' => $values[21]
-                        ]);
-
-                        $document = Document::where('series', $serie)
-                            ->where('number', $number)
-                            ->first();
-                        if ($document) {
+                    if($type == 'sale'){
+                        foreach ($lines as $line) {
+                            $values = explode('|', $line);
+                            $serie = $values[3];
+                            $number = (int) $values[4];
                             $dataCollection->push([
-                                'service' => 'PRO-X',
-                                'date' => $document->date_of_issue->format('Y/m/d'),
-                                'document_type' => $document->document_type_id,
-                                'serie' => $document->series,
-                                'number' => $document->number,
-                                'total' => $document->total
+                                'service' => 'SUNAT',
+                                'date' => $values[0], // 2023/05/01
+                                'document_type' => $values[2],
+                                'serie' => $serie,
+                                'number' => $number,
+                                'total' => $values[21]
                             ]);
+
+                            $document = Document::where('series', $serie)
+                                ->where('number', $number)
+                                ->first();
+                            if ($document) {
+                                $dataCollection->push([
+                                    'service' => 'PRO-X',
+                                    'date' => $document->date_of_issue->format('Y/m/d'),
+                                    'document_type' => $document->document_type_id,
+                                    'serie' => $document->series,
+                                    'number' => $document->number,
+                                    'total' => $document->total
+                                ]);
+                            }
+                        }
+                    } else {
+                        foreach ($lines as $line) {
+                            $values = explode('|', $line);
+                            $serie = $values[7];
+                            $number = (int)$values[9];
+                            $dataCollection->push([
+                                'service' => 'SUNAT',
+                                'date' => $values[4], //2023/05/01
+                                'document_type' => $values[6],
+                                'serie' => $serie,
+                                'number' => $number,
+                                'total' => $values[24]
+                            ]);
+
+                            $purchase = Purchase::where('series', $serie)
+                                            ->where('number', $number)
+                                            ->first();
+                            if($purchase) {
+                                $dataCollection->push([
+                                    'service' => 'PRO-X',
+                                    'date' => $purchase->date_of_issue->format('d/m/Y'),
+                                    'document_type' => $purchase->document_type_id,
+                                    'serie' => $purchase->series,
+                                    'number' => $purchase->number,
+                                    'total' => $purchase->total
+                                ]);
+                            }
                         }
                     }
                     return $dataCollection;
