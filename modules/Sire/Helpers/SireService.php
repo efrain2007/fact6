@@ -329,7 +329,7 @@ class SireService
                                 ->first();
                             if ($document) {
                                 $dataCollection->push([
-                                    'service' => 'PRO-X',
+                                    'service' => 'PRO-5',
                                     'date' => $document->date_of_issue->format('Y/m/d'),
                                     'document_type' => $document->document_type_id,
                                     'serie' => $document->series,
@@ -357,7 +357,7 @@ class SireService
                                             ->first();
                             if($purchase) {
                                 $dataCollection->push([
-                                    'service' => 'PRO-X',
+                                    'service' => 'PRO-5',
                                     'date' => $purchase->date_of_issue->format('d/m/Y'),
                                     'document_type' => $purchase->document_type_id,
                                     'serie' => $purchase->series,
