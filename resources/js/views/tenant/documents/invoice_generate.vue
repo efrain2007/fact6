@@ -2285,10 +2285,18 @@ export default {
             }
         },
         async onSetFormData(data) {
-            console.log('onSetFormData')
+            // carga informacion de un documento previo al formulario
+            // console.log('onSetFormData')
             this.currency_type = await _.find(this.currency_types, {'id': data.currency_type_id})
             this.form.establishment_id = data.establishment_id;
             this.form.document_type_id = data.document_type_id;
+            // this.form.series = data.series; //form.series no llena el selector
+            if(this.table !== 'quotations') {
+                 this.$store.commit('setSeries', this.onSetSeries(data.document_type_id, data.series))
+            } else {
+                // this.series = this.onSetSeries(this.form.document_type_id, this.series);
+                this.changeDocumentType()
+            }
             this.form.id = data.id;
             this.form.hash = data.hash;
             this.form.number = data.number;
@@ -2314,17 +2322,10 @@ export default {
             this.form.pending_amount_prepayment = data.pending_amount_prepayment || 0;
             this.form.payment_method_type_id = data.payment_method_type_id;
             this.form.charges = data.charges || [];
-
             this.form.discounts = this.prepareDataGlobalDiscount(data)
             // this.form.discounts = data.discounts || [];
-
             this.form.seller_id = data.seller_id;
             this.form.items = this.onPrepareItems(data.items);
-            // this.form.series = data.series; //form.series no llena el selector
-             if(this.table !== 'quotations') {
-                 this.$store.commit('setSeries', this.onSetSeries(data.document_type_id, data.series))
-             }
-            //
             // this.series = this.onSetSeries(data.document_type_id, data.series);
             this.form.state_type_id = data.state_type_id;
             this.form.total_discount = parseFloat(data.total_discount);
