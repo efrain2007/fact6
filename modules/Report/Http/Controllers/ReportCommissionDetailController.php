@@ -55,7 +55,7 @@ class ReportCommissionDetailController extends Controller
 
     public function getRecords($request, $model){
 
-        
+
         $establishment_id = $request['establishment_id'];
         $period = $request['period'];
         $date_start = $request['date_start'];
@@ -68,7 +68,7 @@ class ReportCommissionDetailController extends Controller
 
         $d_start = null;
         $d_end = null;
-        /** @todo: Eliminar periodo, fechas y cambiar por
+        /* @todo: Eliminar periodo, fechas y cambiar por
 
         $date_start = $request['date_start'];
         $date_end = $request['date_end'];
@@ -114,12 +114,12 @@ class ReportCommissionDetailController extends Controller
                         ->where('establishment_id', $establishment_id)
                         ->whereStateTypeAccepted();
                     });
-                    
-    
+
+
             }else{
-    
-             
-                
+
+
+
                 $data = $model::whereHas('document',function($query) use($date_start, $date_end){
                             $query->whereBetween('date_of_issue', [$date_start, $date_end])
                             ->whereIn('document_type_id', ['01','03'])
@@ -131,10 +131,11 @@ class ReportCommissionDetailController extends Controller
                 $data = $data->where('item_id', $item_id);
             }
 
+
             $this->filterByCategory($data, $category_id);
     
             return $data;
-            
+
 
         }
         else if ($model == 'App\Models\Tenant\SaleNoteItem'){
@@ -147,20 +148,21 @@ class ReportCommissionDetailController extends Controller
                         ->whereStateTypeAccepted()
                         ->whereNotChanged();
                     });
-    
+
             }else{
-    
+
                     $data = $model::whereHas('sale_note',function($query) use($date_start, $date_end){
                                 $query->whereBetween('date_of_issue', [$date_start, $date_end])
                                     ->whereStateTypeAccepted()
                                     ->whereNotChanged();
                                 });
-                        
+
             }
-    
+
             if ($item_id) {
                 $data = $data->where('item_id', $item_id);
             }
+
 
             $this->filterByCategory($data, $category_id);
     
@@ -216,7 +218,7 @@ class ReportCommissionDetailController extends Controller
         $sales_notes = $this->getRecords($request->all(), SaleNoteItem::class);
         $documents = $this->getRecords($request->all(), DocumentItem::class);
         $records = ($sales_notes->get())->merge($documents->get());
-        
+
         return (new CommissionDetailExport)
                 ->records($records)
                 ->company($company)

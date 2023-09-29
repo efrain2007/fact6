@@ -17,7 +17,7 @@
 
 ## Manuales de Instalación
 
-[Windows - Linux](https://docs.google.com/document/d/1izr-fbKyOAAQDG46SpMAZtLytMxGEUdCEVh2VWGik_E/edit "Clic")
+[Windows ](https://docs.google.com/document/d/1_s2El7B8IZpNFfbnIXjCUrhUjPUM6bT3/edit?usp=sharing&ouid=105852058831627260857&rtpof=true&sd=true "Clic")
 <br>
 [Docker - Linux](https://docs.google.com/document/d/1eKZwozEZkDKjYMSkQG_oFdMbnMVYlMfkQK-BfCNTm5w/edit?usp=sharing "Clic")
 <br>

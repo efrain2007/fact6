@@ -119,7 +119,7 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label class="control-label">Favicon</label>
+                                    <label class="control-label">Favicon (ícono web)</label>
                                     <el-input v-model="form.favicon"
                                               :readonly="true">
                                         <el-upload slot="append"
@@ -133,12 +133,16 @@
                                                        type="primary"></el-button>
                                         </el-upload>
                                     </el-input>
-                                    <div class="sub-title text-danger"><small>Se recomienda una imagen con fondo
-                                                                              transparente y cuadrada en formato
-                                                                              PNG</small></div>
+                                    <div class="sub-title text-danger"><small>Se recomienda una imagen con fondo transparente y cuadrada en PNG</small></div>
                                 </div>
                             </div>
-
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="control-label">Título (nombre web)</label>
+                                    <el-input v-model="form.title_web"></el-input>
+                                    <div class="sub-title text-muted"><small>Requiere recargar la página</small></div>
+                                </div>
+                            </div>
 
                             <div class="col-md-6">
                                 <div class="form-group">
@@ -428,17 +432,20 @@
             </div>
         </div>
         <TokenRucDni></TokenRucDni>
+        <SireConfiguration></SireConfiguration>
     </div>
 </template>
 
 <script>
 import {mapActions, mapState} from "vuex";
 import TokenRucDni from './token_ruc_dni.vue'
+import SireConfiguration from '../sire/partials/configuration.vue'
 
 
 export default {
     components: {
-        TokenRucDni
+        TokenRucDni,
+        SireConfiguration,
     },
     computed: {
         ...mapState([
@@ -527,6 +534,7 @@ export default {
                 soap_sunat_password: null,
                 api_sunat_id: null,
                 api_sunat_secret: null,
+                title_web: null
             }
         },
         submit() {

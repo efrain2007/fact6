@@ -951,7 +951,7 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                     @endif
 
                     @if(in_array('accounting', $vc_modules))
-                        <li class="nav-parent {{ ($firstLevel === 'account' || $firstLevel === 'accounting_ledger'  )?'nav-active nav-expanded':'' }}">
+                        <li class="nav-parent {{ ($firstLevel === 'account' || $firstLevel === 'accounting_ledger' || $firstLevel === 'sire' )?'nav-active nav-expanded':'' }}">
                             <a class="nav-link"
                                href="#">
                                 <svg xmlns="http://www.w3.org/2000/svg"
@@ -1006,6 +1006,21 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                                        href="{{ route('tenant.accounting_ledger.create') }}">
                                         Libro Mayor
                                     </a>
+                                </li>
+                                <li class="nav-parent {{ ($firstLevel === 'sire')?'nav-active nav-expanded':'' }}">
+                                    <a class="nav-link"
+                                       href="#">
+                                        <span>SIRE</span>
+                                    </a>
+                                    <ul class="nav nav-children"
+                                        style="">
+                                        <li class="{{ ($secondLevel === 'sale')?'nav-active':'' }}">
+                                          <a class="nav-link" href="{{route('tenant.sire.sale')}}">Ventas</a>
+                                        </li>
+                                        <li class="{{ ($secondLevel === 'purchase')?'nav-active':'' }}">
+                                            <a class="nav-link" href="{{route('tenant.sire.purchase')}}">Compras</a>
+                                        </li>
+                                    </ul>
                                 </li>
                             </ul>
                         </li>

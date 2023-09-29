@@ -129,7 +129,7 @@
                 <cbc:ID schemeAgencyName="PE:INEI"
                         schemeName="Ubigeos">{{ $document['delivery_location_id'] }}</cbc:ID>
                 <!-- CODIGO DE ESTABLECIMIENTO ANEXO DE LLEGADA -->
-                @if($document['customer_identity_document_type_id'] === '6')
+                @if($document['customer_identity_document_type_id'] === '6' && $document['customer_number'] !== $document['company_number'])
                 <cbc:AddressTypeCode listAgencyName="PE:SUNAT"
                                      listName="Establecimientos anexos"
                                      listID="{{ $document['customer_number'] }}">0000</cbc:AddressTypeCode>

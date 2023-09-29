@@ -36,6 +36,18 @@ class ReportCommissionDetailCollection extends ResourceCollection
             }
             */
 
+            /* Cambios de Raul fixed | https://gitlab.com/facturaloperu/facturador/pro5/-/issues/1399 | calculo de utilidad detallada de productos vendidos por listado de presentacion
+            pendiente de revisar y analizar
+
+            $unit_gain = ((float)$row->unit_price - (float)$purchase_unit_price);
+            $overall_profit = (((float)$row->unit_price * $row->quantity ) - ((float)$purchase_unit_price * $row->quantity));
+            if(!empty($row->item->presentation)) {
+                $presentation = $row->item->presentation;
+                $unit_gain = ((float)$row->unit_price - (float)($purchase_unit_price * $presentation->quantity_unit));
+                $overall_profit = (((float)$row->unit_price * $row->quantity ) - ((float)($purchase_unit_price * $presentation->quantity_unit) * $row->quantity));
+            }
+            */
+
             $commission_values = ReportHelper::getValuesReportCommissionDetail($row);
             
             return [

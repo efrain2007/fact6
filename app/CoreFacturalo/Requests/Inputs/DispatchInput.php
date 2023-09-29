@@ -387,6 +387,28 @@ class DispatchInput
         return null;
     }
 
+
+    private static function getDeliveryId($inputs)
+    {
+        $delivery_address_id = Functions::valueKeyInArray($inputs, 'delivery_address_id', null);
+        if($delivery_address_id != null) {
+            return $delivery_address_id;
+        }
+        if ($inputs['document_type_id'] === '09' && $inputs['transport_mode_type_id'] === '01') {
+            $delivery = $inputs['delivery'];
+            // dd(self::getDispatcherId());
+            $record = DispatchAddress::query()
+                ->firstOrCreate([
+                    'person_id' => self::getDispatcherId($inputs),
+                    'location_id' => $delivery['location_id'],
+                    'address' => $delivery['address']
+                ]);
+
+           return $record->id;
+        }
+        return null;
+    }
+
     private static function getDriverId($inputs)
     {
         if (($inputs['document_type_id'] === '09' && $inputs['transport_mode_type_id'] === '02') || $inputs['document_type_id'] === '31') {
