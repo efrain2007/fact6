@@ -1,14 +1,19 @@
+import { checkPermissionEditPrices } from '@mixins/check-permission-edit-prices'
+
 export const editableRowItems = {
+    mixins: [
+        checkPermissionEditPrices
+    ],
     computed:
     {
         showEditableItems()
         {
             return this.configuration && this.configuration.change_values_preview_document
         },
-        canEditRowPrices()
-        {
-            return (this.typeUser === 'admin') ? true : this.configuration.allow_edit_unit_price_to_seller
-        },
+        // canEditRowPrices()
+        // {
+        //     return (this.typeUser === 'admin') ? true : this.configuration.allow_edit_unit_price_to_seller
+        // },
     },
     methods: 
     {

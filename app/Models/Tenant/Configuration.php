@@ -295,6 +295,7 @@
             'remove_validation_email_establishments',
             'select_establishment_bank_account',
             'change_values_preview_document',
+            'session_lifetime',
         ];
 
         protected $casts = [
@@ -421,6 +422,7 @@
             'remove_validation_email_establishments'=>'bool',
             'select_establishment_bank_account'=>'bool',
             'change_values_preview_document'=>'bool',
+            'session_lifetime' => 'float',
         ];
         
         protected $hidden = [

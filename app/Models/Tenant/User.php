@@ -211,6 +211,7 @@ class User extends Authenticatable
         'permission_force_send_by_summary',
         'is_multi_user',
         'multi_user_id',
+        'permission_edit_item_prices',
 
     ];
 
@@ -241,6 +242,7 @@ class User extends Authenticatable
         'multiple_default_document_types'=>'bool',
         'permission_force_send_by_summary' => 'boolean',
         'is_multi_user' => 'boolean',
+        'permission_edit_item_prices' => 'boolean',
     ];
 
     public function modules()
@@ -1191,6 +1193,7 @@ $withEstablishment = true){
             'multiple_default_document_types' => $this->multiple_default_document_types,
             'default_document_types' => $this->default_document_types,
             'permission_force_send_by_summary' => $this->permission_force_send_by_summary,
+            'permission_edit_item_prices' => $this->permission_edit_item_prices,
         ];
     }
 

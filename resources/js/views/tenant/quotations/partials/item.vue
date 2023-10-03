@@ -197,6 +197,7 @@
                             <template v-if="applyChangeCurrencyItem && changeCurrencyFromParent">
 
                                 <el-input v-model="form.unit_price"
+                                        :disabled="!hasPermissionEditItemPrices(permissionEditItemPrices)"
                                         @input="calculateQuantity">
 
                                         <el-select slot="prepend" v-model="form.item.currency_type_id" class="custom-change-select-currency">
@@ -211,6 +212,7 @@
                             <template v-else>
 
                                 <el-input v-model="form.unit_price"
+                                        :disabled="!hasPermissionEditItemPrices(permissionEditItemPrices)"
                                         @input="calculateQuantity">
                                     <template v-if="form.item.currency_type_symbol"
                                             slot="prepend">
@@ -571,6 +573,8 @@ import ClassicEditor from '@ckeditor/ckeditor5-build-classic'
 import VueCkeditor from 'vue-ckeditor5'
 import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 import {ItemOptionDescription, ItemSlotTooltip} from "../../../../helpers/modal_item";
+import { checkPermissionEditPrices } from '@mixins/check-permission-edit-prices'
+
 
 export default {
     props: [
@@ -585,6 +589,7 @@ export default {
         'percentageIgv',
         'currencyTypes',
         'showOptionChangeCurrency',
+        'permissionEditItemPrices'
     ],
     components: {
         itemForm,
@@ -592,6 +597,9 @@ export default {
         'vue-ckeditor': VueCkeditor.component,
         LotsGroup
     },
+    mixins: [
+        checkPermissionEditPrices
+    ],
     data() {
         return {
             showDiscounts: true,

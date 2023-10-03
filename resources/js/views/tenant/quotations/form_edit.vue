@@ -331,7 +331,7 @@
                                                             class="input-custom"
                                                             controls-position="right"
                                                             style="min-width: 115px !important"
-                                                            :disabled="hasRowAdvancedOption(row) || !canEditRowPrices"
+                                                            :disabled="hasRowAdvancedOption(row) || !hasPermissionEditItemPrices(authUser.permission_edit_item_prices)"
                                                             @change="changeRowUnitValue(row)">
                                                         </el-input-number>
                                                     </td>
@@ -345,7 +345,7 @@
                                                             class="input-custom"
                                                             controls-position="right"
                                                             style="min-width: 115px !important"
-                                                            :disabled="hasRowAdvancedOption(row) || !canEditRowPrices"
+                                                            :disabled="hasRowAdvancedOption(row) || !hasPermissionEditItemPrices(authUser.permission_edit_item_prices)"
                                                             @change="changeRowUnitPrice(row)">
                                                         </el-input-number>
                                                     </td>
@@ -359,7 +359,7 @@
                                                             class="input-custom"
                                                             controls-position="right"
                                                             style="min-width: 115px !important"
-                                                            :disabled="hasRowAdvancedOption(row) || !canEditRowPrices"
+                                                            :disabled="hasRowAdvancedOption(row) || !hasPermissionEditItemPrices(authUser.permission_edit_item_prices)"
                                                             @change="changeRowTotalValue(row)">
                                                         </el-input-number>
                                                     </td>
@@ -373,7 +373,7 @@
                                                             class="input-custom"
                                                             controls-position="right"
                                                             style="min-width: 115px !important"
-                                                            :disabled="hasRowAdvancedOption(row) || !canEditRowPrices"
+                                                            :disabled="hasRowAdvancedOption(row) || !hasPermissionEditItemPrices(authUser.permission_edit_item_prices)"
                                                             @change="changeRowTotal(row)">
                                                         </el-input-number>
                                                     </td>
@@ -505,6 +505,7 @@
                              :percentage-igv="percentage_igv"
                              :currency-types="currency_types"
                              :show-option-change-currency="true"
+                             :permissionEditItemPrices="authUser.permission_edit_item_prices"
                              @add="addRow"></quotation-form-item>
 
         <person-form :showDialog.sync="showDialogNewPerson"
@@ -547,6 +548,9 @@ export default {
             required: true,
         },
         'configuration': {
+            required: true,
+        },
+        authUser: {
             required: true,
         }
     },

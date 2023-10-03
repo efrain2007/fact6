@@ -2453,6 +2453,9 @@
                                 </div>
                             </div>
                         </div>
+
+                        <session-lifetime></session-lifetime>
+
                     </el-tab-pane>
 
                 </el-tabs>
@@ -2489,6 +2492,7 @@ import AllowanceCharge from './partials/allowance_charge.vue'
 import {mapActions, mapState} from "vuex";
 import ReportConfigurationsIndex from './partials/report_configurations_index.vue'
 import PdfFooterImages from './partials/pdf_footer_images.vue'
+import SessionLifetime from '@viewsModuleLevelAccess/configurations/SessionLifetime.vue';
 
 
 export default {
@@ -2502,6 +2506,7 @@ export default {
         AllowanceCharge,
         ReportConfigurationsIndex,
         PdfFooterImages,
+        SessionLifetime
     },
     computed: {
         ...mapState([

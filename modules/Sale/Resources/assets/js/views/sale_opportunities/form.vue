@@ -221,6 +221,7 @@
                                     :currency-type-id-active="form.currency_type_id"
                                     :exchange-rate-sale="form.exchange_rate_sale"
                                     :percentage-igv="percentage_igv"
+                                    :permissionEditItemPrices="authUser.permission_edit_item_prices"
                                     @add="addRow"></sale-opportunity-form-item>
 
         <person-form :showDialog.sync="showDialogNewPerson"
@@ -253,7 +254,7 @@ import {calculateRowItem} from '@helpers/functions'
 import Logo from '@views/companies/logo.vue'
 
 export default {
-    props: ['typeUser', 'id'],
+    props: ['typeUser', 'id', 'authUser'],
     components: {SaleOpportunityFormItem, PersonForm, SaleOpportunityOptions, Logo},
     mixins: [functions, exchangeRate],
     data() {

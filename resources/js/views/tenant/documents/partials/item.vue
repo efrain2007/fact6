@@ -227,7 +227,7 @@
                                 <template v-if="form.item">
                                     <el-input v-model="form.unit_price_value"
                                               :tabindex="'3'"
-                                              :readonly="!edit_unit_price"
+                                              :disabled="!hasPermissionEditItemPrices(permissionEditItemPrices)"
                                               @input="calculateQuantity">
 
                                         <template v-if="form.item.currency_type_symbol">
@@ -248,7 +248,7 @@
 
                                 <el-input v-model="form.unit_price_value"
                                           :tabindex="'3'"
-                                          :readonly="!edit_unit_price"
+                                          :disabled="!hasPermissionEditItemPrices(permissionEditItemPrices)"
                                           @input="calculateQuantity">
                                     <template v-if="form.item.currency_type_symbol"
                                               slot="prepend">
@@ -650,6 +650,8 @@ import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 import {ItemOptionDescription, ItemSlotTooltip} from "../../../../helpers/modal_item";
 import Keypress from "vue-keypress";
 import HistorySalesForm from "../../../../../../modules/Pos/Resources/assets/js/views/history/sales.vue";
+import { checkPermissionEditPrices } from '@mixins/check-permission-edit-prices'
+
 
 export default {
     name: 'DocumentPartialItem',
@@ -671,6 +673,7 @@ export default {
         'percentageIgv',
         'isCreditNoteAndType03',
         'isUpdateDocument',
+        'permissionEditItemPrices'
     ],
     components: {
         ItemForm,
@@ -681,6 +684,9 @@ export default {
         HistorySalesForm,
         'vue-ckeditor': VueCkeditor.component
     },
+    mixins: [
+        checkPermissionEditPrices
+    ],
     data() {
         return {
             showDiscounts: true,

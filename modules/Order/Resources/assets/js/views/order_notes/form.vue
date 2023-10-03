@@ -388,6 +388,7 @@
                               :typeUser="typeUser"
                               :configuration="config"
                               :percentage-igv="percentage_igv"
+                              :permissionEditItemPrices="authUser.permission_edit_item_prices"
                               @add="addRow"></order-note-form-item>
 
         <person-form :showDialog.sync="showDialogNewPerson"
@@ -425,7 +426,8 @@ import SelectLotsGroup from '@views/documents/partials/lots_group.vue'
 export default {
     props: [
         'typeUser',
-        'configuration'
+        'configuration',
+        'authUser',
     ],
     components: {OrderNoteFormItem, PersonForm, OrderNoteOptions, Logo, SelectLotsGroup},
     mixins: [functions, exchangeRate],

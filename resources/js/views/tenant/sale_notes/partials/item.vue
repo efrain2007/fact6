@@ -172,7 +172,8 @@
 
                             <template v-if="applyChangeCurrencyItem && changeCurrencyFromParent">
 
-                                <el-input tabindex="3" v-model="form.unit_price_value" :readonly="!edit_unit_price"
+                                <el-input tabindex="3" v-model="form.unit_price_value"
+                                        :disabled="!hasPermissionEditItemPrices(permissionEditItemPrices)"
                                         @input="calculateQuantity">
                                         
                                         <template v-if="form.item.currency_type_symbol">
@@ -188,7 +189,8 @@
                             </template>
                             <template v-else>
 
-                                <el-input tabindex="3" v-model="form.unit_price_value" :readonly="!edit_unit_price"
+                                <el-input tabindex="3" v-model="form.unit_price_value"
+                                        :disabled="!hasPermissionEditItemPrices(permissionEditItemPrices)"
                                         @input="calculateQuantity">
                                     <template v-if="form.item.currency_type_symbol" slot="prepend">
                                         {{ form.item.currency_type_symbol }}
@@ -525,6 +527,8 @@ import VueCkeditor from 'vue-ckeditor5'
 import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 import {ItemOptionDescription, ItemSlotTooltip} from "../../../../helpers/modal_item";
 import Keypress from "vue-keypress";
+import { checkPermissionEditPrices } from '@mixins/check-permission-edit-prices'
+
 
 export default {
     props: [
@@ -541,6 +545,7 @@ export default {
         'percentageIgv',
         'currencyTypes',
         'showOptionChangeCurrency',
+        'permissionEditItemPrices'
     ],
     components: {
         ItemForm,
@@ -550,6 +555,9 @@ export default {
         SelectLotsForm,
         'vue-ckeditor': VueCkeditor.component
     },
+    mixins: [
+        checkPermissionEditPrices
+    ],
     data() {
         return {
             extra_temp: undefined,
