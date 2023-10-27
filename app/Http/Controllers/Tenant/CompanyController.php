@@ -81,7 +81,7 @@ class CompanyController extends Controller
             //     $file->storeAs(($type === 'logo_store') ? 'public/uploads/logos' : 'certificates', $name);
             // }
 
-			if (($type === 'favicon')) 
+			if (($type === 'favicon'))
             {
                 request()->validate(['file' => 'required|image|mimes:png|max:1024']);
                 $filename = time() . '.' . $ext;
@@ -92,7 +92,7 @@ class CompanyController extends Controller
 			    $file->storeAs('public/uploads/favicons', $filename);
             }
 
-            if (($type === 'app_logo')) 
+            if (($type === 'app_logo'))
             {
                 request()->validate(['file' => 'required|mimes:jpeg,png,jpg,gif,svg|max:2048']);
                 UploadFileHelper::checkIfValidFile($name, $file->getPathName(), true);
@@ -105,7 +105,7 @@ class CompanyController extends Controller
                 request()->validate(['file' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048']);
                 UploadFileHelper::checkIfValidFile($name, $file->getPathName(), true);
                 $file->storeAs('public/uploads/firms', $name);
-            } 
+            }
 
             // $file->storeAs(($type === 'img_firm') ? 'public/uploads/firms' : 'certificates', $name);
 
@@ -126,7 +126,7 @@ class CompanyController extends Controller
         ];
     }
 
-    
+
     /**
      * Registrar datos de configuracion para enviar xml/cdr a PSE
      *
@@ -170,9 +170,9 @@ class CompanyController extends Controller
             'client_id_pse' => $company->client_id_pse,
             'url_login_pse' => $company->url_login_pse,
             'user_pse' => $company->user_pse,
-            // 'password_pse' => $company->password_pse,
+            'password_pse' => $company->password_pse,
         ];
-        
+
     }
 
 
@@ -195,9 +195,9 @@ class CompanyController extends Controller
         ];
     }
 
-    
+
     /**
-     * 
+     *
      * Obtener datos de configuracion de WhatsApp Api
      *
      * @param  Request $request

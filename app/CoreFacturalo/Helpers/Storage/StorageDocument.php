@@ -3,6 +3,7 @@
 namespace App\CoreFacturalo\Helpers\Storage;
 
 use Illuminate\Support\Facades\Storage;
+use ZipArchive;
 
 trait StorageDocument
 {
@@ -12,6 +13,17 @@ trait StorageDocument
     public function uploadStorage($filename, $file_content, $file_type, $root = null)
     {
         $this->setData($filename, $file_type, $root);
+        if($file_type == 'cdr_b64') {
+            $cdr_xml = base64_decode($file_content);
+            Storage::disk('tenant')->makeDirectory($this->_folder);
+
+            $zip = new ZipArchive();
+            if($zip->open(Storage::disk('tenant')->path($this->_folder.DIRECTORY_SEPARATOR.$this->_filename), ZipArchive::CREATE) === true){
+                $zip->addFromString($filename.'xml', $cdr_xml);
+                $zip->close();
+            }
+            return;
+        }
         Storage::disk('tenant')->put($this->_folder.DIRECTORY_SEPARATOR.$this->_filename, $file_content);
     }
 
@@ -52,6 +64,11 @@ trait StorageDocument
                 $filename = 'R-'.$filename;
                 $extension = 'xml';
                 $file_type = 'cdr';
+                break;
+            case 'cdr_b64':
+                $filename = 'R-'.$filename;
+                $extension = 'zip';
+                $file_type = 'cdr'; // folder
                 break;
             case 'purchase_quotation':
                 $extension = 'pdf';

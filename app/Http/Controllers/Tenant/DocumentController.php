@@ -670,11 +670,12 @@ class DocumentController extends Controller
             $facturalo = new Facturalo();
             $facturalo->save($data);
             $facturalo->createXmlUnsigned();
-            $facturalo->signXmlUnsigned();
-            $facturalo->updateHash();
+            $service_pse_xml = $facturalo->servicePseSendXml();
+            $facturalo->signXmlUnsigned($service_pse_xml['xml_signed']);
+            $facturalo->updateHash($service_pse_xml['hash']);
             $facturalo->updateQr();
             $facturalo->createPdf();
-            $facturalo->senderXmlSignedBill();
+            $facturalo->senderXmlSignedBill($service_pse_xml['code']);
 
             return $facturalo;
         });

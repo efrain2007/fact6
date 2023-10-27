@@ -38,6 +38,7 @@ use App\CoreFacturalo\Requests\Inputs\Functions;
 use App\Models\Tenant\PurchaseSettlement;
 use App\CoreFacturalo\Services\Helpers\SendDocumentPse;
 use Modules\Finance\Traits\FilePaymentTrait;
+use Modules\PseService\Http\Gior\Service as GiorService;
 
 
 /**
@@ -244,13 +245,13 @@ class Facturalo
     /**
      * Firma digital xml
      */
-    public function signXmlUnsigned()
+    public function signXmlUnsigned($pse_xml_signed = null)
     {
 
         //validar si es que el documento se enviara al pse para la agregar la firma
-        if($this->sendToPse()){
-
-            $this->xmlSigned = $this->sendDocumentPse->signXml($this->xmlUnsigned, $this->document);
+        if($pse_xml_signed !== null){
+            // if $this->sendToPse(); // deprecated
+            $this->xmlSigned = base64_decode($pse_xml_signed);
 
         }else{
 
@@ -264,11 +265,40 @@ class Facturalo
         return $this;
     }
 
-    public function updateHash()
+    /*
+     * envio de xml a serivicio pse gior
+     */
+    public function servicePseSendXml()
     {
-        $this->document->update([
-            'hash' => $this->getHash(),
-        ]);
+        if($this->hasPseSend()) {
+            $giorService = new GiorService();
+            $giorService->getToken();
+            $response = $giorService->sendXml($this->xmlUnsigned, $this->document->filename);
+            if(!$response['success']) {
+                throw new Exception("PSE. QUERY - Code: {$response['code']}; Description: {$response['message']}");
+            } else {
+                return $response;
+            }
+        } else {
+            return [
+                'xml_signed' => null,
+                'hash' => null,
+                'code' => null,
+            ];
+        }
+    }
+
+    public function updateHash($pse_hash = null)
+    {
+        if($pse_hash != null){
+            $this->document->update([
+                'hash' => $this->getHash(),
+            ]);
+        } else {
+            $this->document->update([
+                'hash' => $pse_hash,
+            ]);
+        }
     }
 
     public function updateQr()
@@ -800,7 +830,7 @@ class Facturalo
         return $sender->send($this->document->filename, $this->xmlSigned);
     }
 
-    public function senderXmlSignedBill()
+    public function senderXmlSignedBill($service_pse_code = null)
     {
         if(!$this->actions['send_xml_signed']) {
             $this->response = [
@@ -808,13 +838,18 @@ class Facturalo
             ];
             return;
         }
-        $this->onlySenderXmlSignedBill();
+        $this->onlySenderXmlSignedBill($service_pse_code);
 
+    }
+
+    public function hasPseSend()
+    {
+        return $this->company->send_document_to_pse;
     }
 
 
     /**
-     *
+     * deprecated
      * Evaluar si se debe firmar el xml y enviar cdr al PSE
      * Disponible para facturas, boletas, anulaciones de facturas
      *
@@ -848,42 +883,72 @@ class Facturalo
         }
     }
 
-    public function onlySenderXmlSignedBill()
+    public function onlySenderXmlSignedBill($service_pse_code = null)
     {
-        $res = $this->senderXmlSigned();
-
-        if($res->isSuccess()) {
-
-            $cdrResponse = $res->getCdrResponse();
-            $this->uploadFile($res->getCdrZip(), 'cdr');
-
-            //enviar cdr a pse
-            $this->sendCdrToPse($res->getCdrZip(), $this->document);
-            //enviar cdr a pse
-
-            $code = $cdrResponse->getCode();
-            $description = $cdrResponse->getDescription();
-
-            $this->response = [
-                'sent' => true,
-                'code' => $cdrResponse->getCode(),
-                'description' => $cdrResponse->getDescription(),
-                'notes' => $cdrResponse->getNotes()
-            ];
-
-            $this->validationCodeResponse($code, $description);
-
+        if($service_pse_code != null) {
+            $giorService = new GiorService();
+            $response = $giorService->sendXmlSigned($this->document->filename, $this->xmlSigned);
+            // dd($response);
+            if($response['success']) {
+                if($response['cdr'] != null) {
+                    $this->uploadFile($response['cdr'], 'cdr_b64');
+                    $cdrResponse = $giorService->getCdrResponse($response['cdr']);
+                    $code = $cdrResponse['code'];
+                    $description = $cdrResponse['description'];
+                    $this->response = [
+                        'sent' => true,
+                        'code' => $cdrResponse['code'],
+                        'description' => $cdrResponse['description'],
+                        'notes' => $cdrResponse['notes'],
+                    ];
+                    $this->validationCodeResponse($code, $description);
+                }
+            } else {
+                $description = 'PSE - SEND. '. $response['message'].' - - '.json_encode($response['errors']);
+                // dd($description);
+                $this->response = [
+                    'sent' => true,
+                    'code' => $response['code'],
+                    'description' => $description
+                ];
+                $this->validationCodeResponse($response['code'], $description);
+            }
         } else {
-            $code = $res->getError()->getCode();
-            $message = $res->getError()->getMessage();
-            $this->response = [
-                'sent' => true,
-                'code' => $code,
-                'description' => $message
-            ];
+            $res = $this->senderXmlSigned();
 
-            $this->validationCodeResponse($code, $message);
+            if($res->isSuccess()) {
 
+                $cdrResponse = $res->getCdrResponse();
+                $this->uploadFile($res->getCdrZip(), 'cdr');
+
+                //enviar cdr a pse
+                //$this->sendCdrToPse($res->getCdrZip(), $this->document);
+                //enviar cdr a pse
+
+                $code = $cdrResponse->getCode();
+                $description = $cdrResponse->getDescription();
+
+                $this->response = [
+                    'sent' => true,
+                    'code' => $cdrResponse->getCode(),
+                    'description' => $cdrResponse->getDescription(),
+                    'notes' => $cdrResponse->getNotes()
+                ];
+
+                $this->validationCodeResponse($code, $description);
+
+            } else {
+                $code = $res->getError()->getCode();
+                $message = $res->getError()->getMessage();
+                $this->response = [
+                    'sent' => true,
+                    'code' => $code,
+                    'description' => $message
+                ];
+
+                $this->validationCodeResponse($code, $message);
+
+            }
         }
     }
 
@@ -959,26 +1024,42 @@ class Facturalo
 
     public function senderXmlSignedSummary()
     {
-        $res = $this->senderXmlSigned();
-        if($res->isSuccess()) {
-            $ticket = $res->getTicket();
-            $this->updateTicket($ticket);
-            $this->updateState(self::SENT);
-            if($this->type === 'summary') {
-                // if($this->document->summary_status_type_id === '1') {
-                if(in_array($this->document->summary_status_type_id, ['1', '2'])) {
-                    $this->updateStateDocuments(self::SENT);
+        if($this->hasPseSend()) {
+            $giorService = new GiorService();
+            $response = $giorService->sendXmlSigned($this->document->filename, $this->xmlSigned, true);
+            if(!$response['success']) {
+                throw new Exception("PSE. SEND - Code: {$response['code']}; Description: {$response['message']}");
+            } else {
+                $this->updateTicket($response['ticket']);
+                $this->updateState(self::SENT);
+                $this->updateStateDocuments(self::SENT);
+                $this->response = [
+                    'sent' => true
+                ];
+            }
+
+        } else {
+            $res = $this->senderXmlSigned();
+            if($res->isSuccess()) {
+                $ticket = $res->getTicket();
+                $this->updateTicket($ticket);
+                $this->updateState(self::SENT);
+                if($this->type === 'summary') {
+                    // if($this->document->summary_status_type_id === '1') {
+                    if(in_array($this->document->summary_status_type_id, ['1', '2'])) {
+                        $this->updateStateDocuments(self::SENT);
+                    } else {
+                        $this->updateStateDocuments(self::CANCELING);
+                    }
                 } else {
                     $this->updateStateDocuments(self::CANCELING);
                 }
+                $this->response = [
+                    'sent' => true
+                ];
             } else {
-                $this->updateStateDocuments(self::CANCELING);
+                throw new Exception("Code: {$res->getError()->getCode()}; Description: {$res->getError()->getMessage()}");
             }
-            $this->response = [
-                'sent' => true
-            ];
-        } else {
-            throw new Exception("Code: {$res->getError()->getCode()}; Description: {$res->getError()->getMessage()}");
         }
     }
 
@@ -989,63 +1070,112 @@ class Facturalo
         ]);
     }
 
-    public function statusSummary($ticket)
+    public function pseQuerySummary()
     {
-        $extService = new ExtService();
-        $extService->setClient($this->wsClient);
-        $extService->setCodeProvider(new XmlErrorCodeProvider());
-        $res = $extService->getStatus($ticket);
-        if(!$res->isSuccess()) {
-            throw new Exception("Code: {$res->getError()->getCode()}; Description: {$res->getError()->getMessage()}", 511); //custom exception code
+        $giorService = new GiorService();
+        $response = $giorService->querySummary($this->document->filename);
+        if(!$response['success']) {
+            throw new Exception("PSE. SEND - Code: {$response['code']}; Description: {$response['message']}");
         } else {
-            $cdrResponse = $res->getCdrResponse();
-            $this->uploadFile($res->getCdrZip(), 'cdr');
+            $status_code = 98;
+            if($response['cdr'] != null) {
+                $this->uploadFile($response['cdr'], 'cdr_b64');
+                $cdrResponse = $giorService->getCdrResponse($response['cdr']);
+                $status_code = $cdrResponse['code'];
 
-            $this->response = [
-                'sent' => true,
-                'code' => $cdrResponse->getCode(),
-                'description' => $cdrResponse->getDescription(),
-                'notes' => $cdrResponse->getNotes(),
-                'is_accepted' => $cdrResponse->isAccepted(),
-                'status_code' => $extService->getCustomStatusCode(),
-            ];
-
-            $this->validationStatusCodeResponse($extService->getCustomStatusCode());
-            // $this->updateState(self::ACCEPTED);
-
-            if($this->type === 'summary') {
-
-                if($extService->getCustomStatusCode() === 0){
-
-                    // if($this->document->summary_status_type_id === '1') {
-                    if(in_array($this->document->summary_status_type_id, ['1', '2']))
-                    {
+                if($status_code == 0) {
+                    if(in_array($this->document->summary_status_type_id, ['1', '2'])) {
                         $this->updateStateDocuments(self::ACCEPTED);
-                    }
-                    else
-                    {
+                    } else {
                         $this->updateStateDocuments(self::VOIDED);
                     }
-
-                    //enviar cdr a pse
-                    $this->sendCdrToPse($res->getCdrZip(), $this->document);
-                    //enviar cdr a pse
-
-                }else if($extService->getCustomStatusCode() === 99){
-
+                    $this->updateState(self::ACCEPTED);
+                } elseif ($status_code == 99) {
+                    $this->updateState(self::REJECTED);
                     $this->updateStateDocuments(self::REGISTERED);
-
                 }
 
+                $this->response = [
+                    'sent' => true,
+                    'code' => $cdrResponse['code'],
+                    'description' => $cdrResponse['description'],
+                    'notes' => $cdrResponse['notes'],
+                    'is_accepted' => true,
+                    'status_code' => $cdrResponse['code'],
+                ];
+                $this->document->update([
+                    'soap_shipping_response' => $this->response
+                ]);
             } else {
-
-                //enviar cdr a pse
-                $this->sendCdrToPse($res->getCdrZip(), $this->document);
-                //enviar cdr a pse
-
-                $this->updateStateDocuments(self::VOIDED);
+                $this->response = [
+                    'description' => $cdrResponse['description'],
+                    'status_code' => $cdrResponse['code'],
+                ];
             }
+        }
+    }
 
+    public function statusSummary($ticket)
+    {
+        if($this->hasPseSend()) {
+            $this->pseQuerySummary();
+        } else {
+            $extService = new ExtService();
+            $extService->setClient($this->wsClient);
+            $extService->setCodeProvider(new XmlErrorCodeProvider());
+            $res = $extService->getStatus($ticket);
+            if(!$res->isSuccess()) {
+                throw new Exception("Code: {$res->getError()->getCode()}; Description: {$res->getError()->getMessage()}", 511); //custom exception code
+            } else {
+                $cdrResponse = $res->getCdrResponse();
+                $this->uploadFile($res->getCdrZip(), 'cdr');
+
+                $this->response = [
+                    'sent' => true,
+                    'code' => $cdrResponse->getCode(),
+                    'description' => $cdrResponse->getDescription(),
+                    'notes' => $cdrResponse->getNotes(),
+                    'is_accepted' => $cdrResponse->isAccepted(),
+                    'status_code' => $extService->getCustomStatusCode(),
+                ];
+
+                $this->validationStatusCodeResponse($extService->getCustomStatusCode());
+                // $this->updateState(self::ACCEPTED);
+
+                if($this->type === 'summary') {
+
+                    if($extService->getCustomStatusCode() === 0){
+
+                        // if($this->document->summary_status_type_id === '1') {
+                        if(in_array($this->document->summary_status_type_id, ['1', '2']))
+                        {
+                            $this->updateStateDocuments(self::ACCEPTED);
+                        }
+                        else
+                        {
+                            $this->updateStateDocuments(self::VOIDED);
+                        }
+
+                        //enviar cdr a pse
+                        //$this->sendCdrToPse($res->getCdrZip(), $this->document);
+                        //enviar cdr a pse
+
+                    }else if($extService->getCustomStatusCode() === 99){
+
+                        $this->updateStateDocuments(self::REGISTERED);
+
+                    }
+
+                } else {
+
+                    //enviar cdr a pse
+                    //$this->sendCdrToPse($res->getCdrZip(), $this->document);
+                    //enviar cdr a pse
+
+                    $this->updateStateDocuments(self::VOIDED);
+                }
+
+            }
         }
     }
 
