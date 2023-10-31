@@ -3,11 +3,11 @@
 namespace Modules\Inventory\Providers;
 
 use Modules\Order\Models\OrderNote;
-use App\Models\Tenant\Document;  
+use App\Models\Tenant\Document;
 use Illuminate\Support\ServiceProvider;
 use Modules\Inventory\Traits\InventoryTrait;
-use App\Models\Tenant\Dispatch;  
-use App\Models\Tenant\Note;  
+use App\Models\Tenant\Dispatch;
+use App\Models\Tenant\Note;
 
 class InventoryVoidedServiceProvider extends ServiceProvider
 {
@@ -16,7 +16,7 @@ class InventoryVoidedServiceProvider extends ServiceProvider
     public function register()
     {
     }
-    
+
     public function boot()
     {
         $this->voided();
@@ -38,7 +38,7 @@ class InventoryVoidedServiceProvider extends ServiceProvider
 
                     foreach ($document['items'] as $detail) {
                         // dd($detail['item']->presentation);
-                        
+
                         if(!$detail->item->is_set){
 
                             $warehouse = ($detail->warehouse_id) ? $this->findWarehouse($this->findWarehouseById($detail->warehouse_id)->establishment_id) : $this->findWarehouse($document['establishment_id']);
@@ -52,7 +52,7 @@ class InventoryVoidedServiceProvider extends ServiceProvider
                                 $this->updateStock($detail['item_id'], $detail['quantity'] * $presentationQuantity, $warehouse->id);
 
                             }else{
-                                
+
                                 if($detail->document->dispatch){
 
                                     if(!$detail->document->dispatch->transfer_reason_type->discount_stock){
@@ -66,23 +66,23 @@ class InventoryVoidedServiceProvider extends ServiceProvider
 
                         }
                         else{
-                            
+
                             $this->voidedDocumentItemSet($detail);
-            
+
                         }
-                        
+
                     }
 
                     $this->voidedWasDeductedPrepayment($document);
 
                 }
-            }         
+            }
         });
     }
 
-    
+
     /**
-     * 
+     *
      * Flujo para nota credito cuando se anula o rechaza
      *
      * @return void
@@ -96,13 +96,13 @@ class InventoryVoidedServiceProvider extends ServiceProvider
                 // si es nota credito tipo 13, no se asocia a inventario
                 if($document->isCreditNoteAndType13()) return;
 
-                foreach ($document->items as $document_item) 
+                foreach ($document->items as $document_item)
                 {
                     if(!$document_item->item->is_set)
                     {
                         $warehouse = ($document_item->warehouse_id) ? $this->findWarehouse($this->findWarehouseById($document_item->warehouse_id)->establishment_id) : $this->findWarehouse($document->establishment_id);
                         $presentation_quantity = (!empty($document_item->item->presentation)) ? $document_item->item->presentation->quantity_unit : 1;
-                        
+
                         $factor = -1;
                         $calculate_quantity = $factor * ($document_item->quantity * $presentation_quantity);
 
@@ -119,12 +119,12 @@ class InventoryVoidedServiceProvider extends ServiceProvider
     }
 
 
-    
+
     private function voidedWasDeductedPrepayment($document)
     {
 
         if($document->prepayments){
-            
+
             foreach ($document->prepayments as $row) {
                 $fullnumber = explode('-', $row->number);
                 $series = $fullnumber[0];
@@ -138,11 +138,11 @@ class InventoryVoidedServiceProvider extends ServiceProvider
                 }
             }
         }
-        
+
     }
-    
+
     /**
-     * 
+     *
      * Verificar documento relacionado a la nota de credito para liberar el monto del anticipo informado
      *
      * @return void
@@ -162,15 +162,15 @@ class InventoryVoidedServiceProvider extends ServiceProvider
                     //si el cpe relacionado tiene anticipos y el total de la nota es igual al del cpe afectado
                     if($affected_document->prepayments && $note->document->total == $affected_document->total)
                     {
-                        foreach($affected_document->prepayments as $row) 
+                        foreach($affected_document->prepayments as $row)
                         {
                             $number_full = explode('-', $row->number);
                             $find_document = Document::whereFilterWithOutRelations()->where([['series', $number_full[0]],['number', $number_full[1]]])->first();
-    
+
                             if($find_document)
                             {
                                 $find_document->pending_amount_prepayment += $row->total;
-    
+
                                 if($find_document->pending_amount_prepayment <= $find_document->total)
                                 {
                                     $find_document->was_deducted_prepayment = false;
@@ -215,12 +215,15 @@ class InventoryVoidedServiceProvider extends ServiceProvider
     }
 
 
-    
+
     private function voided_dispatch()
     {
         Dispatch::updated(function ($dispatch) {
 
             // dd($dispatch, $dispatch['state_type_id'],$dispatch->state_type_id);
+            if($dispatch->transfer_reason_type == null) {
+                $dispatch = Dispatch::where('id', $dispatch->id)->first();
+            }
             if($dispatch->transfer_reason_type->discount_stock){
 
                 if(in_array($dispatch->state_type_id, [ '09', '11' ], true)){
@@ -228,13 +231,13 @@ class InventoryVoidedServiceProvider extends ServiceProvider
                     $warehouse = $this->findWarehouse($dispatch->establishment_id);
 
                     foreach ($dispatch->items as $detail) {
-                        
+
                         $this->createInventoryKardex($dispatch, $detail->item_id, $detail->quantity, $warehouse->id);
 
                         if(!$detail->dispatch->reference_sale_note_id && !$detail->dispatch->reference_order_note_id && !$detail->dispatch->reference_document_id){
                             $this->updateStock($detail->item_id, $detail->quantity, $warehouse->id);
                         }
-                    
+
                         $this->updateDataLots($detail);
                     }
                 }
