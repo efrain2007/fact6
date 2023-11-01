@@ -113,4 +113,40 @@
             return $this;
         }
 
+                
+        /**
+         *
+         * @param  Builder $query
+         * @param  int $item_id
+         * @return Builder
+         */
+        public function scopeFilterDataByItem($query, $item_id)
+        {
+            return $query->where('item_id', $item_id)
+                        ->with([
+                            'individual_item' => function($individual_item){
+                                $individual_item->whereFilterWithOutRelations()->select(['id', 'description']);
+                            }
+                        ])
+                        ->select([
+                            'id',
+                            'item_id',
+                            'individual_item_id',
+                            'quantity'
+                        ]);
+        }
+
+        
+        /**
+         *
+         * @return array
+         */
+        public function getRowViewDescription()
+        {
+            return [
+                'description' => $this->individual_item->description,
+                'quantity' => (float) $this->quantity
+            ];
+        }
+
     }

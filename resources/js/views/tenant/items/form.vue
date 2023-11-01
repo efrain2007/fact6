@@ -1180,11 +1180,16 @@
                 </el-tab-pane>
             </el-tabs>
             <div class="form-actions text-right pt-2 mt-2">
-                <el-button @click.prevent="close()">Cancelar</el-button>
-                <el-button :loading="loading_submit"
-                           native-type="submit"
-                           type="primary">Guardar
-                </el-button>
+                <template v-if="forOnlyShowAllDetails">
+                    <el-button @click.prevent="close()">Cerrar</el-button>
+                </template>
+                <template v-else>
+                    <el-button @click.prevent="close()">Cancelar</el-button>
+                    <el-button :loading="loading_submit"
+                            native-type="submit"
+                            type="primary">Guardar
+                    </el-button>
+                </template>
             </div>
         </form>
 
@@ -1213,13 +1218,19 @@ export default {
         'external',
         'type',
         'pharmacy',
+        'onlyShowAllDetails',
     ],
     components: {
         LotsForm,
         ExtraInfo
     },
     computed: {
+        forOnlyShowAllDetails()
+        {
+            if(this.onlyShowAllDetails != undefined && this.onlyShowAllDetails != null) return this.onlyShowAllDetails
 
+            return false
+        },
         ...mapState([
             'colors',
             'CatItemSize',
@@ -1620,6 +1631,18 @@ export default {
             this.form.purchase_affectation_igv_type_id = (this.affectation_igv_types.length > 0) ? this.affectation_igv_types[0].id : null
             this.setDefaultConfiguration()
         },
+        setDialogTitle()
+        {
+            if(this.forOnlyShowAllDetails)
+            {
+                this.titleDialog = 'Ver Producto'
+            }
+            else
+            {
+                this.titleDialog = (this.recordId) ? 'Editar Producto' : 'Nuevo Producto'
+            }
+        },
+        
         async create() {
             // console.log(this.warehouses)
             // this.warehouses = this.warehouses.map(w => {
@@ -1632,7 +1655,8 @@ this.activeName =  'first'
                     this.form.unit_type_id = 'ZZ';
                 }
             }
-            this.titleDialog = (this.recordId) ? 'Editar Producto' : 'Nuevo Producto'
+            
+            this.setDialogTitle()
 
             if (this.recordId) {
                 await this.$http.get(`/${this.resource}/record/${this.recordId}`)

@@ -516,6 +516,9 @@ Vue.mixin({
                 success: success,
                 message: message
             }
+        },
+        generalSleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms))
         }
     }
 })

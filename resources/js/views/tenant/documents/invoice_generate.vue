@@ -248,7 +248,7 @@
 
                         </div>
                     </div>
-                    <div class="card-body border-top no-gutters p-0">
+                    <div class="card-body border-top no-gutters p-0" v-loading="loading_items">
                         <div class="table-responsive">
                             <table class="table table-sm">
                                 <thead>
@@ -271,7 +271,25 @@
                                 <tr v-for="(row, index) in form.items"
                                     :key="index">
                                     <td>{{ index + 1 }}</td>
-                                    <td>{{ setDescriptionOfItem(row.item) }}
+                                    <td>
+                                        <template v-if="canAddDescriptionToDocumentItem">
+                                            <template v-if="row.name_product_pdf && row.name_product_pdf != ''">
+                                                <label v-html="row.name_product_pdf"></label>
+                                            </template>
+                                            <template v-else>
+                                                <label><p v-text="setDescriptionOfItem(row.item)"></p></label>
+                                            </template>
+                                        </template>
+                                        <template v-else>
+                                            {{ setDescriptionOfItem(row.item) }}
+                                        </template>
+                                        
+                                        <pack-item-description
+                                            v-if="row.item.is_set && configuration.show_item_description_pack"
+                                            :item-id="row.item_id"
+                                        >
+                                        </pack-item-description>
+
                                         {{
                                             row.item.presentation.hasOwnProperty('description') ?
                                                 row.item.presentation.description : ''
@@ -296,6 +314,10 @@
                                                 <span class="text-danger mt-1 mb-2 d-block">Restringido para venta en CPE</span>
                                             </template>
                                         </template>
+                                        
+                                        <p class="control-label font-weight-bold text-info" v-if="configuration.show_all_item_details">
+                                            <a href="#" @click.prevent="clickShowItemDetail(row.item_id)">[Ver detalle]</a>
+                                        </p>
 
                                     </td>
                                     <td class="text-center">{{ row.item.unit_type_id }}</td>
@@ -426,6 +448,21 @@
                                     </td>
 
                                 </tr>
+
+                                <template v-if="showSearchItemsMainForm">
+                                    <tr>
+                                        <td colspan="9">
+                                            <item-search-quick-sale
+                                                class="p-2 ml-1"
+                                                @changeItem="changeItemQuickSale"
+                                                :resource="resource"
+                                                :showDetailButton="configuration.show_all_item_details"
+                                                ref="item_search_quick_sale"
+                                            >
+                                            </item-search-quick-sale>
+                                        </td>
+                                    </tr>
+                                </template>
 
                                 <!-- @todo: Mejorar evitando duplicar codigo -->
                                 <!-- Ocultar en cel -->
@@ -1641,6 +1678,7 @@
             :percentage-igv="percentage_igv"
             :isUpdateDocument="isUpdateDocument"
             :permissionEditItemPrices="authUser.permission_edit_item_prices"
+            ref="form_add_item"
             @add="addRow"></document-form-item>
 
         <person-form :document_type_id=form.document_type_id
@@ -1685,6 +1723,14 @@
                                  :item="recordItem"
                                  :document-id="documentId"
                                  @success="successItemSeries"></store-item-series-index>
+                                 
+        <item-detail-form 
+            :recordId="itemDetailId"
+            :showDialog.sync="showDialogItemDetail"
+            :onlyShowAllDetails="configuration.show_all_item_details"
+        >
+        </item-detail-form>
+
     </div>
 </template>
 
@@ -1722,7 +1768,7 @@
 import DocumentFormItem from './partials/item.vue'
 import PersonForm from '../persons/form.vue'
 import DocumentOptions from '../documents/partials/options.vue'
-import {exchangeRate, functions, pointSystemFunctions, fnRestrictSaleItemsCpe} from '../../../mixins/functions'
+import {exchangeRate, functions, pointSystemFunctions, fnRestrictSaleItemsCpe, fnItemSearchQuickSale} from '../../../mixins/functions'
 import {calculateRowItem, showNamePdfOfDescription} from '../../../helpers/functions'
 import Logo from '../companies/logo.vue'
 import DocumentHotelForm from '../../../../../modules/BusinessTurn/Resources/assets/js/views/hotels/form.vue'
@@ -1737,6 +1783,9 @@ import SetTip from '@components/SetTip.vue'
 
 import LotsForm from './partials/lots.vue'
 import { editableRowItems } from '@mixins/editable-row-items'
+import ItemSearchQuickSale from '@components/items/ItemSearchQuickSale.vue'
+import PackItemDescription from '@components/items/PackItemDescription.vue'
+import ItemDetailForm from '@views/items/form.vue'
 
 
 export default {
@@ -1763,8 +1812,11 @@ export default {
         DocumentReportCustomer,
         SetTip,
         LotsForm,
+        ItemSearchQuickSale,
+        ItemDetailForm,
+        PackItemDescription
     },
-    mixins: [functions, exchangeRate, pointSystemFunctions, fnRestrictSaleItemsCpe, editableRowItems],
+    mixins: [functions, exchangeRate, pointSystemFunctions, fnRestrictSaleItemsCpe, editableRowItems, fnItemSearchQuickSale],
     data() {
         return {
             datEmision: {
@@ -1857,6 +1909,8 @@ export default {
             showDialogReportCustomer: false,
             report_to_customer_id: null,
             retention_query_data: null,
+            itemDetailId: null,
+            showDialogItemDetail: false,
         }
     },
     computed: {
@@ -1914,6 +1968,12 @@ export default {
         {
             return (this.table !== undefined && this.table !== null)
         },
+        canAddDescriptionToDocumentItem()
+        {
+            if (this.configuration) return this.configuration.add_description_to_document_item
+
+            return false
+        }
     },
     async created() {
         this.loadConfiguration()
@@ -2067,6 +2127,11 @@ export default {
 
     },
     methods: {
+        clickShowItemDetail(id)
+        {
+            this.itemDetailId = id
+            this.showDialogItemDetail = true
+        },
         changeDataTip(tip)
         {
             if(tip)

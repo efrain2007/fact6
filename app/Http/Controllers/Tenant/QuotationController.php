@@ -455,6 +455,9 @@ class QuotationController extends Controller
 
             case 'items':
 
+                return SearchItemController::getItemsToQuotation();
+
+                /*
                 $warehouse = Warehouse::where('establishment_id', auth()->user()->establishment_id)->first();
 
                 $items = Item::orderBy('description')->whereIsActive()
@@ -466,6 +469,7 @@ class QuotationController extends Controller
                 $this->ReturnItem($items);
 
                 return $items;
+                */
 
                 break;
             default:

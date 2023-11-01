@@ -69,6 +69,7 @@ if($hostname) {
 
             Route::post('items/import/item-sets', 'ItemSetController@importItemSets');
             Route::post('items/import/item-sets-individual', 'ItemSetController@importItemSetsIndividual');
+            Route::get('items/sets-description/{item_id}', 'ItemSetController@setsDescription');
 
 
             Route::prefix('web-platforms')->group(function () {
