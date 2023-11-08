@@ -26,6 +26,7 @@
     use Modules\Item\Imports\{
         ItemUpdatePriceImport
     };
+    use Modules\Purchase\Helpers\WeightedAverageCostHelper;
 
 
     class ItemController extends Controller
@@ -289,6 +290,19 @@
                 ];
             });
             return $records;
+        }
+
+        
+        /**
+         * 
+         * Obtener el ultimo costo ponderado del producto
+         *
+         * @param  int $item_id
+         * @return float
+         */
+        public function getWeightedCost($item_id)
+        {
+            return WeightedAverageCostHelper::onlyWeightedAverageCost($item_id);
         }
 
 

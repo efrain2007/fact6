@@ -473,6 +473,28 @@
                                 </div>
                             </div>
 
+                            <div class="col-md-6 mt-4">
+                                <label class="control-label">
+                                    Mostrar costo ponderado
+                                    <el-tooltip class="item"
+                                                content="Muestra el costo ponderado en formulario producto de compras"
+                                                effect="dark"
+                                                placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                 <div :class="{'has-danger': errors.show_weighted_cost_purchase}"
+                                        class="form-group">
+                                    <el-switch v-model="form.show_weighted_cost_purchase"
+                                                active-text="Si"
+                                                inactive-text="No"
+                                                @change="submit"></el-switch>
+                                    <small v-if="errors.show_weighted_cost_purchase"
+                                            class="form-control-feedback"
+                                            v-text="errors.show_weighted_cost_purchase[0]"></small>
+                                </div>
+                            </div>
+
                             <template>
                                 <div v-if="typeUser != 'integrator'" class="col-md-4 mt-4">
                                     <label class="control-label">
@@ -2800,6 +2822,7 @@ export default {
                 show_all_item_details: false,
                 add_description_to_document_item: false,
                 show_item_description_pack: false,
+                show_weighted_cost_purchase: false,
             };
         },
         UpdateFormPurchase(e) {

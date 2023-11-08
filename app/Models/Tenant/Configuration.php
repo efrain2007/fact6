@@ -300,6 +300,7 @@
             'show_all_item_details',
             'add_description_to_document_item',
             'show_item_description_pack',
+            'show_weighted_cost_purchase',
         ];
 
         protected $casts = [
@@ -431,6 +432,7 @@
             'show_all_item_details'=>'bool',
             'add_description_to_document_item'=>'bool',
             'show_item_description_pack'=>'bool',
+            'show_weighted_cost_purchase'=>'bool',
         ];
         
         protected $hidden = [
@@ -679,6 +681,7 @@
                 'show_all_item_details' => $this->show_all_item_details,
                 'add_description_to_document_item' => $this->add_description_to_document_item,
                 'show_item_description_pack' => $this->show_item_description_pack,
+                'show_weighted_cost_purchase' => $this->show_weighted_cost_purchase,
             ];
         }
 

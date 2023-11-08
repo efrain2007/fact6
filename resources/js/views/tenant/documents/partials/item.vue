@@ -311,6 +311,29 @@
                                    v-text="errors.total_item[0]"></small>
                         </div>
                     </div>
+
+                    <template v-if="configShowLastPriceSale">
+                        <div class="col-md-4" v-if="form.item_id">
+                            <div class="form-group">
+                                <label class="control-label">Último precio de venta</label>
+                                <el-input :value="value_item_last_price" readonly>
+                                </el-input>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4" v-if="form.item">
+                            <div class="form-group">
+                                <label class="control-label">Costo unitario</label>
+                                <el-input :value="form.item.purchase_unit_price" readonly>
+                                </el-input>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4" v-if="form.item_id">
+                            <weighted-average-cost :item-id="form.item_id"></weighted-average-cost>
+                        </div>
+                    </template>
+
                     <div v-if="config.edit_name_product"
                          class="col-md-12 col-sm-12 mt-2">
                         <div class="form-group">
@@ -658,6 +681,7 @@ import {ItemOptionDescription, ItemSlotTooltip} from "../../../../helpers/modal_
 import Keypress from "vue-keypress";
 import HistorySalesForm from "../../../../../../modules/Pos/Resources/assets/js/views/history/sales.vue";
 import { checkPermissionEditPrices } from '@mixins/check-permission-edit-prices'
+import WeightedAverageCost from '@components/items/WeightedAverageCost.vue'
 
 
 export default {
@@ -689,7 +713,8 @@ export default {
         LotsGroup,
         SelectLotsForm,
         HistorySalesForm,
-        'vue-ckeditor': VueCkeditor.component
+        'vue-ckeditor': VueCkeditor.component,
+        WeightedAverageCost
     },
     mixins: [
         checkPermissionEditPrices
@@ -738,6 +763,7 @@ export default {
             value1: 'hello',
             readonly_total: 0,
             itemLastPrice: null,
+            value_item_last_price: 0,
             search_item_by_barcode_presentation: false,
             showDialogHistorySales: false,
             history_item_id: null,
@@ -882,6 +908,10 @@ export default {
             if (this.configuration) return this.configuration.add_description_to_document_item
 
             return false
+        },
+        configShowLastPriceSale()
+        {
+            return _.has(this.configuration, 'show_last_price_sale') ? this.configuration.show_last_price_sale : false
         }
     },
     methods: {
@@ -1824,6 +1854,8 @@ export default {
         },
         async getLastPriceItem() {
             this.itemLastPrice = null
+            this.value_item_last_price = 0
+
             let show_last_price_sale = _.has(this.configuration, 'show_last_price_sale') ? this.configuration.show_last_price_sale : false;
             if (show_last_price_sale) {
                 if (this.customerId && this.form.item_id) {
@@ -1835,6 +1867,7 @@ export default {
                     await this.$http.get(`/items/last-sale`, {params}).then((response) => {
                         if (response.data.unit_price) {
                             this.itemLastPrice = `Último precio de venta: ${response.data.unit_price}`
+                            this.value_item_last_price = response.data.unit_price
                         }
 
                     })
