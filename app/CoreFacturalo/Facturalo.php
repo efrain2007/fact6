@@ -270,7 +270,7 @@ class Facturalo
      */
     public function servicePseSendXml()
     {
-        if($this->hasPseSend()) {
+        if($this->hasPseSend() && $this->actions['send_xml_signed']) {
             $giorService = new GiorService();
             $giorService->getToken();
             $response = $giorService->sendXml($this->xmlUnsigned, $this->document->filename);

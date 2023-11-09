@@ -908,7 +908,8 @@ class DocumentController extends Controller
             $facturalo = new Facturalo();
             $facturalo->setDocument($document);
             $facturalo->loadXmlSigned();
-            $facturalo->onlySenderXmlSignedBill();
+            $hasSendPse = $facturalo->hasPseSend() ? '200' : null;
+            $facturalo->onlySenderXmlSignedBill($hasSendPse);
             return $facturalo;
         });
 
