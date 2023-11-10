@@ -305,5 +305,14 @@
             return WeightedAverageCostHelper::onlyWeightedAverageCost($item_id);
         }
 
+        
+        /**
+         * @param  int $item_id
+         */
+        public function showItemDetail($item_id)
+        {
+            return view('item::items.item-detail', compact('item_id'));
+        }
+
 
     }

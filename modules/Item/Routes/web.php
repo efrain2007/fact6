@@ -55,6 +55,7 @@ if($hostname) {
             Route::get('items/last-sale', 'ItemController@itemtLastSale');
 
             Route::get('items/weighted-cost/{item_id}', 'ItemController@getWeightedCost');
+            Route::get('items/show-item-detail/{item_id}', 'ItemController@showItemDetail');
 
 
             //history

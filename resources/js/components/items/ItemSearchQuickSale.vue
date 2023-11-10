@@ -54,12 +54,12 @@
             :itemName="itemName">
         </warehouses-stock>
         
-        <item-detail-form 
+        <!-- <item-detail-form 
             :recordId="dialogItemId"
             :showDialog.sync="showDialogItem"
             :onlyShowAllDetails="showDetailButton"
         >
-        </item-detail-form>
+        </item-detail-form> -->
 
     </div>
 </template>
@@ -84,7 +84,7 @@
         },
         components: {
             WarehousesStock,
-            ItemDetailForm
+            // ItemDetailForm
         },
         data() {
             return {
@@ -116,8 +116,10 @@
             },
             clickDetail(id)
             {
-                this.dialogItemId = id
-                this.showDialogItem = true
+                // this.dialogItemId = id
+                // this.showDialogItem = true
+                window.open(`/items/show-item-detail/${id}`)
+
             },
             clickStock(row)
             {

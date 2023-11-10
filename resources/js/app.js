@@ -262,6 +262,8 @@ Vue.component('tenant-agents-index', require('@viewsModuleSale/agents/index.vue'
 
 //Item
 Vue.component('tenant-web-platforms-index', require('@viewsModuleItem/web-platforms/index.vue'));
+Vue.component('tenant-item-detail-index', require('@viewsModuleItem/items/item-detail.vue'));
+
 
 //technical Services
 Vue.component('tenant-technical-services-index', require('@viewsModuleSale/technical-services/index.vue'));

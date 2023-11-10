@@ -1724,12 +1724,12 @@
                                  :document-id="documentId"
                                  @success="successItemSeries"></store-item-series-index>
                                  
-        <item-detail-form 
+        <!-- <item-detail-form 
             :recordId="itemDetailId"
             :showDialog.sync="showDialogItemDetail"
             :onlyShowAllDetails="configuration.show_all_item_details"
         >
-        </item-detail-form>
+        </item-detail-form> -->
 
     </div>
 </template>
@@ -1785,7 +1785,7 @@ import LotsForm from './partials/lots.vue'
 import { editableRowItems } from '@mixins/editable-row-items'
 import ItemSearchQuickSale from '@components/items/ItemSearchQuickSale.vue'
 import PackItemDescription from '@components/items/PackItemDescription.vue'
-import ItemDetailForm from '@views/items/form.vue'
+// import ItemDetailForm from '@views/items/form.vue'
 
 
 export default {
@@ -1813,7 +1813,7 @@ export default {
         SetTip,
         LotsForm,
         ItemSearchQuickSale,
-        ItemDetailForm,
+        // ItemDetailForm,
         PackItemDescription
     },
     mixins: [functions, exchangeRate, pointSystemFunctions, fnRestrictSaleItemsCpe, editableRowItems, fnItemSearchQuickSale],
@@ -1909,8 +1909,8 @@ export default {
             showDialogReportCustomer: false,
             report_to_customer_id: null,
             retention_query_data: null,
-            itemDetailId: null,
-            showDialogItemDetail: false,
+            // itemDetailId: null,
+            // showDialogItemDetail: false,
         }
     },
     computed: {
@@ -2129,8 +2129,9 @@ export default {
     methods: {
         clickShowItemDetail(id)
         {
-            this.itemDetailId = id
-            this.showDialogItemDetail = true
+            // this.itemDetailId = id
+            // this.showDialogItemDetail = true
+            window.open(`/items/show-item-detail/${id}`)
         },
         changeDataTip(tip)
         {

@@ -717,12 +717,6 @@
                             :showClose="false"
                             :configuration="config"></sale-notes-options>
 
-        <item-detail-form
-            :recordId="itemDetailId"
-            :showDialog.sync="showDialogItemDetail"
-            :onlyShowAllDetails="configuration.show_all_item_details"
-        >
-        </item-detail-form>
 
     </div>
 </template>
@@ -746,7 +740,6 @@
     import Keypress from "vue-keypress";
     import { editableRowItems } from '@mixins/editable-row-items'
     import ItemSearchQuickSale from '@components/items/ItemSearchQuickSale.vue'
-    import ItemDetailForm from '@views/items/form.vue'
     import PackItemDescription from '@components/items/PackItemDescription.vue'
 
 
@@ -764,7 +757,6 @@
             Logo,
             Keypress,
             ItemSearchQuickSale,
-            ItemDetailForm,
             PackItemDescription,
         },
         mixins: [functions, exchangeRate, editableRowItems, fnItemSearchQuickSale],
@@ -868,8 +860,6 @@
             global_discount_type: {},
             is_amount: true,
             total_global_discount: 0,
-            itemDetailId: null,
-            showDialogItemDetail: false,
         }
     },
     async created() {
@@ -920,8 +910,7 @@
     methods: {
         clickShowItemDetail(id)
         {
-            this.itemDetailId = id
-            this.showDialogItemDetail = true
+            window.open(`/items/show-item-detail/${id}`)
         },
         setDescriptionOfItem(item)
         {

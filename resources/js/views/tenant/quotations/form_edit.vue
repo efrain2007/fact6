@@ -580,12 +580,7 @@
                          :form="form"
                          :showClose="false"></terms-condition>
 
-        <item-detail-form
-            :recordId="itemDetailId"
-            :showDialog.sync="showDialogItemDetail"
-            :onlyShowAllDetails="configuration.show_all_item_details"
-        >
-        </item-detail-form>
+        
     </div>
 </template>
 
@@ -600,12 +595,11 @@ import Logo from '../companies/logo.vue'
 import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 import { editableRowItems } from '@mixins/editable-row-items'
 import ItemSearchQuickSale from '@components/items/ItemSearchQuickSale.vue'
-import ItemDetailForm from '@views/items/form.vue'
 import PackItemDescription from '@components/items/PackItemDescription.vue'
 
 
 export default {
-    components: {QuotationFormItem, PersonForm, QuotationOptions, Logo, TermsCondition, ItemSearchQuickSale, ItemDetailForm, PackItemDescription},
+    components: {QuotationFormItem, PersonForm, QuotationOptions, Logo, TermsCondition, ItemSearchQuickSale, PackItemDescription},
     props: {
         'resourceId': {
             required: true,
@@ -654,8 +648,6 @@ export default {
             recordItem: null,
             sellers: [],
             total_discount_no_base: 0,
-            itemDetailId: null,
-            showDialogItemDetail: false,
         }
     },
     async created() {
@@ -711,8 +703,7 @@ export default {
     methods: {
         clickShowItemDetail(id)
         {
-            this.itemDetailId = id
-            this.showDialogItemDetail = true
+            window.open(`/items/show-item-detail/${id}`)
         },
         ...mapActions([
             'loadConfiguration',
