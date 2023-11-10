@@ -530,7 +530,7 @@ class InventoryController extends Controller
             $inventory->item_id = $item_id;
             $inventory->warehouse_id = $warehouse_id;
             $inventory->quantity = $quantity_new;
-            if ($quantity_real < $quantity) {
+            if ($quantity_real != $quantity) {
                 $inventory->inventory_transaction_id = 28;
             }
 
