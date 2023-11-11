@@ -5,7 +5,7 @@
                 <div class="row">
 
                     <div class="col-md-4">
-                        
+
                         <div class="form-group">
                             <label class="control-label">Filtrar por</label>
                             <el-select
@@ -45,9 +45,9 @@
                             <small class="form-control-feedback" v-if="errors.warehouse_id"
                                    v-text="errors.warehouse_id[0]"></small>
                         </div>
-                    </div> 
-  
-                    
+                    </div>
+
+
                     <div class="col-md-3">
                         <label class="control-label">Fecha inicio</label>
                         <el-date-picker v-model="form.date_start" type="date"
@@ -97,8 +97,8 @@
                                         <th class="text-center">Fecha y hora transacción</th>
                                         <th class="text-center">Motivo de traslado</th>
                                         <th class="text-center">Stock sistema</th>
-                                        <th class="text-center">Entrada</th>
-                                        <th class="text-center">Salida</th>
+                                        <th class="text-center">Ajuste</th>
+                                        <!-- <th class="text-center">Salida</th> -->
                                         <th class="text-center">Stock real</th>
                                     </tr>
                                 </thead>
@@ -109,8 +109,8 @@
                                         <td class="text-center"> {{ row.date_time }} </td>
                                         <td class="text-center"> {{ row.description }} </td>
                                         <td class="text-center"> {{ row.system_stock }} </td>
-                                        <td class="text-center"> {{ row.input }} </td>
-                                        <td class="text-center"> {{ row.output }} </td>
+                                        <td class="text-center"> {{ row.real_stock - row.system_stock }} </td>
+                                        <!-- <td class="text-center"> {{ row.output }} </td> -->
                                         <td class="text-center"> {{ row.real_stock }} </td>
                                     </tr>
                                 </tbody>
@@ -133,12 +133,12 @@
                 <el-button @click.prevent="close()">Cerrar</el-button>
             </div>
         </form>
- 
+
     </el-dialog>
 
 </template>
 
-<script> 
+<script>
 
 import moment from 'moment'
 import queryString from 'query-string'
@@ -172,8 +172,8 @@ export default {
         this.initForm()
         this.initTables()
     },
-    methods: {  
-        changeClearInput() 
+    methods: {
+        changeClearInput()
         {
             this.form.search_input = null
         },
@@ -198,7 +198,7 @@ export default {
                 search_input: null,
             }
 
-        }, 
+        },
         changeDisabledDates() {
             if (this.form.date_end < this.form.date_start) {
                 this.form.date_end = this.form.date_start
@@ -213,7 +213,7 @@ export default {
                 })
 
             await this.searchRemoteItems('')
-            
+
         },
         async create() {
 
@@ -236,7 +236,7 @@ export default {
                 .then(()=>{
                     this.loading_search = false
                 })
-        }, 
+        },
         customIndex(index) {
             return (this.pagination.per_page * (this.pagination.current_page - 1)) + index + 1
         },

@@ -5,6 +5,7 @@ namespace Modules\ApiPeruDev\Http\Controllers;
 use App\CoreFacturalo\Helpers\Storage\StorageDocument;
 use App\CoreFacturalo\Helpers\Xml\XmlFormat;
 use App\CoreFacturalo\Template;
+use App\CoreFacturalo\Facturalo;
 use App\Models\Tenant\Company;
 use App\Models\Tenant\Dispatch;
 use Illuminate\Routing\Controller;
@@ -13,6 +14,8 @@ use Illuminate\Support\Facades\Log;
 use Modules\ApiPeruDev\Helpers\CdrRead;
 use Modules\ApiPeruDev\Helpers\ServiceDispatch;
 use Modules\Store\Helpers\StorageHelper;
+use Modules\PseService\Http\Gior\Service as GiorService;
+use Exception;
 
 class ServiceDispatchController extends Controller
 {
@@ -46,31 +49,57 @@ class ServiceDispatchController extends Controller
                 ->where('external_id', $external_id)->first();
             if ($dispatch) {
                 $xml_signed = (new StorageHelper())->getXmlSigned($dispatch->filename);
-                $res = $this->getServiceInitial()->send(
-                    $dispatch->filename,
-                    $xml_signed
-                );
 
-                if ($res['success']) {
-                    $data = $res['data'];
-                    if (key_exists('numTicket', $data)) {
-                        $ticket = $data['numTicket'];
-                        $reception_date = $data['fecRecepcion'];
+                $facturalo = new Facturalo();
+                $hasPseSend = $facturalo->hasPseSend();
+                if($hasPseSend){
+                    $giorService = new GiorService();
+                    $response = $giorService->sendXmlSigned($dispatch->filename, $xml_signed, true);
+                    // dd($response);
+                    if(!$response['success']) {
+                        $res_errors = is_array($response['errors']) ? implode(" ",$response['errors']) : '';
+                        throw new Exception("PSE. SEND - Code: {$response['code']}; Description: {$response['message']} ;detalle: {$res_errors}");
+                    } else {
                         Dispatch::query()
                             ->where('id', $dispatch->id)
                             ->update([
-                                'ticket' => $ticket,
-                                'reception_date' => $reception_date,
+                                'ticket' => $response['ticket'],
                                 'state_type_id' => '03'
                             ]);
                         DB::connection('tenant')->commit();
                     }
+
                     return [
                         'success' => true,
-                        'message' => 'Se obtuvo el nro. de ticket correctamente',
+                        'message' => 'PSE - Se obtuvo el nro. de ticket correctamente',
                     ];
                 } else {
-                    return $res;
+                    $res = $this->getServiceInitial()->send(
+                        $dispatch->filename,
+                        $xml_signed
+                    );
+
+                    if ($res['success']) {
+                        $data = $res['data'];
+                        if (key_exists('numTicket', $data)) {
+                            $ticket = $data['numTicket'];
+                            $reception_date = $data['fecRecepcion'];
+                            Dispatch::query()
+                                ->where('id', $dispatch->id)
+                                ->update([
+                                    'ticket' => $ticket,
+                                    'reception_date' => $reception_date,
+                                    'state_type_id' => '03'
+                                ]);
+                            DB::connection('tenant')->commit();
+                        }
+                        return [
+                            'success' => true,
+                            'message' => 'Se obtuvo el nro. de ticket correctamente',
+                        ];
+                    } else {
+                        return $res;
+                    }
                 }
             }
             return [
@@ -95,73 +124,122 @@ class ServiceDispatchController extends Controller
 
         if ($dispatch) {
             $storage = new StorageHelper();
-            $res = $this->getServiceInitial()->ticket($dispatch->ticket);
 
-            if (key_exists('codRespuesta', $res)) {
-                $has_cdr = false;
-                $qr_url = null;
-                $state_type_id = '01';
-                $message = '';
-                $success = true;
-                switch ($res['codRespuesta']) {
-                    case '98':
-                        $state_type_id = '03';
-                        $message = 'La guía aún está en proceso, vuelva a consultar.';
-                        break;
-                    case '0':
-                        $state_type_id = '05';
-                        $has_cdr = true;
-                        break;
-                    case '99':
+            $facturalo = new Facturalo();
+            $hasPseSend = $facturalo->hasPseSend();
+            if($hasPseSend){
+                $giorService = new GiorService();
+                $response = $giorService->querySummary($dispatch->filename);
+                if(!$response['success']) {
+                    throw new Exception("PSE. TICKET - Code: {$response['code']}; Description: {$response['message']}");
+                } else {
+                    $message = $response['message'];
+                    $state_type_id = '05';
+                    $has_cdr = false;
+                    $qr_url = null;
+                    $download_external_cdr = null;
+
+                    if($response['rejected']) {
                         $state_type_id = '09';
-                        if ($res['indCdrGenerado'] === '1') {
+                    }
+                    if($response['cdr'] != null) {
+                        $has_cdr = true;
+                        $this->uploadStorage($dispatch->filename, $response['cdr'], 'cdr_b64');
+                        $download_external_cdr = $dispatch->download_external_cdr;
+                    }
+
+                    $dispatch->has_cdr = $has_cdr;
+                    $dispatch->state_type_id = $state_type_id;
+                    $dispatch->qr_url = $qr_url;
+                    $dispatch->save();
+
+                    DB::connection('tenant')->commit();
+
+                    return [
+                        'success' => true,
+                        'data' => [
+                            'number' => $dispatch->number_full,
+                            'filename' => $dispatch->filename,
+                            'external_id' => $dispatch->external_id,
+                            'state_type_id' => $dispatch->state_type_id,
+                        ],
+                        'links' => [
+                            'xml' => $dispatch->download_external_xml,
+                            'pdf' => $dispatch->download_external_pdf,
+                            'cdr' => $download_external_cdr,
+                        ],
+                        'message' => 'PSE. '.$message,
+                    ];
+                }
+            } else {
+                $res = $this->getServiceInitial()->ticket($dispatch->ticket);
+
+                if (key_exists('codRespuesta', $res)) {
+                    $has_cdr = false;
+                    $qr_url = null;
+                    $state_type_id = '01';
+                    $message = '';
+                    $success = true;
+                    switch ($res['codRespuesta']) {
+                        case '98':
+                            $state_type_id = '03';
+                            $message = 'La guía aún está en proceso, vuelva a consultar.';
+                            break;
+                        case '0':
+                            $state_type_id = '05';
                             $has_cdr = true;
-                        } else {
-                            $message = $res['error']['desError'];
-                        }
-                        break;
+                            break;
+                        case '99':
+                            $state_type_id = '09';
+                            if ($res['indCdrGenerado'] === '1') {
+                                $has_cdr = true;
+                            } else {
+                                $message = $res['error']['desError'];
+                            }
+                            break;
+                    }
+
+                    if ($has_cdr) {
+                        $file_content_cdr = (new CdrRead())->getCrdContent($res['arcCdr']);
+                        $storage->uploadCdr($dispatch->filename, $file_content_cdr);
+                        $cdr_content = (new StorageHelper())->getCdr($dispatch->filename);
+                        $res['cdr_data'] = (new CdrRead())->getCdrData($cdr_content);
+                        $qr_url = $res['cdr_data']['qr_url'];
+                    }
+
+                    Dispatch::query()
+                        ->where('id', $dispatch->id)
+                        ->update([
+                            'state_type_id' => $state_type_id,
+                            'qr_url' => $qr_url
+                        ]);
+
+                    $record = Dispatch::query()
+                        ->select('id', 'series', 'number', 'state_type_id', 'filename', 'external_id')
+                        ->where('external_id', $external_id)->first();
+
+                    $download_external_cdr = null;
+                    if ($has_cdr) {
+                        $download_external_cdr = $record->download_external_cdr;
+                        $message = $res['cdr_data']['message'];
+                    }
+
+                    return [
+                        'success' => $success,
+                        'data' => [
+                            'number' => $record->number_full,
+                            'filename' => $record->filename,
+                            'external_id' => $record->external_id,
+                            'state_type_id' => $record->state_type_id,
+                        ],
+                        'links' => [
+                            'xml' => $record->download_external_xml,
+                            'pdf' => $record->download_external_pdf,
+                            'cdr' => $download_external_cdr,
+                        ],
+                        'message' => $message,
+                    ];
                 }
-
-                if ($has_cdr) {
-                    $file_content_cdr = (new CdrRead())->getCrdContent($res['arcCdr']);
-                    $storage->uploadCdr($dispatch->filename, $file_content_cdr);
-                    $cdr_content = (new StorageHelper())->getCdr($dispatch->filename);
-                    $res['cdr_data'] = (new CdrRead())->getCdrData($cdr_content);
-                    $qr_url = $res['cdr_data']['qr_url'];
-                }
-
-                Dispatch::query()
-                    ->where('id', $dispatch->id)
-                    ->update([
-                        'state_type_id' => $state_type_id,
-                        'qr_url' => $qr_url
-                    ]);
-
-                $record = Dispatch::query()
-                    ->select('id', 'series', 'number', 'state_type_id', 'filename', 'external_id')
-                    ->where('external_id', $external_id)->first();
-
-                $download_external_cdr = null;
-                if ($has_cdr) {
-                    $download_external_cdr = $record->download_external_cdr;
-                    $message = $res['cdr_data']['message'];
-                }
-
-                return [
-                    'success' => $success,
-                    'data' => [
-                        'number' => $record->number_full,
-                        'filename' => $record->filename,
-                        'external_id' => $record->external_id,
-                        'state_type_id' => $record->state_type_id,
-                    ],
-                    'links' => [
-                        'xml' => $record->download_external_xml,
-                        'pdf' => $record->download_external_pdf,
-                        'cdr' => $download_external_cdr,
-                    ],
-                    'message' => $message,
-                ];
             }
 
             return $res;

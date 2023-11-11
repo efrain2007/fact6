@@ -14,33 +14,39 @@ trait SummaryTrait
             $facturalo = new Facturalo();
             $facturalo->save($request->all());
             $facturalo->createXmlUnsigned();
-            $facturalo->signXmlUnsigned();
+            $service_pse_xml = $facturalo->servicePseSendXml();
+            $facturalo->signXmlUnsigned($service_pse_xml['xml_signed']);
             $facturalo->senderXmlSignedSummary();
 
             return $facturalo;
         });
 
         $document = $fact->getDocument();
-        
+
         return [
             'success' => true,
             'message' => "El resumen {$document->identifier} fue creado correctamente",
         ];
     }
-    
+
     public function query($id) {
         $document = Summary::find($id);
-        
+
         $fact = DB::connection('tenant')->transaction(function () use($document) {
             $facturalo = new Facturalo();
             $facturalo->setDocument($document);
             $facturalo->setType('summary');
-            $facturalo->statusSummary($document->ticket);
+            $hasPseSend = $facturalo->hasPseSend();
+            if($hasPseSend){
+                $facturalo->pseQuerySummary();
+            } else {
+                $facturalo->statusSummary($document->ticket);
+            }
             return $facturalo;
         });
-        
+
         $response = $fact->getResponse();
-        
+
         return [
             'success' => ($response['status_code'] === 99) ? false : true,
             'message' => $response['description'],
@@ -65,7 +71,7 @@ trait SummaryTrait
     }
 
     public function updateUnknownErrorStatus($id, $exception) {
-        
+
         Summary::findOrFail($id)->update([
             'unknown_error_status_response' => true,
             'error_manually_regularized' => [

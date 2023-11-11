@@ -63,7 +63,8 @@ class VoidedController extends Controller
             $facturalo = new Facturalo();
             $facturalo->save($request->all());
             $facturalo->createXmlUnsigned();
-            $facturalo->signXmlUnsigned();
+            $service_pse_xml = $facturalo->servicePseSendXml();
+            $facturalo->signXmlUnsigned($service_pse_xml['xml_signed']);
             $facturalo->senderXmlSignedSummary();
 
             return $facturalo;
@@ -78,7 +79,7 @@ class VoidedController extends Controller
         ];
     }
 
-    
+
     /**
      * Validaciones previas
      *
@@ -93,12 +94,12 @@ class VoidedController extends Controller
 
         if($configuration->restrict_voided_send)
         {
-            foreach ($request->documents as $row) 
+            foreach ($request->documents as $row)
             {
                 $document = Document::whereFilterWithOutRelations()->select('date_of_issue')->findOrFail($row['document_id']);
-    
+
                 $difference_days = $configuration->shipping_time_days_voided - $document->getDiffInDaysDateOfIssue($voided_date_of_issue);
-    
+
                 if($difference_days < 0)
                 {
                     return [

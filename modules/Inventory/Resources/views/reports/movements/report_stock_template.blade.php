@@ -100,7 +100,7 @@
                                     <td class="celda"> {{ $value['stock_real'] }} </td> --}}
                                     <td class="celda"> {{ $value['system_stock'] }} </td>
                                     <td class="celda"> {{ $value['real_stock'] }} </td>
-                                    <td class="celda"> {{ $value['ajust'] }} </td>
+                                    <td class="celda"> {{ $value['real_stock'] - $value['system_stock'] }} </td>
                                 </tr>
                             @endforeach
                         </tbody>
