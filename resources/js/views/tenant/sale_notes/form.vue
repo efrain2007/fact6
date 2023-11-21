@@ -325,6 +325,19 @@
 
 
                         <div class="row mt-4" v-loading="loading_items">
+                            
+                            <div class="col-lg-12 col-md-12 mb-3" v-if="showSearchItemsMainForm">
+                                <div class="form-group">
+                                    <item-search-quick-sale
+                                        @changeItem="changeItemQuickSale"
+                                        :resource="resource"
+                                        :showDetailButton="configuration.show_all_item_details"
+                                        ref="item_search_quick_sale"
+                                    >
+                                    </item-search-quick-sale>
+                                </div>
+                            </div>
+
                             <div class="col-md-12">
                                 <div class="table-responsive">
                                     <table class="table">
@@ -551,17 +564,6 @@
                                         </template>
 
                                     </table>
-                                </div>
-                            </div>
-                            <div class="col-lg-12 col-md-12 mb-5" v-if="showSearchItemsMainForm">
-                                <div class="form-group">
-                                    <item-search-quick-sale
-                                        @changeItem="changeItemQuickSale"
-                                        :resource="resource"
-                                        :showDetailButton="configuration.show_all_item_details"
-                                        ref="item_search_quick_sale"
-                                    >
-                                    </item-search-quick-sale>
                                 </div>
                             </div>
 

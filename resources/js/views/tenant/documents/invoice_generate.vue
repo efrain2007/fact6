@@ -246,6 +246,17 @@
                             </div>
                             <!-- sistema por puntos -->
 
+                            <template v-if="showSearchItemsMainForm">
+                                <div class="col-md-12 mt-4">
+                                    <item-search-quick-sale
+                                        @changeItem="changeItemQuickSale"
+                                        :resource="resource"
+                                        :showDetailButton="configuration.show_all_item_details"
+                                        ref="item_search_quick_sale"
+                                    >
+                                    </item-search-quick-sale>
+                                </div>
+                            </template>
                         </div>
                     </div>
                     <div class="card-body border-top no-gutters p-0" v-loading="loading_items">
@@ -448,21 +459,6 @@
                                     </td>
 
                                 </tr>
-
-                                <template v-if="showSearchItemsMainForm">
-                                    <tr>
-                                        <td colspan="9">
-                                            <item-search-quick-sale
-                                                class="p-2 ml-1"
-                                                @changeItem="changeItemQuickSale"
-                                                :resource="resource"
-                                                :showDetailButton="configuration.show_all_item_details"
-                                                ref="item_search_quick_sale"
-                                            >
-                                            </item-search-quick-sale>
-                                        </td>
-                                    </tr>
-                                </template>
 
                                 <!-- @todo: Mejorar evitando duplicar codigo -->
                                 <!-- Ocultar en cel -->

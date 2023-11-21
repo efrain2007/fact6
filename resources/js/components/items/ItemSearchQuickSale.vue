@@ -31,6 +31,8 @@
                     </span>
 
                     <div class="f-right">
+                        <span class="f-right custom-stock pt-1 pb-1 ml-3">Stock: {{ parseStock(row.stock) }}</span>
+
                         <span class="f-right custom-price pt-1 pb-1">{{ row.currency_type_symbol }} {{ row.sale_unit_price }}</span>
                         <br>
                         <div class="f-right">
@@ -110,6 +112,10 @@
         },
         methods: 
         {
+            parseStock(stock)
+            {
+                return parseFloat(stock)
+            },
             cleanValue()
             {
                 this.item_id = null
@@ -191,6 +197,12 @@
         color: #8492a6; 
         font-size: 17px
     }
+
+    .custom-stock {
+        color: red; 
+        font-size: 17px
+    }
+
 
     .custom-image {
         height: 74px !important;
