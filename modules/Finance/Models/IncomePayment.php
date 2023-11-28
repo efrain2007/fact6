@@ -135,4 +135,14 @@ class IncomePayment extends ModelTenant
         return array_merge($this->getRowResourceCashPayment(), $data);
     }
 
+
+    /**
+     *
+     * @return string|null
+     */
+    public function getPaymentFileUrl()
+    {
+        return null;
+    }
+
 }

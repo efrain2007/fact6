@@ -70,6 +70,7 @@ class AppConfigurationController extends Controller
                 'app_logo' => Company::getAppUrlLogo(),
                 'user_data' => $user->getGeneralDataApp()
             ],
+            'multi_user_enabled' => config('configuration.multi_user_enabled')
         ];
     }
 

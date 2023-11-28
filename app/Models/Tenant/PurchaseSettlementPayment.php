@@ -50,4 +50,15 @@ class PurchaseSettlementPayment extends ModelTenant
     public function getTotal(){
         return $this->payment;
     }
+    
+    
+    /**
+     *
+     * @return string|null
+     */
+    public function getPaymentFileUrl()
+    {
+        return null;
+    }
+
 }

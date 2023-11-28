@@ -34,7 +34,18 @@
                             <td>{{row.cci}}</td>
                             <td>{{row.date_of_payment}}</td>
                             <td>{{row.payment_method_type_description}}</td>
-                            <td>{{row.reference}}</td>
+                            <td>
+                                {{row.reference}}
+
+                                <template v-if="row.file_url">
+                                    <div style="min-width: 125px !important">
+                                        <br>
+                                        <a href="#" class="control-label font-weight-bold text-info"  @click.prevent="clickDownloadFile(row.file_url)">
+                                            [<i class="fas fa-fw fa-file-download"></i> Descargar]
+                                        </a>
+                                    </div>
+                                </template>
+                            </td>
                             <td>{{row.user_name}}</td>
                             <td>{{row.total}}</td>
                         </tr>
@@ -63,7 +74,10 @@
         async created() {
         },
         methods: {
-
+            clickDownloadFile(file_url) 
+            {
+                window.open(file_url, "_blank")
+            },
 
         }
     }

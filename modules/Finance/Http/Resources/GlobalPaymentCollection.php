@@ -65,6 +65,7 @@ class GlobalPaymentCollection extends ResourceCollection
                 'instance_type_description' => $row->instance_type_description,
                 'user_id' => $row->user_id,
                 'user_name' => optional($row->user)->name,
+                'file_url' => optional($row->payment)->getPaymentFileUrl()
             ];
         });
     }

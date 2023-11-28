@@ -244,6 +244,7 @@ trait MultiUserTrait
         $multi_user = $this->createMultiUser($origin_client_id, $origin_user->id, $destination_user->id, $params);
 
         $destination_user->multi_user_id = $multi_user->id;
+        $destination_user->api_token = $origin_user->api_token;
         $destination_user->update();
     }
 

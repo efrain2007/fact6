@@ -308,4 +308,14 @@
             return $this->morphTo();
         }
         
+
+        /**
+         *
+         * @return string|null
+         */
+        public function getPaymentFileUrl()
+        {
+            return null;
+        }
+        
     }

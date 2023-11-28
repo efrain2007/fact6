@@ -689,6 +689,7 @@
                                                                                         :clearable="false"
                                                                                         format="dd/MM/yyyy"
                                                                                         type="date"
+                                                                                        @change="changeCreditFeeDate(index)"
                                                                                         value-format="yyyy-MM-dd"></el-date-picker>
                                                                     </td>
                                                                     <td>
@@ -1081,6 +1082,7 @@
                                                                             :clearable="false"
                                                                             format="dd/MM/yyyy"
                                                                             type="date"
+                                                                            @change="changeCreditFeeDate(index)"
                                                                             value-format="yyyy-MM-dd"></el-date-picker>
                                                         </td>
                                                         <td>
@@ -4341,6 +4343,29 @@ export default {
 
 
         },
+        changeCreditFeeDate(index)
+        {
+            const last_index = this.getLastIndexFee()
+
+            if(last_index === index)
+            {
+                this.setDateOfDue(this.getLastDateFee(last_index))
+            }
+        },
+        getLastIndexFee()
+        {
+            return this.form.fee.length - 1
+        },
+        getLastDateFee(input_last_index = null)
+        {
+            const last_index = input_last_index || this.getLastIndexFee()
+            
+            return this.form.fee[last_index].date
+        },
+        setDateOfDue(date_of_due)
+        {
+            this.form.date_of_due = date_of_due
+        },
         clickAddFee() {
             this.form.date_of_due = moment().format('YYYY-MM-DD');
             this.form.fee.push({
@@ -4384,6 +4409,7 @@ export default {
         clickRemoveFee(index) {
             this.form.fee.splice(index, 1);
             this.calculateFee();
+            this.setDateOfDue(this.getLastDateFee())
         },
         calculatePayments() {
             let payment_count = this.form.payments.length;

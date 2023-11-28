@@ -115,6 +115,7 @@ class SaleNotePayment extends ModelTenant
                         'payment_method_type' => function($payment_method_type){
                             $payment_method_type->select('id', 'description');
                         }, 
+                        'payment_file'
                     ]);
     }
 
@@ -249,5 +250,14 @@ class SaleNotePayment extends ModelTenant
         ];
     }
 
+
+    /**
+     *
+     * @return string
+     */
+    public function getPaymentFileUrl()
+    {
+        return optional($this->payment_file)->getFileUrl('sale_notes');
+    }
 
 }

@@ -64,4 +64,14 @@ class ContractPayment extends ModelTenant
                     ]);
     }
 
+
+    /**
+     *
+     * @return string|null
+     */
+    public function getPaymentFileUrl()
+    {
+        return null;
+    }
+
 }

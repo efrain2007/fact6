@@ -7,6 +7,8 @@ use Hyn\Tenancy\Environment;
 use Illuminate\Support\Facades\DB;
 use Modules\MultiUser\Models\System\MultiUser;
 use App\Models\Tenant\User;
+use App\Models\Tenant\Company;
+use Modules\MobileApp\Models\AppConfiguration;
 use Exception;
 
 
@@ -159,6 +161,69 @@ trait MultiUserTrait
                 if(!$exist_row) $multi_users->push($row);
             }
         }
+    }
+
+    
+    /**
+     *
+     * @param  bool $is_destination
+     * @param  bool $is_destination
+     * @param  int $client_id
+     * @param  int $user_id
+     * @return void
+     */
+    private function setClientUserId($is_destination, $multi_user, &$client_id, &$user_id)
+    {
+        if($is_destination)
+        {
+            $client_id = $multi_user->destination_client_id;
+            $user_id = $multi_user->destination_user_id;   
+        }
+        else
+        {
+            $client_id = $multi_user->origin_client_id;
+            $user_id = $multi_user->origin_user_id;   
+        }
+    }
+
+    
+    /**
+     * 
+     * @param  Client $client
+     * @return void
+     */
+    public function setCurrentTenantConnection($client)
+    {
+        $tenancy = app(Environment::class);
+        $tenancy->tenant($client->hostname->website);
+    }
+
+    
+    /**
+     *
+     * @param  User $user
+     * @return array
+     */
+    public function getDataDestinationClient($user)
+    {
+        $company = Company::active();
+
+        return [
+            'success' => true,
+            'user_name' => $user->name,
+            'user_email' => $user->email,
+            'establishment_id' => $user->establishment->id,
+            'api_token' => $user->api_token,
+            'ruc' => $company->number,
+            'app_logo' => $company->app_logo,
+            'company' => [
+                'name' => $company->name,
+                'address' => $user->establishment->department->description.', '.$user->establishment->province->description.', '.$user->establishment->district->description.', '.$user->establishment->address,
+                'phone' => $user->establishment->telephone,
+                'email' => $user->establishment->email
+            ],
+            'app_configuration' => optional(AppConfiguration::first())->getRowResource(),
+        ];
     }
 
 }
