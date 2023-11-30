@@ -16,6 +16,9 @@ use App\Models\Tenant\Zone;
 use App\Models\Tenant\Catalogs\IdentityDocumentType;
 use Modules\Finance\Helpers\UploadFileHelper;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
+use App\Helpers\UserControlHelper;
+use Exception;
 
 
 class UserController extends Controller
@@ -262,5 +265,47 @@ class UserController extends Controller
             'success' => true,
             'message' => 'Usuario eliminado con éxito'
         ];
+    }
+
+        
+    /**
+     *
+     * @param  Request $request
+     * @return array
+     */
+    public function changeActive(Request $request)
+    {
+        try 
+        {
+            $request->validate([
+                'id' => 'required',
+                'active' => 'required',
+            ]);
+            
+            $user = User::findOrFail($request->id);
+            $user->active = !$request->active;
+            $active_message = null;
+
+            if($user->active)
+            {
+                (new UserControlHelper)->checkLimitUsers();
+                $active_message = 'habilitado';
+                $user->name = trim(str_replace(User::TEXT_INACTIVE_USER , '' , $user->name));
+            }
+            else
+            {
+                $active_message = 'inhabilitado';
+                $user->name = "{$user->name} " . User::TEXT_INACTIVE_USER;
+            }
+
+            $user->save();
+            
+            return $this->generalResponse(true, "Usuario {$active_message} con éxito.");
+
+        } 
+        catch(Exception $e)
+        {
+            return $this->generalResponse(false, $e->getMessage());
+        }
     }
 }

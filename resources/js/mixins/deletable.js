@@ -229,6 +229,39 @@ export const deletable = {
                 });
             })
         },
+        changeActive(url, params) 
+        {
+            const title = params.active ? '¿Desea inhabilitar el registro?' : '¿Desea habilitar el registro?'
+            const action = params.active ? 'Inhabilitar' : 'Habilitar'
+
+            return new Promise((resolve) => {
+                this.$confirm(title, action, {
+                    confirmButtonText: action,
+                    cancelButtonText: 'Cancelar',
+                    type: 'warning'
+                }).then(() => {
+                    this.$http.post(url, params)
+                        .then(res => {
+                            if(res.data.success) {
+                                this.$message.success(res.data.message)
+                                resolve()
+                            }else{
+                                this.$message.error(res.data.message)
+                                resolve()
+                            }
+                        })
+                        .catch(error => {
+                            if (error.response.status === 500) {
+                                this.$message.error('Error al intentar habilitar/inhabilitar');
+                            } else {
+                                console.log(error.response.data.message)
+                            }
+                        })
+                }).catch(error => {
+                    console.log(error)
+                });
+            })
+        },
 
     }
 }

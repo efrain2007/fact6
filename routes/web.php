@@ -170,6 +170,7 @@ if ($hostname) {
             Route::post('users/token/{user}', 'Tenant\UserController@regenerateToken');
             Route::get('users/records', 'Tenant\UserController@records');
             Route::delete('users/{user}', 'Tenant\UserController@destroy');
+            Route::post('users/change-active', 'Tenant\UserController@changeActive');
 
             //ChargeDiscounts
             Route::get('charge_discounts', 'Tenant\ChargeDiscountController@index')->name('tenant.charge_discounts.index');

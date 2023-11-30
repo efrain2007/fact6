@@ -48,6 +48,7 @@ class UserCollection extends ResourceCollection
                 'establishment_description' => optional($row->establishment)->description,
                 'type' => $type,
                 'locked' => (bool) $row->locked,
+                'active' => (bool) $row->active,
 
             ];
         })->sortBy('id');
