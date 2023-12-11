@@ -69,6 +69,7 @@ class UserResource extends JsonResource {
                 return $row->getDataMultipleDocumentType();
             }),
             'permission_force_send_by_summary' => $this->permission_force_send_by_summary,
+            'permission_edit_item_prices' => $this->permission_edit_item_prices,
         ];
     }
 }

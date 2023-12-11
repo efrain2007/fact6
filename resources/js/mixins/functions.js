@@ -599,3 +599,47 @@ export const fnListVisibleColumns = {
         },
     }
 }
+
+
+/**
+ *
+ * Funciones para buscar y agregar productos (venta rapida)
+ * Usado en:
+ * invoice, sale note, quotation
+ *
+ */
+export const fnItemSearchQuickSale = {
+    data()
+    {
+        return {
+            loading_items: false,
+        }
+    },
+    computed:
+    {
+        showSearchItemsMainForm()
+        {
+            return this.configuration && this.configuration.search_items_main_form
+        },
+    },
+    methods:
+    {
+        async changeItemQuickSale(item)
+        {
+            this.loading_items = true
+
+            await this.$refs.form_add_item
+                        .addItemQuickSale(item, this.form.operation_type_id)
+                        .then((res) => {
+                            this.$message.success('Producto agregado.')
+                        })
+                        .catch((error) => {
+                            this.$message.error(error.message)
+                        })
+                        .finally(() => {
+                            this.$refs.item_search_quick_sale.cleanValue()
+                            this.loading_items = false
+                        })
+        },
+    }
+}

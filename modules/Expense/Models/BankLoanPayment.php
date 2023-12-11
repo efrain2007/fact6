@@ -299,6 +299,16 @@
             ]);
         }
 
+
+        /**
+         *
+         * @return string|null
+         */
+        public function getPaymentFileUrl()
+        {
+            return null;
+        }
+
     }
 
 

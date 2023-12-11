@@ -113,6 +113,7 @@ class PurchasePayment extends ModelTenant
                         'payment_method_type' => function($payment_method_type){
                             $payment_method_type->select('id', 'description');
                         }, 
+                        'payment_file'
                     ]);
     }
     
@@ -175,5 +176,14 @@ class PurchasePayment extends ModelTenant
         return array_merge($this->getRowResourceCashPayment(), $data);
     }
 
+
+    /**
+     *
+     * @return string
+     */
+    public function getPaymentFileUrl()
+    {
+        return optional($this->payment_file)->getFileUrl('purchases');
+    }
 
 }

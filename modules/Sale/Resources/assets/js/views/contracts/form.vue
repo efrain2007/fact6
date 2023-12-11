@@ -332,6 +332,7 @@
                             :currency-type-id-active="form.currency_type_id"
                             :exchange-rate-sale="form.exchange_rate_sale"
                             :percentage-igv="percentage_igv"
+                            :permissionEditItemPrices="authUser.permission_edit_item_prices"
                             @add="addRow"></contract-form-item>
 
         <person-form :showDialog.sync="showDialogNewPerson"
@@ -361,7 +362,7 @@ import {calculateRowItem, showNamePdfOfDescription} from '@helpers/functions'
 import Logo from '@views/companies/logo.vue'
 
 export default {
-    props: ['typeUser', 'quotationId', 'id', 'showPayments'],
+    props: ['typeUser', 'quotationId', 'id', 'showPayments', 'authUser'],
     components: {ContractFormItem, PersonForm, ContractOptionsPdf, Logo, TermsCondition},
     mixins: [functions, exchangeRate],
     data() {

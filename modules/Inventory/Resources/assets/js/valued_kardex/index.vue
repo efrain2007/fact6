@@ -26,6 +26,7 @@
                         <th class="text-center">Valor de ventas</th>
                         <th class="text-center">Costo de producto</th>
                         <th class="text-center">Unidad valorizada</th>
+                        <th class="text-center">Costo ponderado</th>
                         <th>Stock</th>
                         <th class="text-center">Exportar</th>
                     <tr>
@@ -40,6 +41,7 @@
                         <td class="text-center">{{ row.total_sales }}</td>
                         <td class="text-center">{{ row.item_cost }}</td>
                         <td class="text-center">{{ row.valued_unit }}</td>
+                        <td class="text-center">{{ row.weighted_cost }}</td>
                         <td>
                             <el-popover
                                 placement="right"

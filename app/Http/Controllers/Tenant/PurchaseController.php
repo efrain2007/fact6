@@ -49,6 +49,7 @@
     use Symfony\Component\HttpFoundation\StreamedResponse;
     use Throwable;
     use App\Models\Tenant\GeneralPaymentCondition;
+    use Modules\Purchase\Helpers\WeightedAverageCostHelper;
 
 
     class PurchaseController extends Controller
@@ -851,6 +852,8 @@
                     $wr->save();
 
                     self::voidedItemLotsGroup($item);
+                    
+                    (new WeightedAverageCostHelper)->processWeightedAverageCost($item, -1);
                 }
 
             });

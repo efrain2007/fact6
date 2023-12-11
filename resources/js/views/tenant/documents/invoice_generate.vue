@@ -246,9 +246,20 @@
                             </div>
                             <!-- sistema por puntos -->
 
+                            <template v-if="showSearchItemsMainForm">
+                                <div class="col-md-12 mt-4">
+                                    <item-search-quick-sale
+                                        @changeItem="changeItemQuickSale"
+                                        :resource="resource"
+                                        :showDetailButton="configuration.show_all_item_details"
+                                        ref="item_search_quick_sale"
+                                    >
+                                    </item-search-quick-sale>
+                                </div>
+                            </template>
                         </div>
                     </div>
-                    <div class="card-body border-top no-gutters p-0">
+                    <div class="card-body border-top no-gutters p-0" v-loading="loading_items">
                         <div class="table-responsive">
                             <table class="table table-sm">
                                 <thead>
@@ -271,7 +282,25 @@
                                 <tr v-for="(row, index) in form.items"
                                     :key="index">
                                     <td>{{ index + 1 }}</td>
-                                    <td>{{ setDescriptionOfItem(row.item) }}
+                                    <td>
+                                        <template v-if="canAddDescriptionToDocumentItem">
+                                            <template v-if="row.name_product_pdf && row.name_product_pdf != ''">
+                                                <label v-html="row.name_product_pdf"></label>
+                                            </template>
+                                            <template v-else>
+                                                <label><p v-text="setDescriptionOfItem(row.item)"></p></label>
+                                            </template>
+                                        </template>
+                                        <template v-else>
+                                            {{ setDescriptionOfItem(row.item) }}
+                                        </template>
+                                        
+                                        <pack-item-description
+                                            v-if="row.item.is_set && configuration.show_item_description_pack"
+                                            :item-id="row.item_id"
+                                        >
+                                        </pack-item-description>
+
                                         {{
                                             row.item.presentation.hasOwnProperty('description') ?
                                                 row.item.presentation.description : ''
@@ -296,22 +325,112 @@
                                                 <span class="text-danger mt-1 mb-2 d-block">Restringido para venta en CPE</span>
                                             </template>
                                         </template>
+                                        
+                                        <p class="control-label font-weight-bold text-info" v-if="configuration.show_all_item_details">
+                                            <a href="#" @click.prevent="clickShowItemDetail(row.item_id)">[Ver detalle]</a>
+                                        </p>
 
                                     </td>
                                     <td class="text-center">{{ row.item.unit_type_id }}</td>
 
-                                    <td class="text-right">{{ row.quantity }}</td>
+                                    <td class="text-right">
 
-                                    <td class="text-right">{{ currency_type.symbol }}
-                                        {{ getFormatUnitPriceRow(row.unit_value) }}
+                                        <template v-if="showEditableItems">
+                                            <el-input-number 
+                                                v-model="row.quantity"
+                                                :min="0.01"
+                                                class="input-custom"
+                                                controls-position="right"
+                                                style="min-width: 120px !important"
+                                                :disabled="hasRowAdvancedOption(row)"
+                                                @change="changeRowQuantity(row)">
+                                            </el-input-number>
+                                        </template>
+                                        <template v-else>
+                                            {{ row.quantity }}
+                                        </template>
+
                                     </td>
-                                    <td class="text-right">{{ currency_type.symbol }}
-                                        {{ getFormatUnitPriceRow(row.unit_price) }}
+
+                                    <td class="text-right">
+                                        {{ currency_type.symbol }}
+                                        
+                                        <template v-if="showEditableItems">
+                                            <el-input-number 
+                                                v-model="row.unit_value"
+                                                :min="0"
+                                                class="input-custom"
+                                                controls-position="right"
+                                                style="min-width: 120px !important"
+                                                :disabled="hasRowAdvancedOption(row) || !hasPermissionEditItemPrices(authUser.permission_edit_item_prices)"
+                                                @change="changeRowUnitValue(row)">
+                                            </el-input-number>
+                                        </template>
+                                        <template v-else>
+                                            {{ getFormatUnitPriceRow(row.unit_value) }}
+                                        </template>
+                                    </td>
+
+                                    <td class="text-right">
+                                        {{ currency_type.symbol }}
+                                        
+                                        <template v-if="showEditableItems">
+                                            <el-input-number 
+                                                v-model="row.unit_price"
+                                                :min="0.01"
+                                                class="input-custom"
+                                                controls-position="right"
+                                                style="min-width: 120px !important"
+                                                :disabled="hasRowAdvancedOption(row) || !hasPermissionEditItemPrices(authUser.permission_edit_item_prices)"
+                                                @change="changeRowUnitPrice(row)">
+                                            </el-input-number>
+                                        </template>
+                                        <template v-else>
+                                            {{ getFormatUnitPriceRow(row.unit_price) }}
+                                        </template>
                                     </td>
 
 
-                                    <td class="text-right">{{ currency_type.symbol }} {{ row.total_value }}</td>
-                                    <td class="text-right">{{ currency_type.symbol }} {{ row.total }}</td>
+                                    <td class="text-right">
+                                        {{ currency_type.symbol }} 
+
+                                        <template v-if="showEditableItems">
+                                            <el-input-number 
+                                                v-model="row.total_value"
+                                                :min="0.01"
+                                                class="input-custom"
+                                                controls-position="right"
+                                                style="min-width: 120px !important"
+                                                :disabled="hasRowAdvancedOption(row) || !hasPermissionEditItemPrices(authUser.permission_edit_item_prices)"
+                                                @change="changeRowTotalValue(row)">
+
+                                            </el-input-number>
+                                        </template>
+                                        <template v-else>
+                                            {{ row.total_value }}
+                                        </template>
+                                    </td>
+                                    
+                                    <td class="text-right">
+                                        {{ currency_type.symbol }}
+                                        
+                                        <template v-if="showEditableItems">
+                                            <el-input-number 
+                                                v-model="row.total"
+                                                :min="0"
+                                                class="input-custom"
+                                                controls-position="right"
+                                                style="min-width: 120px !important"
+                                                :disabled="hasRowAdvancedOption(row) || !hasPermissionEditItemPrices(authUser.permission_edit_item_prices)"
+                                                @change="changeRowTotal(row)">
+
+                                            </el-input-number>
+                                        </template>
+                                        <template v-else>
+                                            {{ row.total }}
+                                        </template>
+                                    </td>
+
 
                                     <td class="text-right">
                                         <template v-if="config.change_free_affectation_igv">
@@ -340,6 +459,7 @@
                                     </td>
 
                                 </tr>
+
                                 <!-- @todo: Mejorar evitando duplicar codigo -->
                                 <!-- Ocultar en cel -->
                                 <tr>
@@ -569,6 +689,7 @@
                                                                                         :clearable="false"
                                                                                         format="dd/MM/yyyy"
                                                                                         type="date"
+                                                                                        @change="changeCreditFeeDate(index)"
                                                                                         value-format="yyyy-MM-dd"></el-date-picker>
                                                                     </td>
                                                                     <td>
@@ -961,6 +1082,7 @@
                                                                             :clearable="false"
                                                                             format="dd/MM/yyyy"
                                                                             type="date"
+                                                                            @change="changeCreditFeeDate(index)"
                                                                             value-format="yyyy-MM-dd"></el-date-picker>
                                                         </td>
                                                         <td>
@@ -1553,6 +1675,8 @@
             :is-from-invoice="true"
             :percentage-igv="percentage_igv"
             :isUpdateDocument="isUpdateDocument"
+            :permissionEditItemPrices="authUser.permission_edit_item_prices"
+            ref="form_add_item"
             @add="addRow"></document-form-item>
 
         <person-form :document_type_id=form.document_type_id
@@ -1597,6 +1721,14 @@
                                  :item="recordItem"
                                  :document-id="documentId"
                                  @success="successItemSeries"></store-item-series-index>
+                                 
+        <!-- <item-detail-form 
+            :recordId="itemDetailId"
+            :showDialog.sync="showDialogItemDetail"
+            :onlyShowAllDetails="configuration.show_all_item_details"
+        >
+        </item-detail-form> -->
+
     </div>
 </template>
 
@@ -1634,7 +1766,7 @@
 import DocumentFormItem from './partials/item.vue'
 import PersonForm from '../persons/form.vue'
 import DocumentOptions from '../documents/partials/options.vue'
-import {exchangeRate, functions, pointSystemFunctions, fnRestrictSaleItemsCpe} from '../../../mixins/functions'
+import {exchangeRate, functions, pointSystemFunctions, fnRestrictSaleItemsCpe, fnItemSearchQuickSale} from '../../../mixins/functions'
 import {calculateRowItem, showNamePdfOfDescription} from '../../../helpers/functions'
 import Logo from '../companies/logo.vue'
 import DocumentHotelForm from '../../../../../modules/BusinessTurn/Resources/assets/js/views/hotels/form.vue'
@@ -1648,6 +1780,11 @@ import DocumentReportCustomer from './partials/report_customer.vue'
 import SetTip from '@components/SetTip.vue'
 
 import LotsForm from './partials/lots.vue'
+import { editableRowItems } from '@mixins/editable-row-items'
+import ItemSearchQuickSale from '@components/items/ItemSearchQuickSale.vue'
+import PackItemDescription from '@components/items/PackItemDescription.vue'
+// import ItemDetailForm from '@views/items/form.vue'
+
 
 export default {
     props: [
@@ -1673,8 +1810,11 @@ export default {
         DocumentReportCustomer,
         SetTip,
         LotsForm,
+        ItemSearchQuickSale,
+        // ItemDetailForm,
+        PackItemDescription
     },
-    mixins: [functions, exchangeRate, pointSystemFunctions, fnRestrictSaleItemsCpe],
+    mixins: [functions, exchangeRate, pointSystemFunctions, fnRestrictSaleItemsCpe, editableRowItems, fnItemSearchQuickSale],
     data() {
         return {
             datEmision: {
@@ -1767,6 +1907,8 @@ export default {
             showDialogReportCustomer: false,
             report_to_customer_id: null,
             retention_query_data: null,
+            // itemDetailId: null,
+            // showDialogItemDetail: false,
         }
     },
     computed: {
@@ -1824,6 +1966,12 @@ export default {
         {
             return (this.table !== undefined && this.table !== null)
         },
+        canAddDescriptionToDocumentItem()
+        {
+            if (this.configuration) return this.configuration.add_description_to_document_item
+
+            return false
+        }
     },
     async created() {
         this.loadConfiguration()
@@ -1977,6 +2125,12 @@ export default {
 
     },
     methods: {
+        clickShowItemDetail(id)
+        {
+            // this.itemDetailId = id
+            // this.showDialogItemDetail = true
+            window.open(`/items/show-item-detail/${id}`)
+        },
         changeDataTip(tip)
         {
             if(tip)
@@ -4190,6 +4344,29 @@ export default {
 
 
         },
+        changeCreditFeeDate(index)
+        {
+            const last_index = this.getLastIndexFee()
+
+            if(last_index === index)
+            {
+                this.setDateOfDue(this.getLastDateFee(last_index))
+            }
+        },
+        getLastIndexFee()
+        {
+            return this.form.fee.length - 1
+        },
+        getLastDateFee(input_last_index = null)
+        {
+            const last_index = input_last_index || this.getLastIndexFee()
+            
+            return this.form.fee[last_index].date
+        },
+        setDateOfDue(date_of_due)
+        {
+            this.form.date_of_due = date_of_due
+        },
         clickAddFee() {
             this.form.date_of_due = moment().format('YYYY-MM-DD');
             this.form.fee.push({
@@ -4233,6 +4410,7 @@ export default {
         clickRemoveFee(index) {
             this.form.fee.splice(index, 1);
             this.calculateFee();
+            this.setDateOfDue(this.getLastDateFee())
         },
         calculatePayments() {
             let payment_count = this.form.payments.length;

@@ -473,6 +473,28 @@
                                 </div>
                             </div>
 
+                            <div class="col-md-6 mt-4">
+                                <label class="control-label">
+                                    Mostrar costo ponderado
+                                    <el-tooltip class="item"
+                                                content="Muestra el costo ponderado en formulario producto de compras"
+                                                effect="dark"
+                                                placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                 <div :class="{'has-danger': errors.show_weighted_cost_purchase}"
+                                        class="form-group">
+                                    <el-switch v-model="form.show_weighted_cost_purchase"
+                                                active-text="Si"
+                                                inactive-text="No"
+                                                @change="submit"></el-switch>
+                                    <small v-if="errors.show_weighted_cost_purchase"
+                                            class="form-control-feedback"
+                                            v-text="errors.show_weighted_cost_purchase[0]"></small>
+                                </div>
+                            </div>
+
                             <template>
                                 <div v-if="typeUser != 'integrator'" class="col-md-4 mt-4">
                                     <label class="control-label">
@@ -801,6 +823,103 @@
                                 </div>
                             </div>
 
+                            <div class="col-md-6 mt-4">
+
+                                <label class="control-label">
+                                    Buscar/Agregar productos en formulario principal (Venta rápida)
+                                    <el-tooltip class="item"
+                                                content="Disponible para Factura, Boleta, Cotización y Notas de venta"
+                                                effect="dark"
+                                                placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+
+                                <div :class="{'has-danger': errors.search_items_main_form}"
+                                        class="form-group">
+                                    <el-switch v-model="form.search_items_main_form"
+                                                active-text="Si"
+                                                inactive-text="No"
+                                                @change="submit"></el-switch>
+                                    <small v-if="errors.search_items_main_form"
+                                            class="form-control-feedback"
+                                            v-text="errors.search_items_main_form[0]"></small>
+                                </div>
+                            </div>
+
+                            
+                            <div class="col-md-6 mt-4">
+
+                                <label class="control-label">
+                                    Habilitar opción "Ver" detalles y características completas del producto
+                                    <el-tooltip class="item"
+                                                content="Disponible para Factura, Boleta, Cotización y Notas de venta (Productos agregados y Buscar/Agregar productos)"
+                                                effect="dark"
+                                                placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+
+                                <div :class="{'has-danger': errors.show_all_item_details}"
+                                        class="form-group">
+                                    <el-switch v-model="form.show_all_item_details"
+                                                active-text="Si"
+                                                inactive-text="No"
+                                                @change="submit"></el-switch>
+                                    <small v-if="errors.show_all_item_details"
+                                            class="form-control-feedback"
+                                            v-text="errors.show_all_item_details[0]"></small>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mt-4">
+
+                                <label class="control-label">
+                                    Agregar descripción al producto
+                                    <el-tooltip class="item"
+                                                content="Asigna el nombre y descripción al campo 'Reemplazar nombre'. Disponible para Factura, Boleta, Cotización y Notas de venta."
+                                                effect="dark"
+                                                placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+
+                                <div :class="{'has-danger': errors.add_description_to_document_item}"
+                                        class="form-group">
+                                    <el-switch v-model="form.add_description_to_document_item"
+                                                active-text="Si"
+                                                inactive-text="No"
+                                                @change="submit"></el-switch>
+                                    <small v-if="errors.add_description_to_document_item"
+                                            class="form-control-feedback"
+                                            v-text="errors.add_description_to_document_item[0]"></small>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mt-4">
+
+                                <label class="control-label">
+                                    Mostrar detalle de Conjuntos/Packs/Promociones
+                                    <el-tooltip class="item"
+                                                content="Descripción de los productos individuales del pack. Disponible para Factura, Boleta, Cotización y Notas de venta."
+                                                effect="dark"
+                                                placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+
+                                <div :class="{'has-danger': errors.show_item_description_pack}"
+                                        class="form-group">
+                                    <el-switch v-model="form.show_item_description_pack"
+                                                active-text="Si"
+                                                inactive-text="No"
+                                                @change="submit"></el-switch>
+                                    <small v-if="errors.show_item_description_pack"
+                                            class="form-control-feedback"
+                                            v-text="errors.show_item_description_pack[0]"></small>
+                                </div>
+                            </div>
+                            
                         </div>
                     </el-tab-pane>
                     <el-tab-pane class="mb-3" name="third">
@@ -1228,6 +1347,28 @@
                                     <small v-if="errors.select_establishment_bank_account"
                                             class="form-control-feedback"
                                             v-text="errors.select_establishment_bank_account[0]"></small>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 mt-4">
+                                <label class="control-label">Modificar valores en previsualización del documento
+                                    <el-tooltip
+                                        class="item"
+                                        content="Cantidad, precios, totales - Disponible para Factura, Boleta, Cotización y Notas de venta"
+                                        effect="dark"
+                                        placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                <div :class="{'has-danger': errors.change_values_preview_document}"
+                                        class="form-group">
+                                    <el-switch v-model="form.change_values_preview_document"
+                                                active-text="Si"
+                                                inactive-text="No"
+                                                @change="submit"></el-switch>
+                                    <small v-if="errors.change_values_preview_document"
+                                            class="form-control-feedback"
+                                            v-text="errors.change_values_preview_document[0]"></small>
                                 </div>
                             </div>
 
@@ -2431,6 +2572,9 @@
                                 </div>
                             </div>
                         </div>
+
+                        <session-lifetime></session-lifetime>
+
                     </el-tab-pane>
 
                 </el-tabs>
@@ -2467,6 +2611,7 @@ import AllowanceCharge from './partials/allowance_charge.vue'
 import {mapActions, mapState} from "vuex";
 import ReportConfigurationsIndex from './partials/report_configurations_index.vue'
 import PdfFooterImages from './partials/pdf_footer_images.vue'
+import SessionLifetime from '@viewsModuleLevelAccess/configurations/SessionLifetime.vue';
 
 
 export default {
@@ -2480,6 +2625,7 @@ export default {
         AllowanceCharge,
         ReportConfigurationsIndex,
         PdfFooterImages,
+        SessionLifetime
     },
     computed: {
         ...mapState([
@@ -2671,6 +2817,12 @@ export default {
                 order_node_advanced: false,
                 remove_validation_email_establishments: false,
                 select_establishment_bank_account: false,
+                change_values_preview_document: false,
+                search_items_main_form: false,
+                show_all_item_details: false,
+                add_description_to_document_item: false,
+                show_item_description_pack: false,
+                show_weighted_cost_purchase: false,
             };
         },
         UpdateFormPurchase(e) {

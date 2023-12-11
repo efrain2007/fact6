@@ -31,6 +31,8 @@ use Modules\Item\Models\ItemLot;
 use Modules\Item\Models\ItemLotsGroup;
 use Modules\Item\Models\WebPlatform;
 use Picqer\Barcode\BarcodeGeneratorPNG;
+use Modules\Purchase\Models\WeightedAverageCost;
+use Modules\Purchase\Helpers\WeightedAverageCostHelper;
 
 
 /**
@@ -378,6 +380,16 @@ class Item extends ModelTenant
     public function purchase_affectation_igv_type()
     {
         return $this->belongsTo(AffectationIgvType::class, 'purchase_affectation_igv_type_id');
+    }
+
+    public function weighted_average_cost()
+    {
+        return $this->morphOne(WeightedAverageCost::class, 'origin');
+    }
+
+    public function weighted_average_costs()
+    {
+        return $this->hasMany(WeightedAverageCost::class, 'item_id');
     }
 
     /**
@@ -1026,7 +1038,8 @@ class Item extends ModelTenant
             'used_points_for_exchange' => null, //total de puntos
             'factory_code' => $this->factory_code,
             'restrict_sale_cpe' => $this->restrict_sale_cpe,
-
+            'image_url' => $this->getImageUrl(),
+            'name' => $this->name,
         ];
 
         // El nombre de producto, por defecto, sera la misma descripcion.
@@ -1415,7 +1428,7 @@ class Item extends ModelTenant
                     'sale_unit_price' => self::getSaleUnitPriceByWarehouse($item, $row->id),
                 ];
             }),
-
+            'weighted_cost' => WeightedAverageCostHelper::onlyWeightedAverageCost($this->id)
         ];
     }
 
@@ -2821,6 +2834,16 @@ class Item extends ModelTenant
     public function scopeFilterByBarcode(Builder $query, $barcode)
     {
         return $query->where('barcode', $barcode);
+    }
+
+    
+    /**
+     *
+     * @return bool
+     */
+    public function hasServiceUnitType()
+    {
+        return $this->unit_type_id === self::SERVICE_UNIT_TYPE;
     }
 
 

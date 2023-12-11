@@ -262,6 +262,8 @@ Vue.component('tenant-agents-index', require('@viewsModuleSale/agents/index.vue'
 
 //Item
 Vue.component('tenant-web-platforms-index', require('@viewsModuleItem/web-platforms/index.vue'));
+Vue.component('tenant-item-detail-index', require('@viewsModuleItem/items/item-detail.vue'));
+
 
 //technical Services
 Vue.component('tenant-technical-services-index', require('@viewsModuleSale/technical-services/index.vue'));
@@ -288,6 +290,8 @@ Vue.component('tenant-origin_addresses-index', require('./views/tenant/dispatche
 Vue.component('tenant-order-forms-index', require('@viewsModuleOrder/order_forms/index.vue'));
 Vue.component('tenant-order-forms-form', require('@viewsModuleOrder/order_forms/form.vue'));
 
+Vue.component('tenant-multi-users-change-client', require('@viewsModuleMultiUser/tenant/multi-users/change-client.vue'));
+
 
 // System
 Vue.component('system-clients-index', require('./views/system/clients/index.vue'));
@@ -298,6 +302,11 @@ Vue.component('system-certificate-index', require('./views/system/certificate/in
 Vue.component('system-companies-form', require('./views/system/companies/form.vue'));
 
 Vue.component('system-accounting-index', require('@viewsModuleAccount/system/accounting/index.vue'));
+
+
+Vue.component('system-multi-users-index', require('@viewsModuleMultiUser/system/multi-users/index.vue'));
+
+
 
 // Hoteles :: Tarifas
 Vue.component('tenant-hotel-rates', require('@viewsModuleHotel/rates/List.vue'));
@@ -512,6 +521,9 @@ Vue.mixin({
                 success: success,
                 message: message
             }
+        },
+        generalSleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms))
         }
     }
 })

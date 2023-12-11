@@ -197,6 +197,7 @@
                             <template v-if="applyChangeCurrencyItem && changeCurrencyFromParent">
 
                                 <el-input v-model="form.unit_price"
+                                        :disabled="!hasPermissionEditItemPrices(permissionEditItemPrices)"
                                         @input="calculateQuantity">
 
                                         <el-select slot="prepend" v-model="form.item.currency_type_id" class="custom-change-select-currency">
@@ -211,6 +212,7 @@
                             <template v-else>
 
                                 <el-input v-model="form.unit_price"
+                                        :disabled="!hasPermissionEditItemPrices(permissionEditItemPrices)"
                                         @input="calculateQuantity">
                                     <template v-if="form.item.currency_type_symbol"
                                             slot="prepend">
@@ -289,7 +291,14 @@
                     <div v-if="config.edit_name_product && showDiscounts"
                          class="col-md-12 col-sm-12 mt-2">
                         <div class="form-group">
-                            <label class="control-label">Nombre producto en PDF</label>
+                            <label class="control-label">
+                                <template v-if="canAddDescriptionToDocumentItem">
+                                    Reemplazar nombre
+                                </template>
+                                <template v-else>
+                                    Nombre producto en PDF
+                                </template>
+                            </label>
                             <vue-ckeditor
                                 v-model="form.name_product_pdf"
                                 :editors="editors"
@@ -571,6 +580,8 @@ import ClassicEditor from '@ckeditor/ckeditor5-build-classic'
 import VueCkeditor from 'vue-ckeditor5'
 import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 import {ItemOptionDescription, ItemSlotTooltip} from "../../../../helpers/modal_item";
+import { checkPermissionEditPrices } from '@mixins/check-permission-edit-prices'
+
 
 export default {
     props: [
@@ -585,6 +596,7 @@ export default {
         'percentageIgv',
         'currencyTypes',
         'showOptionChangeCurrency',
+        'permissionEditItemPrices'
     ],
     components: {
         itemForm,
@@ -592,6 +604,9 @@ export default {
         'vue-ckeditor': VueCkeditor.component,
         LotsGroup
     },
+    mixins: [
+        checkPermissionEditPrices
+    ],
     data() {
         return {
             showDiscounts: true,
@@ -721,8 +736,28 @@ export default {
         {
             return (this.showOptionChangeCurrency !== undefined && this.showOptionChangeCurrency && this.currencyTypes !== undefined && Array.isArray(this.currencyTypes))
         },
+        canAddDescriptionToDocumentItem()
+        {
+            if (this.configuration) return this.configuration.add_description_to_document_item
+
+            return false
+        }
     },
     methods: {
+        async addItemQuickSale(item, operation_type_id)
+        {
+            // console.log("addItemQuickSale NV", item.id)
+            this.form.item_id = item.id
+            this.items = [ {...item} ]
+            
+            await this.changeItem()
+            await this.generalSleep(500)
+            const add_item = await this.clickAddItem()
+
+            if(add_item == null || add_item == undefined) return add_item
+            
+            throw new Error('No se pudo agregar el producto.')
+        },
         ...mapActions([
             'loadConfiguration',
         ]),
@@ -1146,7 +1181,19 @@ export default {
                 this.form.name_product_pdf = this.form.item.name_product_pdf;
             }
 
+            this.addDescriptionToDocumentItem()
+
             this.getLastPriceItem()
+        },
+        addDescriptionToDocumentItem()
+        {
+            if(this.canAddDescriptionToDocumentItem)
+            {
+                const name = this.form.item.description ? `<p>${this.form.item.description}</p>` : ''
+                const description = this.form.item.name ? `<p>${this.form.item.name}</p>` : ''
+
+                this.form.name_product_pdf = `${name}${description}`
+            }
         },
         focusTotalItem(change) {
             if (!change && this.form.item.calculate_quantity) {
@@ -1357,7 +1404,7 @@ export default {
         },
         setFocusSelectItem() {
 
-            this.$refs.selectSearchNormal.$el.getElementsByTagName('input')[0].focus()
+            if(this.$refs.selectSearchNormal) this.$refs.selectSearchNormal.$el.getElementsByTagName('input')[0].focus()
 
         },
         async getLastPriceItem() {

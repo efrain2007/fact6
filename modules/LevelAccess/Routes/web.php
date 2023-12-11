@@ -34,6 +34,12 @@ if($hostname) {
 
             });
 
+            
+            Route::prefix('configurations-session-lifetime')->group(function () {
+                Route::get('data', 'SessionLifetimeController@data');
+                Route::post('', 'SessionLifetimeController@store');
+            });
+
         });
         
     });

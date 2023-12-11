@@ -59,6 +59,7 @@
                     <th class="text-center">Valor de ventas</th>
                     <th class="text-center">Costo de producto</th>
                     <th class="text-center">Unidad valorizada</th>
+                    <th class="text-center">Costo ponderado</th>
                     <th>Stock</th>
                 </tr>
                 </thead>
@@ -75,6 +76,7 @@
                         <td class="text-center">{{ $value['total_sales'] }}</td>
                         <td class="text-center">{{ $value['item_cost'] }}</td>
                         <td class="text-center">{{ $value['valued_unit'] }}</td>
+                        <td class="text-center">{{ $value['weighted_cost'] }}</td>
                         <td>
                             @foreach($value['warehouses'] as $item)
                                 <span>{{$item['description']}} Precio: {{$item['sale_unit_price']}} </span>|

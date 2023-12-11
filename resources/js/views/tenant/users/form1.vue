@@ -237,8 +237,26 @@
                                     </el-checkbox>
                                 </div>
                             </div>
+
+                            <div  class="col-md-4 mt-1">
+                                <div class="form-comtrol">
+                                    
+                                    <el-tooltip 
+                                        class="item"
+                                        content="Disponible en Nuevo CPE, N. Venta, Cotización, Pedido, O. Venta, Contrato."
+                                        effect="dark"
+                                        placement="top">
+
+                                        <el-checkbox v-model="form.permission_edit_item_prices">
+                                            Editar precios de productos
+                                        </el-checkbox>
+
+                                    </el-tooltip>
+
+                                </div>
+                            </div>
                             
-                            <div class="col-md-4 mt-1" v-if="form.type === 'admin'">
+                            <div class="col-md-4 mt-3" v-if="form.type === 'admin'">
                                 <div class="form-comtrol">
                                     
                                     <el-tooltip class="item"
@@ -616,6 +634,7 @@ export default {
                 permission_edit_cpe: false,
                 recreate_documents: false,
                 permission_force_send_by_summary: false,
+                permission_edit_item_prices: true,
             },
             modules: [],
             datai: [],
@@ -786,6 +805,7 @@ export default {
                 multiple_default_document_types: false,
                 default_document_types: [],
                 permission_force_send_by_summary: false,
+                permission_edit_item_prices: true,
             };
         },
         async changeEstablishment()

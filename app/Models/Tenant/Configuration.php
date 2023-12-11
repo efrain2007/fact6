@@ -294,6 +294,13 @@
             'order_node_advanced',
             'remove_validation_email_establishments',
             'select_establishment_bank_account',
+            'change_values_preview_document',
+            'session_lifetime',
+            'search_items_main_form',
+            'show_all_item_details',
+            'add_description_to_document_item',
+            'show_item_description_pack',
+            'show_weighted_cost_purchase',
         ];
 
         protected $casts = [
@@ -419,6 +426,13 @@
             'order_node_advanced' => 'boolean',
             'remove_validation_email_establishments'=>'bool',
             'select_establishment_bank_account'=>'bool',
+            'change_values_preview_document'=>'bool',
+            'session_lifetime' => 'float',
+            'search_items_main_form'=>'bool',
+            'show_all_item_details'=>'bool',
+            'add_description_to_document_item'=>'bool',
+            'show_item_description_pack'=>'bool',
+            'show_weighted_cost_purchase'=>'bool',
         ];
         
         protected $hidden = [
@@ -662,6 +676,12 @@
                 'order_node_advanced' => (bool)$this->order_node_advanced,
                 'remove_validation_email_establishments' => $this->remove_validation_email_establishments,
                 'select_establishment_bank_account' => $this->select_establishment_bank_account,
+                'change_values_preview_document' => $this->change_values_preview_document,
+                'search_items_main_form' => $this->search_items_main_form,
+                'show_all_item_details' => $this->show_all_item_details,
+                'add_description_to_document_item' => $this->add_description_to_document_item,
+                'show_item_description_pack' => $this->show_item_description_pack,
+                'show_weighted_cost_purchase' => $this->show_weighted_cost_purchase,
             ];
         }
 

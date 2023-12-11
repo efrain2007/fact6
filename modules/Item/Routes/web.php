@@ -54,6 +54,10 @@ if($hostname) {
             Route::get('items/history-purchases/records', 'ItemController@itemHistoryPurchases');
             Route::get('items/last-sale', 'ItemController@itemtLastSale');
 
+            Route::get('items/weighted-cost/{item_id}', 'ItemController@getWeightedCost');
+            Route::get('items/show-item-detail/{item_id}', 'ItemController@showItemDetail');
+
+
             //history
 
             Route::prefix('item-lots')->group(function () {
@@ -69,6 +73,7 @@ if($hostname) {
 
             Route::post('items/import/item-sets', 'ItemSetController@importItemSets');
             Route::post('items/import/item-sets-individual', 'ItemSetController@importItemSetsIndividual');
+            Route::get('items/sets-description/{item_id}', 'ItemSetController@setsDescription');
 
 
             Route::prefix('web-platforms')->group(function () {

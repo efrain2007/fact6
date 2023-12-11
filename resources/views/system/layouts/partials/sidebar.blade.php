@@ -16,6 +16,20 @@
                     </li>
                 </ul>
             </nav>
+
+            @if(config('configuration.multi_user_enabled'))
+                <nav id="menu" class="nav-main" role="navigation">
+                    <ul class="nav nav-main">
+                        <li class="{{ ($path[0] === 'multi-users')?'nav-active':'' }}">
+                            <a class="nav-link" href="{{route('system.multi-users.index')}}">
+                                <i class="fas fa-users"></i><span>Multi Usuarios</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            @endif
+
+
             <nav id="menu" class="nav-main" role="navigation">
                 <ul class="nav nav-main">
                     <li class="{{ ($path[0] === 'plans')?'nav-active':'' }}">

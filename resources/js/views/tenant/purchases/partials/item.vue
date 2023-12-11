@@ -227,6 +227,11 @@
                                        v-text="errors.warehouse_id[0]"></small>
                             </div>
                         </div>
+                        
+                        <div class="col-md-3" v-if="form.item_id && config.show_weighted_cost_purchase">
+                            <weighted-average-cost :item-id="form.item_id"></weighted-average-cost>
+                        </div>
+
                         <div v-if="form.item_id"
                              class="col-md-6 mt-2">
                             <div v-if="form.item.lots_enabled"
@@ -614,6 +619,7 @@ import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 import moment from "moment";
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic'
 import VueCkeditor from 'vue-ckeditor5'
+import WeightedAverageCost from '@components/items/WeightedAverageCost.vue'
 
 
 export default {
@@ -628,7 +634,8 @@ export default {
         itemForm, 
         LotsForm, 
         Keypress,
-        'vue-ckeditor': VueCkeditor.component
+        'vue-ckeditor': VueCkeditor.component,
+        WeightedAverageCost
     },
     computed: {
         ...mapState([
