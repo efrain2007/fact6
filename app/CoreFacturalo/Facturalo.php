@@ -361,7 +361,7 @@ class Facturalo
             $this->document->date_of_issue->format('Y-m-d'),
             $customer->identity_document_type_id,
             $customer->number,
-            $this->document->hash
+            $this->document->hash.'|'
         ]);
 
         $qrCode = new QrCodeGenerate();
