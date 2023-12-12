@@ -290,7 +290,7 @@ class Facturalo
 
     public function updateHash($pse_hash = null)
     {
-        if($pse_hash != null){
+        if($pse_hash == null){
             $this->document->update([
                 'hash' => $this->getHash(),
             ]);
