@@ -36,7 +36,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr v-for="(row, index) in records" :key="index">
+                        <tr v-for="(row, index) in records" :key="index" :class="!row.active ? 'text-danger' : ''">
                             <td>{{ index + 1 }}</td>
                             <td>{{ row.email }}</td>
                             <td>{{ row.name }}</td>
@@ -44,8 +44,14 @@
                             <td>{{ row.api_token }}</td>
                             <td>{{ row.establishment_description }}</td>
                             <td class="text-right">
-                                <button v-if="typeUser === 'admin'" type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickCreate(row.id)">Editar</button>
+                                <button v-if="typeUser === 'admin' && row.active" type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickCreate(row.id)">Editar</button>
                                 <button type="button" class="btn waves-effect waves-light btn-xs btn-danger"  @click.prevent="clickDelete(row.id)" v-if="row.id != 1 && typeUser === 'admin'">Eliminar</button>
+                                
+                                <template v-if="!isMainUser(row.id) && isAdminUser">
+                                    <button type="button" class="btn waves-effect waves-light btn-xs" :class="row.active ? 'btn-warning' : 'btn-success'" @click.prevent="clickActive(row.active, row.id)">
+                                        {{ row.active ? 'Inhabilitar' : 'Habilitar'}}
+                                    </button>
+                                </template>
                             </td>
                         </tr>
                         </tbody>
@@ -91,9 +97,17 @@
             showAccessTokenForDiscount()
             {
                 return this.typeUser === 'admin' && this.configuration.restrict_seller_discount
+            },
+            isAdminUser()
+            {
+                return this.typeUser === 'admin'
             }
         },
         methods: {
+            isMainUser(user_id)
+            {
+                return user_id === 1
+            },
             clickAccessTokenForDiscount()
             {
                 this.showDialogAuthorizedTokenForDiscount = true
@@ -112,7 +126,12 @@
                 this.destroy(`/${this.resource}/${id}`).then(() =>
                     this.$eventHub.$emit('reloadData')
                 )
-            }
+            },
+            clickActive(active, id)
+            {
+                this.changeActive(`/${this.resource}/change-active`, { active, id })
+                    .then(() => this.$eventHub.$emit('reloadData'))
+            },
         }
     }
 </script>

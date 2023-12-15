@@ -4,6 +4,8 @@ namespace App\Http\Middleware;
 
 use Closure;
 use App\Models\Tenant\Configuration;
+use App\Helpers\UserControlHelper;
+
 
 class LockedTenant
 {
@@ -24,6 +26,8 @@ class LockedTenant
         if($configuration->isLockedTenant()){
             abort(403);
         }
+
+        UserControlHelper::checkActiveUser();
 
         return $next($request);
     }

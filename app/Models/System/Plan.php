@@ -92,5 +92,15 @@ class Plan extends Model
     {
         return $this->include_sale_notes_limit_documents;
     }
+
+    
+    /**
+     *
+     * @return bool
+     */
+    public function isUnlimitedUsers()
+    {
+        return $this->limit_users === 0;
+    }
     
 }

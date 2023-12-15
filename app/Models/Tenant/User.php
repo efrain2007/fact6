@@ -155,6 +155,8 @@ class User extends Authenticatable
     use Notifiable;
     use UsesTenantConnection;
 
+    public const TEXT_INACTIVE_USER = '(SUSPENDIDO)';
+
     protected $with = [
         'establishment'
     ];
@@ -1217,5 +1219,38 @@ $withEstablishment = true){
 
         return $show_modules;
     }
+
+
+    /**
+     *
+     * @return bool
+     */
+    public function isActive()
+    {
+        return $this->active;
+    }
+
+  
+    /**
+     *
+     * @param  Builder $query
+     * @return Builder
+     */
+    public function scopeWhereActive($query)
+    {
+        return $query->where('active', true);
+    }
+
+
+    /**
+     *
+     * @param  Builder $query
+     * @return Builder
+     */
+    public static function getQuantityActive()
+    {
+        return self::whereActive()->count();
+    }
+
 
 }

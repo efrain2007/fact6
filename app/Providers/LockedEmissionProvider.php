@@ -16,6 +16,7 @@ use App\Models\Tenant\{
     Establishment
 };
 use App\Traits\LockedEmissionTrait;
+use App\Helpers\UserControlHelper;
 
 
 class LockedEmissionProvider extends ServiceProvider
@@ -135,7 +136,9 @@ class LockedEmissionProvider extends ServiceProvider
 
         User::creating(function ($document) {
             
-            
+            (new UserControlHelper)->checkLimitUsers();
+
+            /*
             $configuration = Configuration::first();
 
             $quantity_users = User::count();
@@ -147,6 +150,7 @@ class LockedEmissionProvider extends ServiceProvider
                     throw new Exception("Ha superado el límite permitido para la creación de usuarios");
                 }
             }
+            */
 
         });
     }
