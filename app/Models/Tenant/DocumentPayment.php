@@ -146,6 +146,7 @@ class DocumentPayment extends ModelTenant
                         'payment_method_type' => function($payment_method_type){
                             $payment_method_type->select('id', 'description');
                         }, 
+                        'payment_file'
                     ]);
     }
 
@@ -267,5 +268,15 @@ class DocumentPayment extends ModelTenant
             'payment_for_calculate' => $payment_for_calculate,
         ];
     }
-    
+
+
+    /**
+     *
+     * @return string
+     */
+    public function getPaymentFileUrl()
+    {
+        return optional($this->payment_file)->getFileUrl('documents');
+    }
+
 }

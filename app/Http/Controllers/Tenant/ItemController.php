@@ -729,6 +729,7 @@ class ItemController extends Controller
 
             $item = Item::findOrFail($id);
             $this->deleteRecordInitialKardex($item);
+            $this->deleteRecordInitialWeightedCosts($item);
             $item->delete();
 
             return [
@@ -864,6 +865,20 @@ class ItemController extends Controller
             ($item->kardex[0]->type == null) ? $item->kardex[0]->delete() : false;
         }
 
+    }
+        
+
+    /**
+     *
+     * @param  Item $item
+     * @return void
+     */
+    private function deleteRecordInitialWeightedCosts($item)
+    {
+        if($item->weighted_average_costs()->count() == 1)
+        {
+            $item->weighted_average_cost()->delete();
+        }
     }
 
 

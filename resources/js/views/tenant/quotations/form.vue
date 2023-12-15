@@ -240,10 +240,153 @@
                         </div>
 
 
-                        <div class="row mt-3">
+                        <div class="row mt-3" v-loading="loading_items">
+                            
+                            <div class="col-lg-12 col-md-12 mb-3" v-if="showSearchItemsMainForm">
+                                <div class="form-group">
+                                    <item-search-quick-sale
+                                        @changeItem="changeItemQuickSale"
+                                        :resource="resource"
+                                        :showDetailButton="configuration.show_all_item_details"
+                                        ref="item_search_quick_sale"
+                                    >
+                                    </item-search-quick-sale>
+                                </div>
+                            </div>
+
                             <div class="col-md-12">
                                 <div class="table-responsive">
                                     <table class="table">
+
+                                        <template v-if="showEditableItems">
+                                            <thead>
+                                                <tr>
+                                                    <th width="3%">#</th>
+                                                    <th class="font-weight-bold" width="16%">Descripción</th>
+                                                    <th width="8%" class="text-center font-weight-bold">Unidad</th>
+                                                    <th width="12%" class="text-right font-weight-bold">Cantidad</th>
+                                                    <th width="14%" class="text-right font-weight-bold">Valor Unitario</th>
+                                                    <th width="14%" class="text-right font-weight-bold">Precio Unitario</th>
+                                                    <th width="14%" class="text-right font-weight-bold">Subtotal</th>
+                                                    <th width="14%" class="text-right font-weight-bold">Total</th>
+                                                    <th width="5%"></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody v-if="form.items.length > 0">
+                                                <tr v-for="(row, index) in form.items" :key="index">
+                                                    <td>{{ index + 1 }}</td>
+                                                    <td>
+                                                        <template v-if="canAddDescriptionToDocumentItem">
+                                                            <template v-if="row.name_product_pdf && row.name_product_pdf != ''">
+                                                                <label v-html="row.name_product_pdf"></label>
+                                                            </template>
+                                                            <template v-else>
+                                                                <label><p v-text="setDescriptionOfItem(row.item)"></p></label>
+                                                            </template>
+                                                        </template>
+                                                        <template v-else>
+                                                            {{ setDescriptionOfItem(row.item) }}
+                                                        </template>
+                                                        
+                                                        <pack-item-description
+                                                            v-if="row.item.is_set && configuration.show_item_description_pack"
+                                                            :item-id="row.item_id"
+                                                        >
+                                                        </pack-item-description>
+
+                                                        <template v-if="row.item.presentation">
+                                                            {{ row.item.presentation.hasOwnProperty('description') ? row.item.presentation.description : '' }}
+                                                        </template>
+                                                        <br/>
+                                                        <small>{{ row.affectation_igv_type.description }}</small>
+
+                                                        <p class="control-label font-weight-bold text-info" v-if="configuration.show_all_item_details">
+                                                            <a href="#" @click.prevent="clickShowItemDetail(row.item_id)">[Ver detalle]</a>
+                                                        </p>
+                                                    </td>
+                                                    <td class="text-center">{{ row.item.unit_type_id }}</td>
+
+                                                    <td class="text-right">
+                                                        <el-input-number 
+                                                            v-model="row.quantity"
+                                                            :min="0.01"
+                                                            class="input-custom"
+                                                            controls-position="right"
+                                                            style="min-width: 110px !important"
+                                                            :disabled="hasRowAdvancedOption(row)"
+                                                            @change="changeRowQuantity(row)">
+                                                        </el-input-number>
+                                                    </td>
+
+                                                    <td class="text-right">
+                                                        {{ currency_type.symbol }}
+                                                        
+                                                        <el-input-number 
+                                                            v-model="row.unit_value"
+                                                            :min="0"
+                                                            class="input-custom"
+                                                            controls-position="right"
+                                                            style="min-width: 115px !important"
+                                                            :disabled="hasRowAdvancedOption(row) || !hasPermissionEditItemPrices(authUser.permission_edit_item_prices)"
+                                                            @change="changeRowUnitValue(row)">
+                                                        </el-input-number>
+                                                    </td>
+
+                                                    <td class="text-right">
+                                                        {{ currency_type.symbol }}
+                                                        
+                                                        <el-input-number 
+                                                            v-model="row.unit_price"
+                                                            :min="0.01"
+                                                            class="input-custom"
+                                                            controls-position="right"
+                                                            style="min-width: 115px !important"
+                                                            :disabled="hasRowAdvancedOption(row) || !hasPermissionEditItemPrices(authUser.permission_edit_item_prices)"
+                                                            @change="changeRowUnitPrice(row)">
+                                                        </el-input-number>
+                                                    </td>
+
+                                                    <td class="text-right">
+                                                        {{ currency_type.symbol }} 
+
+                                                        <el-input-number 
+                                                            v-model="row.total_value"
+                                                            :min="0.01"
+                                                            class="input-custom"
+                                                            controls-position="right"
+                                                            style="min-width: 115px !important"
+                                                            :disabled="hasRowAdvancedOption(row) || !hasPermissionEditItemPrices(authUser.permission_edit_item_prices)"
+                                                            @change="changeRowTotalValue(row)">
+                                                        </el-input-number>
+                                                    </td>
+                                                    
+                                                    <td class="text-right">
+                                                        {{ currency_type.symbol }}
+                                                    
+                                                        <el-input-number 
+                                                            v-model="row.total"
+                                                            :min="0"
+                                                            class="input-custom"
+                                                            controls-position="right"
+                                                            style="min-width: 115px !important"
+                                                            :disabled="hasRowAdvancedOption(row) || !hasPermissionEditItemPrices(authUser.permission_edit_item_prices)"
+                                                            @change="changeRowTotal(row)">
+                                                        </el-input-number>
+                                                    </td>
+
+                                                    <td class="text-center">
+                                                        <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click="ediItem(row, index)" ><span style='font-size:10px;'>&#9998;</span> </button>
+                                                        <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickRemoveItem(index)">x</button>
+                                                    </td>
+
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="9"></td>
+                                                </tr>
+                                            </tbody>
+                                        </template>
+
+                                        <template v-else>
                                         <thead>
                                             <tr>
                                                 <th width="5%">#</th>
@@ -263,7 +406,30 @@
                                             <tr v-for="(row, index) in form.items" :key="index">
                                                 <td>{{index + 1}}</td>
                                                 <td>
-                                                    {{ setDescriptionOfItem (row.item) }} {{row.item.presentation.hasOwnProperty('description') ? row.item.presentation.description : ''}}<br/><small>{{row.affectation_igv_type.description}}</small></td>
+                                                    <template v-if="canAddDescriptionToDocumentItem">
+                                                        <template v-if="row.name_product_pdf && row.name_product_pdf != ''">
+                                                            <label v-html="row.name_product_pdf"></label>
+                                                        </template>
+                                                        <template v-else>
+                                                            <label><p v-text="setDescriptionOfItem(row.item)"></p></label>
+                                                        </template>
+                                                    </template>
+                                                    <template v-else>
+                                                        {{ setDescriptionOfItem(row.item) }}
+                                                    </template>
+
+                                                    <pack-item-description
+                                                        v-if="row.item.is_set && configuration.show_item_description_pack"
+                                                        :item-id="row.item_id"
+                                                    >
+                                                    </pack-item-description>
+
+                                                    {{row.item.presentation.hasOwnProperty('description') ? row.item.presentation.description : ''}}<br/><small>{{row.affectation_igv_type.description}}</small>
+                                                    
+                                                    <p class="control-label font-weight-bold text-info" v-if="configuration.show_all_item_details">
+                                                        <a href="#" @click.prevent="clickShowItemDetail(row.item_id)">[Ver detalle]</a>
+                                                    </p>
+                                                </td>
                                                 <td class="text-center">{{row.item.unit_type_id}}</td>
                                                 <td class="text-center">{{row.quantity}}</td>
                                                 <!-- <td class="text-right">{{currency_type.symbol}} {{row.unit_price}}</td> -->
@@ -280,9 +446,13 @@
                                             </tr>
                                             <tr><td colspan="9"></td></tr>
                                         </tbody>
+                                        </template>
+
                                     </table>
                                 </div>
                             </div>
+                            
+
                             <div class="col-lg-12 col-md-6 d-flex align-items-end">
                                 <div class="form-group">
                                     <button type="button" class="btn waves-effect waves-light btn-primary" @click="clickAddItem">+ Agregar Producto</button>
@@ -326,6 +496,8 @@
             :percentage-igv="percentage_igv"
             :currency-types="currency_types"
             :show-option-change-currency="true"
+            :permissionEditItemPrices="authUser.permission_edit_item_prices"
+            ref="form_add_item"
             @add="addRow"></quotation-form-item>
 
         <person-form :showDialog.sync="showDialogNewPerson"
@@ -343,6 +515,7 @@
         <terms-condition :showDialog.sync="showDialogTermsCondition"
                           :form="form"
                           :showClose="false"></terms-condition>
+
     </div>
 </template>
 
@@ -351,19 +524,24 @@
     import QuotationFormItem from './partials/item.vue'
     import PersonForm from '../persons/form.vue'
     import QuotationOptions from '../quotations/partials/options.vue'
-    import {functions, exchangeRate} from '../../../mixins/functions'
+    import {functions, exchangeRate, fnItemSearchQuickSale} from '../../../mixins/functions'
     import {calculateRowItem, showNamePdfOfDescription, sumAmountDiscountsNoBaseByItem} from '../../../helpers/functions'
     import Logo from '../companies/logo.vue'
     import {mapActions, mapState} from "vuex/dist/vuex.mjs";
+    import { editableRowItems } from '@mixins/editable-row-items'
+    import ItemSearchQuickSale from '@components/items/ItemSearchQuickSale.vue'
+    import PackItemDescription from '@components/items/PackItemDescription.vue'
+
 
     export default {
         props:[
             'typeUser',
             'saleOpportunityId',
             'configuration',
+            'authUser',
         ],
-        components: {QuotationFormItem, PersonForm, QuotationOptions, Logo, TermsCondition},
-        mixins: [functions, exchangeRate],
+        components: {QuotationFormItem, PersonForm, QuotationOptions, Logo, TermsCondition, ItemSearchQuickSale, PackItemDescription},
+        mixins: [functions, exchangeRate, editableRowItems, fnItemSearchQuickSale],
         data() {
             return {
                 sellers: [],
@@ -439,8 +617,18 @@
             ...mapState([
                 'config',
             ]),
+            canAddDescriptionToDocumentItem()
+            {
+                if (this.configuration) return this.configuration.add_description_to_document_item
+
+                return false
+            }
         },
         methods: {
+            clickShowItemDetail(id)
+            {
+                window.open(`/items/show-item-detail/${id}`)
+            },
             ...mapActions([
                 'loadConfiguration',
             ]),

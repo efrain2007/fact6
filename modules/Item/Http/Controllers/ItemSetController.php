@@ -8,6 +8,10 @@ use Illuminate\Routing\Controller;
 use Modules\Item\Imports\ItemSetIndividualImport;
 use Modules\Item\Imports\ItemSetImport;
 use Maatwebsite\Excel\Excel;
+use App\Models\Tenant\{
+    Item,
+    ItemSet
+};
 
 class ItemSetController extends Controller
 {
@@ -64,5 +68,19 @@ class ItemSetController extends Controller
         ];
     }
 
+        
+    /**
+     *
+     * @param  int $item_id
+     * @return array
+     */
+    public function setsDescription($item_id)
+    {
+        return ItemSet::filterDataByItem($item_id)
+                        ->get()
+                        ->transform(function ($set) {
+                            return $set->getRowViewDescription();
+                        });
+    }
 
 }

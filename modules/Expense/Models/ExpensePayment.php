@@ -168,6 +168,7 @@
                 'expense_method_type' => function($q){
                     $q->select('id', 'description');
                 }, 
+                'payment_file'
             ]);
         }
 
@@ -266,6 +267,16 @@
             ];
 
             return array_merge($this->getRowResourceCashPayment(), $data);
+        }
+
+
+        /**
+         *
+         * @return string
+         */
+        public function getPaymentFileUrl()
+        {
+            return optional($this->payment_file)->getFileUrl('expenses');
         }
 
     }

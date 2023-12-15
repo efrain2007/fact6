@@ -227,7 +227,7 @@
                                 <template v-if="form.item">
                                     <el-input v-model="form.unit_price_value"
                                               :tabindex="'3'"
-                                              :readonly="!edit_unit_price"
+                                              :disabled="!hasPermissionEditItemPrices(permissionEditItemPrices)"
                                               @input="calculateQuantity">
 
                                         <template v-if="form.item.currency_type_symbol">
@@ -248,7 +248,7 @@
 
                                 <el-input v-model="form.unit_price_value"
                                           :tabindex="'3'"
-                                          :readonly="!edit_unit_price"
+                                          :disabled="!hasPermissionEditItemPrices(permissionEditItemPrices)"
                                           @input="calculateQuantity">
                                     <template v-if="form.item.currency_type_symbol"
                                               slot="prepend">
@@ -311,10 +311,40 @@
                                    v-text="errors.total_item[0]"></small>
                         </div>
                     </div>
+
+                    <template v-if="configShowLastPriceSale">
+                        <div class="col-md-4" v-if="form.item_id">
+                            <div class="form-group">
+                                <label class="control-label">Último precio de venta</label>
+                                <el-input :value="value_item_last_price" readonly>
+                                </el-input>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4" v-if="form.item">
+                            <div class="form-group">
+                                <label class="control-label">Costo unitario</label>
+                                <el-input :value="form.item.purchase_unit_price" readonly>
+                                </el-input>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4" v-if="form.item_id">
+                            <weighted-average-cost :item-id="form.item_id"></weighted-average-cost>
+                        </div>
+                    </template>
+
                     <div v-if="config.edit_name_product"
                          class="col-md-12 col-sm-12 mt-2">
                         <div class="form-group">
-                            <label class="control-label">Nombre producto en PDF</label>
+                            <label class="control-label">
+                                <template v-if="canAddDescriptionToDocumentItem">
+                                    Reemplazar nombre
+                                </template>
+                                <template v-else>
+                                    Nombre producto en PDF
+                                </template>
+                            </label>
                             <vue-ckeditor
                                 v-model="form.name_product_pdf"
                                 :editors="editors"
@@ -650,6 +680,9 @@ import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 import {ItemOptionDescription, ItemSlotTooltip} from "../../../../helpers/modal_item";
 import Keypress from "vue-keypress";
 import HistorySalesForm from "../../../../../../modules/Pos/Resources/assets/js/views/history/sales.vue";
+import { checkPermissionEditPrices } from '@mixins/check-permission-edit-prices'
+import WeightedAverageCost from '@components/items/WeightedAverageCost.vue'
+
 
 export default {
     name: 'DocumentPartialItem',
@@ -671,6 +704,7 @@ export default {
         'percentageIgv',
         'isCreditNoteAndType03',
         'isUpdateDocument',
+        'permissionEditItemPrices'
     ],
     components: {
         ItemForm,
@@ -679,8 +713,12 @@ export default {
         LotsGroup,
         SelectLotsForm,
         HistorySalesForm,
-        'vue-ckeditor': VueCkeditor.component
+        'vue-ckeditor': VueCkeditor.component,
+        WeightedAverageCost
     },
+    mixins: [
+        checkPermissionEditPrices
+    ],
     data() {
         return {
             showDiscounts: true,
@@ -725,6 +763,7 @@ export default {
             value1: 'hello',
             readonly_total: 0,
             itemLastPrice: null,
+            value_item_last_price: 0,
             search_item_by_barcode_presentation: false,
             showDialogHistorySales: false,
             history_item_id: null,
@@ -864,8 +903,39 @@ export default {
         {
             return this.form.item_id && !_.isEmpty(this.form.item)
         },
+        canAddDescriptionToDocumentItem()
+        {
+            if (this.configuration) return this.configuration.add_description_to_document_item
+
+            return false
+        },
+        configShowLastPriceSale()
+        {
+            return _.has(this.configuration, 'show_last_price_sale') ? this.configuration.show_last_price_sale : false
+        }
     },
     methods: {
+        async addItemQuickSale(item, operation_type_id)
+        {
+            // console.log("addItemQuickSale", item.id)
+
+            const operation_type = _.find(this.operation_types, {id: operation_type_id})
+            if(!operation_type) throw new Error('No se pudo cargar el tipo de operación del documento, intente dentro de unos segundos.')
+
+            this.form.item_id = item.id
+            this.items = [ {...item} ]
+            this.affectation_igv_types = _.filter(this.all_affectation_igv_types, { exportation: operation_type.exportation })
+            
+            await this.changeItem()
+            await this.generalSleep(500)
+
+            const add_item = await this.clickAddItem()
+
+            if(add_item == null || add_item == undefined) return add_item
+            
+            throw new Error('No se pudo agregar el producto.')
+        
+        },
         ...mapActions([
             'loadConfiguration',
             'clearExtraInfoItem',
@@ -1363,8 +1433,20 @@ export default {
                 this.form.name_product_pdf = this.form.item.name_product_pdf;
             }
 
+            this.addDescriptionToDocumentItem()
+
             this.getLastPriceItem()
 
+        },
+        addDescriptionToDocumentItem()
+        {
+            if(this.canAddDescriptionToDocumentItem)
+            {
+                const name = this.form.item.description ? `<p>${this.form.item.description}</p>` : ''
+                const description = this.form.item.name ? `<p>${this.form.item.name}</p>` : ''
+
+                this.form.name_product_pdf = `${name}${description}`
+            }
         },
         focusTotalItem(change) {
             if (!change && this.form.item.calculate_quantity) {
@@ -1644,7 +1726,7 @@ export default {
         },
         setFocusSelectItem() {
 
-            this.$refs.selectSearchNormal.$el.getElementsByTagName('input')[0].focus()
+            if(this.$refs.selectSearchNormal) this.$refs.selectSearchNormal.$el.getElementsByTagName('input')[0].focus()
 
         },
         setExtraFieldOfitem(item) {
@@ -1772,6 +1854,8 @@ export default {
         },
         async getLastPriceItem() {
             this.itemLastPrice = null
+            this.value_item_last_price = 0
+
             let show_last_price_sale = _.has(this.configuration, 'show_last_price_sale') ? this.configuration.show_last_price_sale : false;
             if (show_last_price_sale) {
                 if (this.customerId && this.form.item_id) {
@@ -1783,6 +1867,7 @@ export default {
                     await this.$http.get(`/items/last-sale`, {params}).then((response) => {
                         if (response.data.unit_price) {
                             this.itemLastPrice = `Último precio de venta: ${response.data.unit_price}`
+                            this.value_item_last_price = response.data.unit_price
                         }
 
                     })

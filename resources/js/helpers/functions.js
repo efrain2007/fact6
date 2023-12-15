@@ -76,6 +76,7 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
         purchase_unit_price: row_old.item.purchase_unit_price,
         purchase_unit_value: row_old.item.purchase_unit_value,
         purchase_has_igv: row_old.item.has_igv,
+        input_has_plastic_bag_taxes: row_old.has_plastic_bag_taxes,
 
         data_item_lot_group: getDataItemLotGroup(row_old)
     };

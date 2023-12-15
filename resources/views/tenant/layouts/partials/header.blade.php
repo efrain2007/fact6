@@ -16,6 +16,10 @@
             </div>
         @endif
 
+        @if(config('configuration.multi_user_enabled'))
+            <tenant-multi-users-change-client></tenant-multi-users-change-client>
+        @endif
+
     </div>
     <div class="header-right">
 

@@ -217,5 +217,71 @@ class Client extends Model
         return $query->withOut(['hostname','plan']);
     }
 
+    
+    /**
+     *
+     * @return string
+     */
+    public function getFullName()
+    {
+        return "{$this->number} - {$this->name}";
+    }
+    
+
+    /**
+     *
+     * @return array
+     */
+    public function getDataToSelect()
+    {
+        return [
+            'id' => $this->id,
+            'full_name' => $this->getFullName(),
+        ];
+    }
+
+    
+    /**
+     *
+     * @param  Builder $query
+     * @return Builder
+     */
+    public function scopeFilterDataMultiUser($query)
+    {
+        return $query->select([
+                    'id',
+                    'hostname_id',
+                    'number',
+                    'name'
+                ])
+                ->whereFilterWithOutRelations()
+                ->with([
+                    'hostname' => function($query){
+                        return $query->select(['id', 'fqdn', 'website_id'])
+                                    ->with(['website']);
+                    }
+                ]);
+    }
+
+    
+    /**
+     *
+     * @param  Builder $query
+     * @return Builder
+     */
+    public function scopeCurrentClientByWebsite($query, $website)
+    {
+        return $query->wherehas('hostname', function($q) use($website) {
+                    return $q->where('website_id', $website->id);
+                })
+                ->whereFilterWithOutRelations()
+                ->with(['hostname'])
+                ->select([
+                    'id',
+                    'number',
+                    'name',
+                    'hostname_id'
+                ]);
+    }
 
 }

@@ -12,6 +12,8 @@ class PaymentFile extends ModelTenant
 {
 
     public $timestamps = false;
+
+    public const FOLDER_BASE_URL = "finances/payment-file/download-file";
     
     protected $fillable = [
         'filename',
@@ -103,6 +105,18 @@ class PaymentFile extends ModelTenant
                     
                 });
 
+    }
+
+      
+    /**
+     * getFileUrl
+     *
+     * @param  string $type
+     * @return string
+     */
+    public function getFileUrl($type)
+    {
+        return url(self::FOLDER_BASE_URL."/{$this->filename}/{$type}");
     }
 
 }

@@ -156,6 +156,7 @@ class UserController extends Controller
             $user->delete_purchase = $request->input('delete_purchase');
 
             $user->permission_force_send_by_summary = $request->input('permission_force_send_by_summary');
+            $user->permission_edit_item_prices = $request->permission_edit_item_prices;
 
             if($user->isDirty('password')) $user->last_password_update = date('Y-m-d H:i:s');
 

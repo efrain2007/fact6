@@ -8,6 +8,8 @@ use App\Models\Tenant\Catalogs\SystemIscType;
 use App\Traits\AttributePerItems;
 use Modules\Inventory\Models\Warehouse;
 use Modules\Item\Models\ItemLot;
+use Modules\Purchase\Models\WeightedAverageCost;
+
 
 /**
  * App\Models\Tenant\PurchaseItem
@@ -29,6 +31,7 @@ use Modules\Item\Models\ItemLot;
  * @method static \Illuminate\Database\Eloquent\Builder|PurchaseItem query()
  * @mixin \Eloquent
  */
+
 class PurchaseItem extends ModelTenant
 {
     use AttributePerItems;
@@ -179,6 +182,11 @@ class PurchaseItem extends ModelTenant
     public function relation_item()
     {
         return $this->belongsTo(Item::class, 'item_id');
+    }
+
+    public function weighted_average_cost()
+    {
+        return $this->morphOne(WeightedAverageCost::class, 'origin');
     }
 
     public function getCollectionData(Configuration $configuration = null) {
@@ -347,6 +355,5 @@ class PurchaseItem extends ModelTenant
     {
         return $this->generalConvertValueToPen($this->total_isc, $this->purchase->exchange_rate_sale);
     }
-
 
 }

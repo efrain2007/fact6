@@ -131,7 +131,7 @@
                              class="form-group">
                             <label class="control-label">Precio Unitario</label>
                             <el-input v-model="form.unit_price"
-                                      :readonly="!edit_unit_price"
+                                      :disabled="!hasPermissionEditItemPrices(permissionEditItemPrices)"
                                       @input="calculateQuantity">
                                 <template v-if="form.item.currency_type_symbol"
                                           slot="prepend">
@@ -484,6 +484,7 @@ import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import VueCkeditor from "vue-ckeditor5";
 import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 import {ItemOptionDescription, ItemSlotTooltip} from "../../../../../../../../resources/js/helpers/modal_item";
+import { checkPermissionEditPrices } from '@mixins/check-permission-edit-prices'
 
 export default {
     props: [
@@ -493,10 +494,13 @@ export default {
         'exchangeRateSale',
         'typeUser',
         'configuration',
-        'percentageIgv'
+        'percentageIgv',
+        'permissionEditItemPrices',
     ],
     components: {ItemForm, WarehousesDetail, LotsGroup, SelectLotsForm, 'vue-ckeditor': VueCkeditor.component},
-
+    mixins: [
+        checkPermissionEditPrices
+    ],
     data() {
         return {
             can_add_new_product: false,

@@ -280,6 +280,7 @@
             :showDialog.sync="showDialogAddItem"
             :typeUser="typeUser"
             :percentage-igv="percentage_igv"
+            :permissionEditItemPrices="authUser.permission_edit_item_prices"
             @add="addRow"></order-note-form-item>
 
         <person-form :showDialog.sync="showDialogNewPerson"
@@ -316,6 +317,9 @@
                 required: true,
             },
             'configuration': {},
+            'authUser': {
+                required: true,
+            },
         },
         mixins: [functions, exchangeRate],
         data() {

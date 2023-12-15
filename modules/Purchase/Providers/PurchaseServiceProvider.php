@@ -35,6 +35,7 @@ class PurchaseServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->register(RouteServiceProvider::class);
+        $this->app->register(WeightedAverageCostServiceProvider::class);
     }
 
     /**
