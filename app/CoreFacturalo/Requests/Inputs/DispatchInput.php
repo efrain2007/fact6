@@ -38,7 +38,7 @@ class DispatchInput
 
         $filename = Functions::filename($company, $document_type_id, $series, $number);
         $establishment = EstablishmentInput::set($inputs['establishment_id']);
-        $customer = PersonInput::set($inputs['customer_id']);
+        $customer = self::customer($inputs);
         $inputs['type'] = 'dispatch';
         $data = [
             'id' => Functions::valueKeyInArray($inputs, 'id'),
@@ -56,7 +56,7 @@ class DispatchInput
             'number' => $number,
             'date_of_issue' => $inputs['date_of_issue'],
             'time_of_issue' => $inputs['time_of_issue'],
-            'customer_id' => $inputs['customer_id'],
+            'customer_id' => self::customer_id($inputs),
             'customer' => $customer,
             'observations' => $inputs['observations'],
             'transport_mode_type_id' => Functions::valueKeyInArray($inputs, 'transport_mode_type_id'),
@@ -110,6 +110,22 @@ class DispatchInput
         return $data;
     }
 
+    private static function customer($inputs)
+    {
+        if(array_key_exists('customer_id', $inputs)) {
+            return PersonInput::set($inputs['customer_id']);
+        }
+        return null;
+    }
+
+    private static function customer_id($inputs)
+    {
+        if(array_key_exists('customer_id', $inputs)) {
+            return $inputs['customer_id'];
+        }
+
+        return null;
+    }
 
     /**
      *
@@ -132,38 +148,42 @@ class DispatchInput
 
     private static function origin($inputs)
     {
-        if (array_key_exists('origin', $inputs)) {
-            $origin = $inputs['origin'];
-            $country_id = key_exists('country_id', $origin) ? $origin['country_id'] : 'PE';
-            $address = $origin['address'];
-            $location_id = $origin['location_id'][2] == '0' ? $origin['location_id'] : $origin['location_id'][2];
-            $code = key_exists('code', $origin) ? $origin['code'] : '0000';
+        if($inputs['document_type_id'] == '09') {
+            if (array_key_exists('origin', $inputs)) {
+                $origin = $inputs['origin'];
+                $country_id = key_exists('country_id', $origin) ? $origin['country_id'] : 'PE';
+                $address = $origin['address'];
+                $location_id = $origin['location_id'][2] == '0' ? $origin['location_id'] : $origin['location_id'][2];
+                $code = key_exists('code', $origin) ? $origin['code'] : '0000';
 
-            return [
-                'country_id' => $country_id,
-                'location_id' => $location_id,
-                'address' => $address,
-                'code' => $code,
-            ];
+                return [
+                    'country_id' => $country_id,
+                    'location_id' => $location_id,
+                    'address' => $address,
+                    'code' => $code,
+                ];
+            }
         }
         return null;
     }
 
     private static function delivery($inputs)
     {
-        if (array_key_exists('delivery', $inputs)) {
-            $delivery = $inputs['delivery'];
-            $country_id = key_exists('country_id', $delivery) ? $delivery['country_id'] : 'PE';
-            $address = $delivery['address'];
-            $location_id = $delivery['location_id'][2] == '0' ? $delivery['location_id'] : $delivery['location_id'][2];
-            $code = key_exists('code', $delivery) ? $delivery['code'] : '0000';
+        if($inputs['document_type_id'] == '09') {
+            if (array_key_exists('delivery', $inputs)) {
+                $delivery = $inputs['delivery'];
+                $country_id = key_exists('country_id', $delivery) ? $delivery['country_id'] : 'PE';
+                $address = $delivery['address'];
+                $location_id = $delivery['location_id'][2] == '0' ? $delivery['location_id'] : $delivery['location_id'][2];
+                $code = key_exists('code', $delivery) ? $delivery['code'] : '0000';
 
-            return [
-                'country_id' => $country_id,
-                'location_id' => $location_id,
-                'address' => $address,
-                'code' => $code,
-            ];
+                return [
+                    'country_id' => $country_id,
+                    'location_id' => $location_id,
+                    'address' => $address,
+                    'code' => $code,
+                ];
+            }
         }
         return null;
     }

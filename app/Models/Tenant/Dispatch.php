@@ -160,7 +160,8 @@ class Dispatch extends ModelTenant
         'receiver_data' => 'array',
         'sender_data' => 'array',
         'sender_address_data' => 'array',
-        'receiver_address_data' => 'array'
+        'receiver_address_data' => 'array',
+        'establishment' => 'json',
     ];
 
     public function getAdditionalDataAttribute($value)

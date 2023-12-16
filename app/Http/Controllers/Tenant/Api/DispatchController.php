@@ -8,6 +8,15 @@ use App\Models\Tenant\Dispatch;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Modules\ApiPeruDev\Http\Controllers\ServiceDispatchController;
+use App\Models\Tenant\Establishment;
+use Modules\Dispatch\Models\Driver;
+use Modules\Dispatch\Models\Transport;
+use App\Models\Tenant\Catalogs\{
+    IdentityDocumentType,
+    TransferReasonType,
+    TransportModeType,
+    UnitType
+};
 
 class DispatchController extends Controller
 {
@@ -22,6 +31,7 @@ class DispatchController extends Controller
             'delivery.address' => 'required|max:100',
             'origin.address' => 'required|max:100',
         ]);
+        // dd($request->all());
 
         $fact = DB::connection('tenant')->transaction(function () use ($request) {
             $facturalo = new Facturalo();
@@ -77,5 +87,44 @@ class DispatchController extends Controller
         (new Facturalo())->createPdf($record, 'dispatch', 'a4');
         return $res;
 
+    }
+
+    /**
+    * Tables
+    * @param  Request $request
+    * @return \Illuminate\Http\Response
+    */
+    public function tables(Request $request) {
+        $transferReasonTypes = TransferReasonType::whereActive()->get();
+        $transportModeTypes = TransportModeType::whereActive()->get();
+        $unitTypes = UnitType::whereActive()->get();
+        $establishments = Establishment::all();
+        $dispatchers = app(\Modules\Dispatch\Http\Controllers\DispatcherController::class)->getOptions();
+        $transports = Transport::query()
+            ->where('is_active', true)
+            ->get()
+            ->transform(function ($row) {
+                return [
+                    'id' => $row->id,
+                    'plate_number' => $row->plate_number,
+                    'model' => $row->model,
+                    'brand' => $row->brand,
+                    'is_default' => $row->is_default
+                ];
+            });
+        $drivers = Driver::query()
+            ->where('is_active', true)
+            ->get()
+            ->transform(function ($row) {
+                return [
+                    'id' => $row->id,
+                    'identity_document_type_id' => $row->identity_document_type_id,
+                    'number' => $row->number,
+                    'name' => $row->name,
+                    'license' => $row->license
+                ];
+            });
+
+        return compact('establishments', 'transportModeTypes', 'transferReasonTypes', 'unitTypes', 'dispatchers','transports','drivers');
     }
 }

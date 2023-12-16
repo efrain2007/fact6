@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -13,6 +15,17 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/dispatch', function (Request $request) {
-    return $request->user();
-});
+$hostname = app(Hyn\Tenancy\Contracts\CurrentHostname::class);
+
+if ($hostname) {
+    Route::domain($hostname->fqdn)->group(function () {
+
+        Route::middleware(['auth:api', 'locked.tenant'])->group(function () {
+
+            Route::prefix('dispatch-carrier')
+                ->group(function () {
+                Route::post('/', 'Api\DispatchCarrierController@store');
+            });
+        });
+    });
+};
