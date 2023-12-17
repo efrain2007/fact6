@@ -1608,8 +1608,8 @@ $inventory_configuration = InventoryConfiguration::getSidebarPermissions();
                         <li class="{{ ($firstLevel === 'live-app')?'nav-active':'' }}">
                             <a class="nav-link"
                                href="{{ route('tenant.liveapp.configuration') }}">
-                                <i class="fas fa-puzzle-piece"></i>
-                                <span>Generador APP 2.0</span>
+                                <i class="fas fa-mobile"></i>
+                                <span>APP 3.0</span>
                             </a>
                         </li>
                     @endif

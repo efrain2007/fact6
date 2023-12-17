@@ -6,6 +6,8 @@ use App\CoreFacturalo\Requests\Api\Transform\Common\EstablishmentTransform;
 use App\CoreFacturalo\Requests\Api\Transform\Common\PersonTransform;
 use App\CoreFacturalo\Requests\Api\Transform\Common\LegendTransform;
 use App\CoreFacturalo\Requests\Api\Transform\Common\ActionTransform;
+use Modules\Dispatch\Models\DispatchAddress;
+
 
 class DispatchTransform
 {
@@ -19,7 +21,7 @@ class DispatchTransform
             'time_of_issue' => Functions::valueKeyInArray($inputs, 'hora_de_emision'),
             'document_type_id' => Functions::valueKeyInArray($inputs, 'codigo_tipo_documento'),
             'establishment' => EstablishmentTransform::transform($inputs['datos_del_emisor']),
-            'customer' => PersonTransform::transform($inputs['datos_del_cliente_o_receptor']),
+            'customer' => self::customer($inputs),
             'observations' => Functions::valueKeyInArray($inputs, 'observaciones'),
             'transport_mode_type_id' => Functions::valueKeyInArray($inputs, 'codigo_modo_transporte'),
             'transfer_reason_type_id' => Functions::valueKeyInArray($inputs, 'codigo_motivo_traslado'),
@@ -41,9 +43,73 @@ class DispatchTransform
             'legends' => LegendTransform::transform($inputs),
             'actions' => ActionTransform::transform($inputs),
             'additional_data' => Functions::valueKeyInArray($inputs, 'dato_adicional'),
+            //dispatchCarrier
+            'sender_id' => Functions::valueKeyInArray($inputs, 'remitente_id'),
+            'sender_data' => self::senderData($inputs),
+            'sender_address_id' => Functions::valueKeyInArray($inputs, 'direccion_remitente_id'),
+            'sender_address_data' => self::addressData($inputs, 'sender'),
+            'receiver_id' => Functions::valueKeyInArray($inputs, 'destinatario_id'),
+            'receiver_data' => self::receiverData($inputs),
+            'receiver_address_id' => Functions::valueKeyInArray($inputs, 'direccion_destinatario_id'),
+            'receiver_address_data' => self::addressData($inputs, 'receiver')
+
         ];
         self::AffectedDocument($data, $inputs);
         return $data;
+    }
+    private static function addressData($inputs, $type)
+    {
+        if (key_exists('direccion_remitente_id', $inputs) ||
+            key_exists('direccion_destinatario_id', $inputs)) {
+            $key = ($type === 'sender') ? 'direccion_remitente_id' : 'direccion_destinatario_id';
+            $dispatchAddress = DispatchAddress::find($inputs[$key]);
+
+            return [
+                'address' => $dispatchAddress->address,
+                'location_id' => $dispatchAddress->location_id
+            ];
+        }
+        return null;
+
+    }
+
+    private static function senderData($inputs)
+    {
+        if (key_exists('datos_remitente', $inputs)) {
+            $sender_data = $inputs['datos_remitente'];
+
+            return [
+                'identity_document_type_id' => $sender_data['codigo_tipo_documento_identidad'],
+                'identity_document_type_description' => $sender_data['descripcion_tipo_documento_identidad'],
+                'number' => $sender_data['numero_documento'],
+                'name' => $sender_data['apellidos_y_nombres_o_razon_social'],
+            ];
+        }
+        return null;
+    }
+
+    private static function receiverData($inputs)
+    {
+        if (key_exists('datos_destinatario', $inputs)) {
+            $receiver_data = $inputs['datos_destinatario'];
+
+            return [
+                'identity_document_type_id' => $receiver_data['codigo_tipo_documento_identidad'],
+                'identity_document_type_description' => $receiver_data['descripcion_tipo_documento_identidad'],
+                'number' => $receiver_data['numero_documento'],
+                'name' => $receiver_data['apellidos_y_nombres_o_razon_social'],
+            ];
+        }
+        return null;
+    }
+
+    private static function customer($inputs)
+    {
+        if (key_exists('datos_del_cliente_o_receptor', $inputs)) {
+            return PersonTransform::transform($inputs['datos_del_cliente_o_receptor']);
+        }
+
+        return null;
     }
 
     private static function AffectedDocument(&$data, $inputs)
@@ -122,7 +188,7 @@ class DispatchTransform
     private static function transport($inputs)
     {
         // if (key_exists('vehiculo', $inputs)) {
-            // $transport = $inputs['vehiculo'];
+        //     $transport = $inputs['vehiculo'];
             return [
                 'plate_number' => Functions::valueKeyInArray($inputs, 'numero_de_placa'),
                 'model' => Functions::valueKeyInArray($inputs, 'modelo'),

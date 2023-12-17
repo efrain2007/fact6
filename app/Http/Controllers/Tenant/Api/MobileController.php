@@ -35,6 +35,7 @@ use Modules\Item\Models\{
     Category
 };
 use App\Http\Controllers\Tenant\ItemController as ItemWebController;
+use Modules\Dispatch\Models\DispatchAddress;
 
 
 class MobileController extends Controller
@@ -99,13 +100,14 @@ class MobileController extends Controller
                 'name' => $row->name,
                 'number' => $row->number,
                 'identity_document_type_id' => $row->identity_document_type_id,
-                'identity_document_type_code' => $row->identity_document_type->code,
+                'identity_document_type_code' => $row->identity_document_type->code,                'identity_document_type_description' => $row->identity_document_type->description,
                 'address' => $row->address,
                 'telephone' => $row->telephone,
                 'country_id' => $row->country_id,
                 'district_id' => $row->district_id,
                 'email' => $row->email,
-                'selected' => false
+                'selected' => false,
+                'addresses' => DispatchAddress::where('person_id', $row->id)->get()
             ];
         });
 
@@ -189,7 +191,7 @@ class MobileController extends Controller
     {
 
         return Series::where('establishment_id', auth()->user()->establishment_id)
-                    ->whereIn('document_type_id', ['01', '03'])
+                    ->whereIn('document_type_id', ['01', '03', '09', '31'])
                     ->get()
                     ->transform(function($row) {
                         return $row->getApiRowResource();
@@ -469,6 +471,7 @@ class MobileController extends Controller
                                     'number' => $row->number,
                                     'identity_document_type_id' => $row->identity_document_type_id,
                                     'identity_document_type_code' => $row->identity_document_type->code,
+                                    'identity_document_type_description' => $row->identity_document_type->description,
                                     'address' => $row->address,
                                     'telephone' => $row->telephone,
                                     'email' => $row->email,

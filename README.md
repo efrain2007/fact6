@@ -1,6 +1,6 @@
 <img src="icon_pro5.png" width="120">
 
-# **Facturador PRO 5**
+# **Facturador PRO 6**
 
 
 ## Términos y condiciones del uso de este repositorio
