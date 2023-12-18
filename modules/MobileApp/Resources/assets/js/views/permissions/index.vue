@@ -12,7 +12,7 @@
                             <th>Email</th>
                             <th>Nombre</th>
                             <th>Perfil</th>
-                            <th class="text-center">Acciones</th>
+                            <th class="text-center">Permisos</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -22,9 +22,14 @@
                             <td>{{ row.name }}</td>
                             <td>{{ row.type }}</td>
                             <td class="text-center">
-                                <button type="button" class="btn waves-effect waves-light btn-xs btn-primary" @click.prevent="clickShowPermissions(row.id)">
-                                    <i class="fas fa-user-lock"></i>
-                                </button>
+                                <template v-if="row.id == 1">
+                                    <span>Todos</span>
+                                </template>
+                                <template v-else>
+                                    <button type="button" class="btn waves-effect waves-light btn-xs btn-primary" @click.prevent="clickShowPermissions(row.id)">
+                                        <i class="fas fa-user-lock"></i>
+                                    </button>
+                                </template>
                             </td>
                         </tr>
                         </tbody>
