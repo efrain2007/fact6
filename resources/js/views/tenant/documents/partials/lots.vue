@@ -161,13 +161,17 @@ export default {
         },
         recordToSelected() {
             if(this.search.input){
-                let lot = _.find(this.records, {series: this.search.input})
-                lot.has_sale = true
-                if(lot) {
-                    this.lotsSelected.push(lot)
-                    this.$nextTick(() => {
-                        this.$refs.searchInput.select();
-                    });
+                const isAlreadySelected = this.lotsSelected.some(lot => lot.series === this.search.input);
+
+                if (!isAlreadySelected) {
+                    let lot = _.find(this.records, {series: this.search.input})
+                    lot.has_sale = true
+                    if(lot) {
+                        this.lotsSelected.push(lot)
+                        this.$nextTick(() => {
+                            this.$refs.searchInput.select();
+                        });
+                    }
                 }
             }
         },
