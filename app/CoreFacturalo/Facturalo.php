@@ -270,7 +270,7 @@ class Facturalo
      */
     public function servicePseSendXml()
     {
-        if($this->hasPseSend() && (isset($this->actions['send_xml_signed']) ? $this->actions['send_xml_signed'] : true)) {
+        if($this->hasPseSend()) {
             $giorService = new GiorService();
             $giorService->getToken();
             $response = $giorService->sendXml($this->xmlUnsigned, $this->document->filename);
@@ -290,7 +290,7 @@ class Facturalo
 
     public function updateHash($pse_hash = null)
     {
-        if($pse_hash != null){
+        if($pse_hash == null){
             $this->document->update([
                 'hash' => $this->getHash(),
             ]);
@@ -361,7 +361,7 @@ class Facturalo
             $this->document->date_of_issue->format('Y-m-d'),
             $customer->identity_document_type_id,
             $customer->number,
-            $this->document->hash
+            $this->document->hash.'|'
         ]);
 
         $qrCode = new QrCodeGenerate();

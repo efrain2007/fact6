@@ -1679,7 +1679,7 @@ class Document extends ModelTenant
             $this->date_of_issue->format('Y-m-d'),
             $customer->identity_document_type_id,
             $customer->number,
-            $this->hash
+            $this->hash.'|'
         ]);
 
         $qrCode = new QrCodeGenerate();
@@ -1697,7 +1697,7 @@ class Document extends ModelTenant
         return url("print/document/{$this->external_id}/{$format}");
     }
 
-    
+
     /**
      *
      * Filtrar registro para envio de mensajes por whatsapp
@@ -1717,9 +1717,9 @@ class Document extends ModelTenant
                     ]);
     }
 
-    
+
     /**
-     * 
+     *
      * Placa para reporte de ventas
      *
      * @return string
@@ -1728,7 +1728,7 @@ class Document extends ModelTenant
     {
         return $this->plate_number;
     }
-    
+
 
     /**
      *
@@ -1741,7 +1741,7 @@ class Document extends ModelTenant
 
 
     /**
-     * 
+     *
      * Determina si es nota credito tipo 13
      *
      * @return bool
@@ -1781,7 +1781,7 @@ class Document extends ModelTenant
 
 
     /**
-     * 
+     *
      * Tipo de transaccion para caja
      *
      * @return string
@@ -1793,7 +1793,7 @@ class Document extends ModelTenant
 
 
     /**
-     * 
+     *
      * Tipo de documento para caja
      *
      * @return string
@@ -1803,9 +1803,9 @@ class Document extends ModelTenant
         return $this->getTable();
     }
 
-    
+
     /**
-     * 
+     *
      * Datos para resumen diario de operaciones
      *
      * @return array
@@ -1831,7 +1831,7 @@ class Document extends ModelTenant
         return $this->payments()->filterCashPaymentWithoutDestination()->sum('payment');
     }
 
-    
+
     /**
      *
      * Obtener total de pagos en transferencia
@@ -1842,10 +1842,10 @@ class Document extends ModelTenant
     {
         return $this->payments()->filterTransferPayment()->sum('payment');
     }
-    
+
 
     /**
-     * 
+     *
      * Validar si tiene estado permitido para calculos/etc
      *
      * @return bool
@@ -1855,7 +1855,7 @@ class Document extends ModelTenant
         return in_array($this->state_type_id, self::STATE_TYPES_ACCEPTED, true);
     }
 
-    
+
     /**
      *
      * @return bool
@@ -1865,9 +1865,9 @@ class Document extends ModelTenant
         return $this->currency_type_id === self::NATIONAL_CURRENCY_ID;
     }
 
-    
+
     /**
-     * 
+     *
      * Obtener base imponible de la retencion en soles
      *
      * @return float
@@ -1884,7 +1884,7 @@ class Document extends ModelTenant
         return round($base, 2);
     }
 
-    
+
     /**
      *
      * @param  float $value

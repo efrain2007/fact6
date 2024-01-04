@@ -21,7 +21,8 @@ class SummaryController extends Controller
             $facturalo = new Facturalo();
             $facturalo->save($request->all());
             $facturalo->createXmlUnsigned();
-            $facturalo->signXmlUnsigned();
+            $service_pse_xml = $facturalo->servicePseSendXml();
+            $facturalo->signXmlUnsigned($service_pse_xml['xml_signed']);
             $facturalo->senderXmlSignedSummary();
 
             return $facturalo;
@@ -62,7 +63,12 @@ class SummaryController extends Controller
         $facturalo = new Facturalo();
         $facturalo->setDocument($summary);
         $facturalo->setType('summary');
-        $facturalo->statusSummary($summary->ticket);
+        $hasPseSend = $facturalo->hasPseSend();
+        if($hasPseSend){
+            $facturalo->pseQuerySummary();
+        } else {
+            $facturalo->statusSummary($summary->ticket);
+        }
 
         $response = $facturalo->getResponse();
 
