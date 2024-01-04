@@ -15,7 +15,7 @@
             </div>
             <div class="row">
                 <div class="col-md-6 col-lg-6 col-xl-6 ">
-                    <el-input placeholder="Buscar serie ..."
+                    <el-input  ref="searchInput" placeholder="Buscar serie ..."
                               v-model="search.input"
                               style="width: 100%;"
                               prefix-icon="el-icon-search"
@@ -165,6 +165,9 @@ export default {
                 lot.has_sale = true
                 if(lot) {
                     this.lotsSelected.push(lot)
+                    this.$nextTick(() => {
+                        this.$refs.searchInput.select();
+                    });
                 }
             }
         },
