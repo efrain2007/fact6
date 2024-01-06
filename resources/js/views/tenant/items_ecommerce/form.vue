@@ -56,7 +56,7 @@
                              class="form-group">
                             <label class="control-label">Descripción</label>
                             <el-input v-model="form.name"
-                                      dusk="name"></el-input>
+                                dusk="name"></el-input>
                             <small v-if="errors.name"
                                    class="form-control-feedback"
                                    v-text="errors.name[0]"></small>
@@ -84,10 +84,10 @@
                         <div :class="{'has-danger': errors.technical_specifications}"
                              class="form-group">
                             <label class="control-label">Especificaciones técnicas</label>
-                            <el-input v-model="form.technical_specifications"
-                                      dusk="technical_specifications"
-                                      maxlength="300"
-                                      type="textarea"></el-input>
+                            <vue-ckeditor
+                                v-model="form.technical_specifications"
+                                :editors="editors"
+                                type="classic"></vue-ckeditor>
                             <small v-if="errors.technical_specifications"
                                    class="form-control-feedback"
                                    v-text="errors.technical_specifications[0]"></small>
@@ -581,10 +581,15 @@
 <script>
 // import PercentagePerception from './partials/percentage_perception.vue'
 import FormImages from "./partials/form_images.vue";
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import VueCkeditor from 'vue-ckeditor5';
 
 export default {
     props: ['showDialog', 'recordId', 'external'],
-    components: {FormImages},
+    components: {
+        FormImages, 
+        'vue-ckeditor': VueCkeditor.component
+    },
 
     data() {
         return {
@@ -606,6 +611,9 @@ export default {
             accounts: [],
             show_has_igv: true,
             have_account: false,
+            editors: {
+                classic: ClassicEditor
+            },
             item_unit_type: {
                 id: null,
                 unit_type_id: null,
