@@ -749,11 +749,17 @@ class Facturalo
 
             if($helper_facturalo->isAllowedAddDispatchTicket($format_pdf, $this->type, $this->document))
             {
+                $height = ($quantity_rows * 8) + $extra_by_item_description;
+
+                if($height < 50 ){
+                    $height = $height + 30;
+                }
+
                 $helper_facturalo->addDocumentDispatchTicket($pdf, $this->company, $this->document, [
                     $template,
                     $base_pdf_template,
                     $width,
-                    ($quantity_rows * 8) + $extra_by_item_description
+                    $height
                 ]);
             }
         }
