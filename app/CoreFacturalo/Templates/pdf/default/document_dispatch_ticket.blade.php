@@ -6,8 +6,7 @@
 <head>
 </head>
 <body class="ticket">
-
-
+<div style="height:10pt"></div>
 <table class="full-width">
     <tr>
         <td class="text-center"><h4>{{ $company->name }}</h4></td>

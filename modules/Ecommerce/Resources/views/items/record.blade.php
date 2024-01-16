@@ -77,13 +77,11 @@
                     <span class="product-price">{{ $record->currency_type_symbol }} {{ number_format($record->sale_unit, 2 )}}</span>
                 </div><!-- End .price-box -->
 
-                <div class="product-desc">
-                    <p>{{$record->name}}</p>
-                </div><!-- End .product-desc -->
-
+                <div>
                 @foreach($record->attributes as $at)
-                   <small> {{$at->description}} : {{$at->value}} </small> <br>
+                   <small> {{$at->description}}: {{$at->value}} </small> <br>
                 @endforeach
+                </div>
 
                 <div class="product-filters-container">
 
@@ -202,7 +200,7 @@
 
         <div class="tab-pane fade" id="product-especTecn-content" role="tabpanel" aria-labelledby="product-tab-especTecn">
             <div class="product-especTecn-content">
-                <p> {{ $record->technical_specifications}} </p>
+                <p> {!! $record->technical_specifications !!} </p>
             </div><!-- End .product-desc-content -->
         </div><!-- End .tab-pane -->
     </div>

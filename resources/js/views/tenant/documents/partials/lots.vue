@@ -15,28 +15,13 @@
             </div>
             <div class="row">
                 <div class="col-md-6 col-lg-6 col-xl-6 ">
-                    <!--                    <template v-if="search_series_by_barcode">-->
-                    <!--                        <el-input placeholder="Buscar serie ..."-->
-                    <!--                                  v-model="search.input"-->
-                    <!--                                  style="width: 100%;"-->
-                    <!--                                  prefix-icon="el-icon-search"-->
-                    <!--                                  @change="searchSeriesBarcode">-->
-                    <!--                        </el-input>-->
-                    <!--                    </template>-->
-                    <!--                    <template v-else>-->
-                    <el-input placeholder="Buscar serie ..."
+                    <el-input  ref="searchInput" placeholder="Buscar serie ..."
                               v-model="search.input"
                               style="width: 100%;"
                               prefix-icon="el-icon-search"
                               @input="getRecords(true)">
                     </el-input>
-                    <!--                    </template>-->
                 </div>
-                <!--                <div class="col-md-6 col-lg-6 col-xl-6 ">-->
-                <!--                    <el-switch v-model="search_series_by_barcode"-->
-                <!--                               active-text="Buscar por código de barras"-->
-                <!--                               @change="changeSearchSeriesBarcode"></el-switch>-->
-                <!--                </div>-->
                 <div class="col-md-12" v-loading="loading">
                     <div class="table-responsive mt-3">
                         <table class="table">
@@ -132,7 +117,6 @@ export default {
         }
     },
     async mounted() {
-        console.log('mounted')
         await this.getRecords()
     },
     // async created() {
@@ -172,7 +156,24 @@ export default {
                 .then(() => {
                     this.loading = false
                 })
+            await this.recordToSelected()
             await this.checkedLot();
+        },
+        recordToSelected() {
+            if(this.search.input){
+                const isAlreadySelected = this.lotsSelected.some(lot => lot.series === this.search.input);
+
+                if (!isAlreadySelected) {
+                    let lot = _.find(this.records, {series: this.search.input})
+                    lot.has_sale = true
+                    if(lot) {
+                        this.lotsSelected.push(lot)
+                        this.$nextTick(() => {
+                            this.$refs.searchInput.select();
+                        });
+                    }
+                }
+            }
         },
         getQueryParameters() {
             return queryString.stringify({
@@ -221,7 +222,6 @@ export default {
         checkedLot() {
             _.forEach(this.lotsSelected, row => {
                 let lot = _.find(this.records, {id: row.id})
-                console.log(row);
                 if (lot) {
                     lot.has_sale = true;
                 }

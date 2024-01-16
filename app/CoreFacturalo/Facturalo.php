@@ -270,7 +270,7 @@ class Facturalo
      */
     public function servicePseSendXml()
     {
-        if($this->hasPseSend() && (isset($this->actions['send_xml_signed']) ? $this->actions['send_xml_signed'] : true)) {
+        if($this->hasPseSend()) {
             $giorService = new GiorService();
             $giorService->getToken();
             $response = $giorService->sendXml($this->xmlUnsigned, $this->document->filename);
@@ -290,7 +290,7 @@ class Facturalo
 
     public function updateHash($pse_hash = null)
     {
-        if($pse_hash != null){
+        if($pse_hash == null){
             $this->document->update([
                 'hash' => $this->getHash(),
             ]);
@@ -361,7 +361,7 @@ class Facturalo
             $this->document->date_of_issue->format('Y-m-d'),
             $customer->identity_document_type_id,
             $customer->number,
-            $this->document->hash
+            $this->document->hash.'|'
         ]);
 
         $qrCode = new QrCodeGenerate();
@@ -749,11 +749,17 @@ class Facturalo
 
             if($helper_facturalo->isAllowedAddDispatchTicket($format_pdf, $this->type, $this->document))
             {
+                $height = ($quantity_rows * 8) + $extra_by_item_description;
+
+                if($height < 50 ){
+                    $height = $height + 30;
+                }
+
                 $helper_facturalo->addDocumentDispatchTicket($pdf, $this->company, $this->document, [
                     $template,
                     $base_pdf_template,
                     $width,
-                    ($quantity_rows * 8) + $extra_by_item_description
+                    $height
                 ]);
             }
         }

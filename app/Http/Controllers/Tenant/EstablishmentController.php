@@ -54,8 +54,8 @@ class EstablishmentController extends Controller
 
         return $record;
     }
-    
-    
+
+
     /**
      *
      * @param  EstablishmentRequest $request
@@ -63,7 +63,7 @@ class EstablishmentController extends Controller
      */
     public function store(EstablishmentRequest $request)
     {
-        try 
+        try
         {
             $id = $request->input('id');
             $has_igv_31556 = ($request->input('has_igv_31556') === 'true');
@@ -90,13 +90,18 @@ class EstablishmentController extends Controller
                 $warehouse->establishment_id = $establishment->id;
                 $warehouse->description = 'Almacén - '.$establishment->description;
                 $warehouse->save();
+            } else {
+                $warehouse = Warehouse::where('establishment_id', $id)->first();
+                $warehouse->description = 'Almacén - '.$establishment->description;
+                $warehouse->save();
             }
+
 
             return [
                 'success' => true,
                 'message' => ($id)?'Establecimiento actualizado':'Establecimiento registrado'
             ];
-        } 
+        }
         catch(Exception $e)
         {
             $this->generalWriteErrorLog($e);
