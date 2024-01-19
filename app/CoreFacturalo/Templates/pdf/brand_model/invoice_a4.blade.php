@@ -462,6 +462,7 @@
         <th class="border-top-bottom text-center py-2" width="8%">CANT.</th>
         <th class="border-top-bottom text-center py-2" width="8%">UNIDAD</th>
         <th class="border-top-bottom text-left py-2">DESCRIPCIÓN</th>
+        <th class="border-top-bottom text-left py-2">SERIE</th>
         <th class="border-top-bottom text-left py-2">MODELO</th>
         <th class="border-top-bottom text-center py-2" width="8%">MARCA</th>
         <th class="border-top-bottom text-right py-2" width="12%">P.UNIT</th>
@@ -532,6 +533,15 @@
                     <br>
                     *** Pago Anticipado ***
                 @endif
+            </td>
+            <td class="text-left align-top">
+                @isset($row->item->lots)
+                    @foreach($row->item->lots as $lot)
+                        @if( isset($lot->has_sale) && $lot->has_sale)
+                            <span style="font-size: 9px">{{ $lot->series }}</span><br>
+                        @endif
+                    @endforeach
+                @endisset
             </td>
             <td class="text-left align-top">{{ $row->item->model ?? '' }}</td>
             <td class="text-left align-top">
