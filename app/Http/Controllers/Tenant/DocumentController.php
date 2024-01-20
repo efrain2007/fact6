@@ -856,8 +856,9 @@ class DocumentController extends Controller
             $facturalo->setDocument($document);
             $facturalo->setType($type);
             $facturalo->createXmlUnsigned();
-            $facturalo->signXmlUnsigned();
-            $facturalo->updateHash();
+            $service_pse_xml = $facturalo->servicePseSendXml();
+            $facturalo->signXmlUnsigned($service_pse_xml['xml_signed']);
+            $facturalo->updateHash($service_pse_xml['hash']);
             $facturalo->updateQr();
             $facturalo->updateSoap('02', $type);
             $facturalo->updateState('01');
