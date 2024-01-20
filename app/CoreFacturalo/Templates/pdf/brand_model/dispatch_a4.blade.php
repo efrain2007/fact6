@@ -152,7 +152,7 @@
         <td colspan="2">
             P.Partida: {{ $document->origin->location_id }}, {{ $document->origin->address }},
             @php
-                $district = \Modules\Catalog\Models\District::find($document->origin->location_id);
+                $district = App\Models\Tenant\Catalogs\District::find($document->origin->location_id);
             @endphp
             {{ $district->description }}, {{ $district->province->description }}, {{ $district->province->department->description }}
         </td>
@@ -161,7 +161,7 @@
         <td colspan="2">
             P.Llegada: {{ $document->delivery->location_id }}, {{ $document->delivery->address }},
             @php
-                $district = \Modules\Catalog\Models\District::find($document->delivery->location_id);
+                $district = App\Models\Tenant\Catalogs\District::find($document->delivery->location_id);
             @endphp
             {{ $district->description }}, {{ $district->province->description }}, {{ $district->province->department->description }}
         </td>
@@ -183,7 +183,7 @@
     <tbody>
     @if($document->transport_mode_type_id === '01')
         @php
-            $document_type_dispatcher = Modules\Catalog\Models\IdentityDocumentType::findOrFail($document->dispatcher->identity_document_type_id);
+            $document_type_dispatcher = App\Models\Tenant\Catalogs\IdentityDocumentType::findOrFail($document->dispatcher->identity_document_type_id);
         @endphp
         <tr>
             <td>Nombre y/o razón social: {{ $document->dispatcher->name }}</td>
@@ -313,7 +313,7 @@
     @if($number !== null && $series !== null && $document_type_id !== null)
 
         @php
-            $documentType  = Modules\Catalog\Models\DocumentType::find($document_type_id);
+            $documentType  = App\Models\Tenant\Catalogs\DocumentType::find($document_type_id);
             $textDocumentType = $documentType->getDescription();
         @endphp
         <table class="full-width border-box">
