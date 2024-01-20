@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="items">
         <div class="page-header pr-0">
             <h2>
                 <a href="/dashboard"><i class="fas fa-tachometer-alt"></i></a>

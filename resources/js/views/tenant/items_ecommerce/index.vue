@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="items_ecommerce">
     <div class="page-header pr-0">
       <h2>
         <a href="/dashboard">

@@ -1,5 +1,5 @@
 <template>
-    <div class="container-fluid p-0">
+    <div class="fast container-fluid p-0">
         <div class="row page-header pr-0 no-gutters" style="height:auto">
             <Keypress
                 key-event="keyup"

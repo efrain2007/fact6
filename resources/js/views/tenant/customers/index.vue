@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="customers">
         <div class="page-header pr-0">
             <h2><a href="/dashboard"><i class="fas fa-tachometer-alt"></i></a></h2>
             <ol class="breadcrumbs">
@@ -20,7 +20,7 @@
                         <th>Nombre</th>
                         <th class="text-right">Número</th>
                         <th class="text-right">Acciones</th>
-                    <tr>
+                    </tr>
                     <tr slot-scope="{ index, row }">
                         <td>{{ index }}</td>
                         <td>{{ row.name }}</td>
