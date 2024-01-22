@@ -1,7 +1,7 @@
 
 
 <template>
-  <div v-loading="loading_submit">
+  <div class="orders" v-loading="loading_submit">
     <div class="page-header pr-0">
       <h2>
         <a href="/dashboard">

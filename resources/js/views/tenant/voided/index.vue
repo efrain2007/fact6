@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="voided">
         <header class="page-header pr-0">
             <h2><a href="/dashboard"><i class="fas fa-tachometer-alt"></i></a></h2>
             <ol class="breadcrumbs">
@@ -26,7 +26,7 @@
                         <th>Estado</th>
                         <th class="text-center">Descargas</th>
                         <th class="text-right">Acciones</th>
-                    <tr>
+                    </tr>
                     <tr slot-scope="{ index, row }" :class="{'text-danger': (row.state_type_id === '05'), 'text-warning': (row.state_type_id === '03')}">
                         <td>{{ index }}</td>
                         <td class="text-center">{{ row.date_of_issue }}</td>

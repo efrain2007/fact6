@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="promotions">
     <div class="page-header pr-0">
       <h2>
         <a href="/dashboard">
