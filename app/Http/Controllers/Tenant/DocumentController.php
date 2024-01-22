@@ -71,6 +71,7 @@ use Modules\Document\Helpers\DocumentHelper;
 use Modules\Inventory\Models\{
     InventoryConfiguration
 };
+use App\Models\Tenant\Cash;
 
 class DocumentController extends Controller
 {
@@ -583,6 +584,8 @@ class DocumentController extends Controller
             $validate = $this->validateDocument($request);
             if (!$validate['success']) return $validate;
 
+            $this->validationOpenCash($request);
+
             $res = $this->storeWithData($request->all());
             $document_id = $res['data']['id'];
             $this->associateDispatchesToDocument($request, $document_id);
@@ -595,6 +598,20 @@ class DocumentController extends Controller
             $this->generalWriteErrorLog($e);
 
             return $this->generalResponse(false, 'Ocurrió un error: '.$e->getMessage());
+        }
+    }
+
+    public function validationOpenCash($request)
+    {
+        // busca una caja chica en el array de pagos
+        $find_cash = array_search('cash', array_column($request->payments,'payment_destination_id'));
+        // si ha seleccionado una caja chica
+        if($find_cash >= 0) {
+            // no hay id de la caja seleccionada por lo que si es abierta una nueva será seleccionada como destino
+            $cash = Cash::where([['user_id', auth()->user()->id],['state', true]])->first();
+            if(!$cash){
+                return $this->generalResponse(false, 'Ocurrió un error: Caja seleccionada en métodos de pago se encuentra cerrada');
+            }
         }
     }
 
