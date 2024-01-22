@@ -584,7 +584,7 @@ class DocumentController extends Controller
             $validate = $this->validateDocument($request);
             if (!$validate['success']) return $validate;
 
-            $this->validationOpenCash($request);
+            if(!$this->validationOpenCash($request)) return $this->generalResponse(false, 'Ocurrió un error: Caja seleccionada en métodos de pago se encuentra cerrada');
 
             $res = $this->storeWithData($request->all());
             $document_id = $res['data']['id'];
@@ -610,9 +610,10 @@ class DocumentController extends Controller
             // no hay id de la caja seleccionada por lo que si es abierta una nueva será seleccionada como destino
             $cash = Cash::where([['user_id', auth()->user()->id],['state', true]])->first();
             if(!$cash){
-                return $this->generalResponse(false, 'Ocurrió un error: Caja seleccionada en métodos de pago se encuentra cerrada');
+                return false;
             }
         }
+        return true;
     }
 
 
