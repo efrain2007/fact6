@@ -135,7 +135,7 @@
                 <cbc:ID schemeID="{{ $customer->identity_document_type_id }}">{{ $customer->number }}</cbc:ID>
             </cac:PartyIdentification>
             <cac:PartyLegalEntity>
-                <cbc:RegistrationName><![CDATA[{!! $customer->name !!}]]></cbc:RegistrationName>
+                <cbc:RegistrationName><![CDATA[{{ $customer->name }}]]></cbc:RegistrationName>
                 @if($customer->address && $customer->address !== '-')
                 <cac:RegistrationAddress>
                     @if($customer->district_id)
