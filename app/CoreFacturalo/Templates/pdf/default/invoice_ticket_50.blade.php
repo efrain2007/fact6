@@ -650,9 +650,12 @@
 
                 </td>
             </tr>
-
             <tr>
-                <td class="text-center desc-9 pt-2">Para consultar el comprobante ingresar a {!! url('/buscar') !!}</td>
+                <td class="text-center desc-9 pt-2">
+                    Para consultar el comprobante ingresar a {!! url('/buscar') !!}
+                    <br>
+                    Representacion impresa de la <span style="text-transform: capitalize" class="text-capitalize">{{ $document->document_type->description }}</span>
+                </td>
             </tr>
 </table>
 

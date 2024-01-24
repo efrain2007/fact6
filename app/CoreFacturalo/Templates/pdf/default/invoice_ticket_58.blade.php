@@ -9,7 +9,7 @@
 
     // $accounts = \App\Models\Tenant\BankAccount::where('show_in_documents', true)->get();
     $accounts = (new TemplatePdf)->getBankAccountsForPdf($document->establishment_id);
-    
+
     $document_base = ($document->note) ? $document->note : null;
     $payments = $document->payments;
 
@@ -649,9 +649,12 @@
 
                 </td>
             </tr>
-
             <tr>
-                <td class="text-center desc-9 pt-2">Para consultar el comprobante ingresar a {!! url('/buscar') !!}</td>
+                <td class="text-center desc-9 pt-2">
+                    Para consultar el comprobante ingresar a {!! url('/buscar') !!}
+                    <br>
+                    Representacion impresa de la <span style="text-transform: capitalize" class="text-capitalize">{{ $document->document_type->description }}</span>
+                </td>
             </tr>
 </table>
 
