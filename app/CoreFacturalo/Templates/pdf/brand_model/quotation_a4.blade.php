@@ -7,7 +7,7 @@
 
     $accounts = (new TemplatePdf)->getBankAccountsForPdf($document->establishment_id);
 
-    $tittle = $document->series.'-'.str_pad($document->number, 8, '0', STR_PAD_LEFT);
+    $tittle = $document->prefix.'-'.str_pad($document->id, 8, '0', STR_PAD_LEFT);
 
     $logo = "storage/uploads/logos/{$company->logo}";
     if($establishment->logo) {
