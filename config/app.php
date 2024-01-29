@@ -2,7 +2,7 @@
 
 return [
 
-    'limite_reseller' => env('LIMITE_RESELLER', 5),
+    'limite_reseller' => env('LIMITE_RESELLER', 999),
 
     /*
     |--------------------------------------------------------------------------
