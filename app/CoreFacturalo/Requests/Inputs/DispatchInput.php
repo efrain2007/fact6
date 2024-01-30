@@ -101,6 +101,7 @@ class DispatchInput
             'receiver_data' => self::receiverData($inputs),
             'sender_address_data' => self::senderAddressData($inputs),
             'receiver_address_data' => self::receiverAddressData($inputs),
+            'date_delivery_to_transport' => $inputs['date_delivery_to_transport'],
         ];
 
         if (isset($inputs['data_affected_document'])) {

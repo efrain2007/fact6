@@ -230,6 +230,7 @@ class DispatchController extends Controller
                 'transport_id' => $document->transport_id,
                 'origin_address_id' => $document->origin_address_id,
                 'delivery_address_id' => $document->delivery_address_id,
+                'date_delivery_to_transport' => $document->date_delivery_to_transport?$document->date_delivery_to_transport->format('Y-m-d'):null,
             ];
         } else {
             $data = [

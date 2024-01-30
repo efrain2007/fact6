@@ -123,12 +123,14 @@
     <tr>
         <td colspan="2">P.Llegada: {{ $document->delivery->location_id }} - {{ $document->delivery->address }}</td>
     </tr>
-    @if($document->order_form_external)
-        <tr>
+    <tr>
+        @if($document->order_form_external)
             <td>Orden de pedido: {{ $document->order_form_external }}</td>
-            <td></td>
-        </tr>
-    @endif
+        @endif
+        @if($document->date_delivery_to_transport)
+            <td>Fecha de entrega de bienes al Transportista: {{$document->date_delivery_to_transport->format('Y-m-d')}}</td>
+        @endif
+    </tr>
     </tbody>
 </table>
 <table class="full-width border-box mt-10 mb-10">

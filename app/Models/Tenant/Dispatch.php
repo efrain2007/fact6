@@ -66,8 +66,7 @@ use App\Models\Tenant\Catalogs\IdentityDocumentType;
  */
 class Dispatch extends ModelTenant
 {
-    protected $with = ['user', 'soap_type', 'state_type', 'document_type', 'unit_type', 'transport_mode_type',
-        'transfer_reason_type', 'items', 'reference_document'];
+    protected $with = ['user', 'soap_type', 'state_type', 'document_type', 'unit_type', 'transport_mode_type','transfer_reason_type', 'items', 'reference_document'];
 
     protected $fillable = [
         'user_id',
@@ -104,16 +103,12 @@ class Dispatch extends ModelTenant
         'driver',
         'transport_id',
         'license_plate',
-
         'legends',
-
         'filename',
         'hash',
-
         'has_xml',
         'has_pdf',
         'has_cdr',
-
         'reference_document_id',
         'reference_order_note_id',
         'reference_quotation_id',
@@ -124,12 +119,10 @@ class Dispatch extends ModelTenant
         'soap_shipping_response',
         'data_affected_document',
         'related',
-
         'send_to_pse',
         'response_signature_pse',
         'response_send_cdr_pse',
         'order_form_external',
-
         'terms_condition',
         'additional_data',
         'ticket',
@@ -138,18 +131,15 @@ class Dispatch extends ModelTenant
         'origin_address_id',
         'delivery_address_id',
         'transport_data',
-
         'sender_id',
         'sender_data',
-
         'receiver_id',
         'receiver_data',
-
         'sender_address_id',
         'sender_address_data',
-
         'receiver_address_id',
         'receiver_address_data',
+        'date_delivery_to_transport',
     ];
 
     protected $casts = [
@@ -162,6 +152,7 @@ class Dispatch extends ModelTenant
         'sender_address_data' => 'array',
         'receiver_address_data' => 'array',
         'establishment' => 'json',
+        'date_delivery_to_transport' => 'date',
     ];
 
     public function getAdditionalDataAttribute($value)

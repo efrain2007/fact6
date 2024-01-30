@@ -252,6 +252,20 @@
                                        v-text="errors.order_form_external[0]"></small>
                             </div>
                         </div>
+                        <div class="col-lg-3" v-if="form.transport_mode_type_id === '01'">
+                            <div :class="{'has-danger': errors.date_delivery_to_transport}"
+                                 class="form-group">
+                                <label class="control-label">Fecha de entrega al transporte<span
+                                    class="text-danger"> *</span></label>
+                                <el-date-picker v-model="form.date_delivery_to_transport"
+                                                :clearable="false"
+                                                type="date"
+                                                value-format="yyyy-MM-dd"></el-date-picker>
+                                <small v-if="errors.date_delivery_to_transport"
+                                       class="form-control-feedback"
+                                       v-text="errors.date_delivery_to_transport[0]"></small>
+                            </div>
+                        </div>
                     </div>
                     <div class="row">
                     </div>
@@ -815,6 +829,7 @@ export default {
                 terms_condition: null,
                 origin_address_id: null,
                 delivery_address_id: null,
+                date_delivery_to_transport: null,
             }
         },
         setDescriptionOfItem(item) {
