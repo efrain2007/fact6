@@ -294,7 +294,7 @@
                                         <template v-else>
                                             {{ setDescriptionOfItem(row.item) }}
                                         </template>
-                                        
+
                                         <pack-item-description
                                             v-if="row.item.is_set && configuration.show_item_description_pack"
                                             :item-id="row.item_id"
@@ -325,7 +325,7 @@
                                                 <span class="text-danger mt-1 mb-2 d-block">Restringido para venta en CPE</span>
                                             </template>
                                         </template>
-                                        
+
                                         <p class="control-label font-weight-bold text-info" v-if="configuration.show_all_item_details">
                                             <a href="#" @click.prevent="clickShowItemDetail(row.item_id)">[Ver detalle]</a>
                                         </p>
@@ -336,7 +336,7 @@
                                     <td class="text-right">
 
                                         <template v-if="showEditableItems">
-                                            <el-input-number 
+                                            <el-input-number
                                                 v-model="row.quantity"
                                                 :min="0.01"
                                                 class="input-custom"
@@ -354,9 +354,9 @@
 
                                     <td class="text-right">
                                         {{ currency_type.symbol }}
-                                        
+
                                         <template v-if="showEditableItems">
-                                            <el-input-number 
+                                            <el-input-number
                                                 v-model="row.unit_value"
                                                 :min="0"
                                                 class="input-custom"
@@ -373,9 +373,9 @@
 
                                     <td class="text-right">
                                         {{ currency_type.symbol }}
-                                        
+
                                         <template v-if="showEditableItems">
-                                            <el-input-number 
+                                            <el-input-number
                                                 v-model="row.unit_price"
                                                 :min="0.01"
                                                 class="input-custom"
@@ -392,10 +392,10 @@
 
 
                                     <td class="text-right">
-                                        {{ currency_type.symbol }} 
+                                        {{ currency_type.symbol }}
 
                                         <template v-if="showEditableItems">
-                                            <el-input-number 
+                                            <el-input-number
                                                 v-model="row.total_value"
                                                 :min="0.01"
                                                 class="input-custom"
@@ -410,12 +410,12 @@
                                             {{ row.total_value }}
                                         </template>
                                     </td>
-                                    
+
                                     <td class="text-right">
                                         {{ currency_type.symbol }}
-                                        
+
                                         <template v-if="showEditableItems">
-                                            <el-input-number 
+                                            <el-input-number
                                                 v-model="row.total"
                                                 :min="0"
                                                 class="input-custom"
@@ -1721,8 +1721,8 @@
                                  :item="recordItem"
                                  :document-id="documentId"
                                  @success="successItemSeries"></store-item-series-index>
-                                 
-        <!-- <item-detail-form 
+
+        <!-- <item-detail-form
             :recordId="itemDetailId"
             :showDialog.sync="showDialogItemDetail"
             :onlyShowAllDetails="configuration.show_all_item_details"
@@ -2457,7 +2457,7 @@ export default {
             // carga informacion de un documento previo al formulario
             // console.log('onSetFormData')
             this.currency_type = await _.find(this.currency_types, {'id': data.currency_type_id})
-            
+
             /*
             this.form.establishment_id = data.establishment_id;
             */
@@ -3402,9 +3402,11 @@ export default {
                 let detraction = this.form.detraction
 
                 let tot = (this.form.currency_type_id == 'PEN') ? this.form.total : (this.form.total * this.form.exchange_rate_sale)
-                let total_restriction = (this.form.operation_type_id == '1001') ? 700 : 400
 
-                if (tot <= total_restriction)
+                let total_restriction = (this.form.operation_type_id == '1001') ? 700 : 400
+                let is_residues = detraction.detraction_type_id === '010' && this.form.operation_type_id == '1001' ? true : false
+
+                if (tot <= total_restriction && !is_residues)
                     return {
                         success: false,
                         message: `El importe de la operación debe ser mayor a S/ ${total_restriction}.00 o equivalente en USD`
@@ -4360,7 +4362,7 @@ export default {
         getLastDateFee(input_last_index = null)
         {
             const last_index = input_last_index || this.getLastIndexFee()
-            
+
             return this.form.fee[last_index].date
         },
         setDateOfDue(date_of_due)
