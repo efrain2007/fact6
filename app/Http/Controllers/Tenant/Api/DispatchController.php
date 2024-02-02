@@ -31,7 +31,6 @@ class DispatchController extends Controller
             'delivery.address' => 'required|max:100',
             'origin.address' => 'required|max:100',
         ]);
-        // dd($request->all());
 
         $fact = DB::connection('tenant')->transaction(function () use ($request) {
             $facturalo = new Facturalo();

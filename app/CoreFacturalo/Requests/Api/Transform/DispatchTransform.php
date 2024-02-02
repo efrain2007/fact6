@@ -51,7 +51,8 @@ class DispatchTransform
             'receiver_id' => Functions::valueKeyInArray($inputs, 'destinatario_id'),
             'receiver_data' => self::receiverData($inputs),
             'receiver_address_id' => Functions::valueKeyInArray($inputs, 'direccion_destinatario_id'),
-            'receiver_address_data' => self::addressData($inputs, 'receiver')
+            'receiver_address_data' => self::addressData($inputs, 'receiver'),
+            'date_delivery_to_transport' => Functions::valueKeyInArray($inputs, 'fecha_entrega_transporte'),
 
         ];
         self::AffectedDocument($data, $inputs);

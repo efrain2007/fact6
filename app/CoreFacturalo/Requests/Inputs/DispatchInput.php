@@ -19,6 +19,7 @@ use Modules\Dispatch\Models\ReceiverAddress;
 use Modules\Dispatch\Models\Sender;
 use Modules\Dispatch\Models\SenderAddress;
 use Modules\Dispatch\Models\Transport;
+use App\Models\Tenant\Catalogs\District;
 
 class DispatchInput
 {
@@ -101,7 +102,7 @@ class DispatchInput
             'receiver_data' => self::receiverData($inputs),
             'sender_address_data' => self::senderAddressData($inputs),
             'receiver_address_data' => self::receiverAddressData($inputs),
-            'date_delivery_to_transport' => $inputs['date_delivery_to_transport'],
+            'date_delivery_to_transport' => Functions::valueKeyInArray($inputs, 'date_delivery_to_transport'),
         ];
 
         if (isset($inputs['data_affected_document'])) {
@@ -389,9 +390,6 @@ class DispatchInput
     private static function getDispatcherId($inputs)
     {
         if ($inputs['document_type_id'] === '09' && $inputs['transport_mode_type_id'] === '01') {
-//            if (key_exists('dispatcher_id', $inputs)) {
-                // return $inputs['dispatcher_id'];
-//            }
            $dispatcher = $inputs['dispatcher'];
            $record = Dispatcher::query()
                ->firstOrCreate([
@@ -417,14 +415,25 @@ class DispatchInput
         }
         if ($inputs['document_type_id'] === '09' && $inputs['transport_mode_type_id'] === '01') {
             $delivery = $inputs['delivery'];
-            // dd(self::getDispatcherId());
-            $record = DispatchAddress::query()
-                ->firstOrCreate([
-                    'person_id' => self::getDispatcherId($inputs),
-                    'location_id' => $delivery['location_id'],
-                    'address' => $delivery['address']
-                ]);
 
+            $location = $delivery['location_id'];
+            if(is_string($location)){
+                $district = District::find($delivery['location_id']);
+                $location = [$district->province->department->id, $district->province->id, $district->id];
+            }
+            $record = DispatchAddress::query()
+                ->where([
+                'person_id' => self::getDispatcherId($inputs),
+                'address' => $delivery['address']])
+                ->first();
+            if(!$record){
+                $record = DispatchAddress::query()
+                    ->create([
+                        'person_id' => self::getDispatcherId($inputs),
+                        'location_id' => $location,
+                        'address' => $delivery['address']
+                    ]);
+            }
            return $record->id;
         }
         return null;
